@@ -1,13 +1,18 @@
 /* ===== HERO SECTION ===== */
 
+/* Override default section padding for hero */
+#hero-section {
+    padding: 0 !important;
+}
+
 .hero-wrapper {
     position: relative;
-    min-height: 90vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     overflow: hidden;
-    padding: var(--space-20) 0;
-    padding-top: 100px; /* Account for fixed nav */
+    padding: 0 0 var(--space-20) 0;
+    padding-top: 70px; /* Exact navbar height */
 }
 
 /* ===== BACKGROUND ===== */
@@ -52,7 +57,8 @@
     grid-template-columns: 1fr 1fr;
     gap: var(--space-16);
     align-items: center;
-    min-height: calc(90vh - 160px);
+    min-height: calc(100vh - 140px); /* Full height minus navbar and bottom padding */
+    width: 100%;
 }
 
 .hero-text {
@@ -194,6 +200,7 @@
     transform: translateX(4px);
 }
 
+/* Contact note - optional supportive text */
 .cta-note {
     display: flex;
     align-items: center;
@@ -417,16 +424,37 @@
     gap: var(--space-2);
     animation: bounce 2s infinite;
     cursor: pointer;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    transition: all var(--transition-fast);
+}
+
+.scroll-indicator:hover {
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .scroll-text {
     font-size: var(--text-sm);
-    color: var(--gray-500);
-    font-weight: var(--font-medium);
+    color: var(--gray-700);
+    font-weight: var(--font-semibold);
+    text-align: center;
+    white-space: nowrap;
 }
 
 .scroll-arrow {
-    color: var(--gray-400);
+    color: var(--gray-600);
+    transition: color var(--transition-fast);
+}
+
+.scroll-indicator:hover .scroll-arrow {
+    color: var(--primary-blue);
 }
 
 @keyframes bounce {
@@ -442,6 +470,16 @@
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1279px) {
+    .hero-headline {
+        font-size: var(--text-5xl);
+    }
+    
+    .hero-content {
+        gap: var(--space-12);
+    }
+}
+
 @media (max-width: 1023px) {
     .hero-content {
         grid-template-columns: 1fr;
@@ -464,27 +502,41 @@
     .floating-card {
         display: none;
     }
-}
-
-@media (max-width: 767px) {
-    .hero-wrapper {
-        min-height: auto;
-        padding: var(--space-12) 0;
-        padding-top: 80px;
-    }
     
     .hero-headline {
         font-size: var(--text-4xl);
     }
     
     .hero-subheadline {
-        font-size: var(--text-lg);
         max-width: 100%;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-wrapper {
+        min-height: 100vh;
+        padding-top: 60px; /* Mobile navbar height */
+        padding-bottom: var(--space-12);
+    }
+    
+    .hero-content {
+        min-height: calc(100vh - 120px);
+    }
+    
+    .hero-headline {
+        font-size: var(--text-3xl);
+        margin-bottom: var(--space-4);
+    }
+    
+    .hero-subheadline {
+        font-size: var(--text-lg);
+        margin-bottom: var(--space-6);
     }
     
     .hero-stats {
         justify-content: center;
         gap: var(--space-4);
+        margin-bottom: var(--space-8);
     }
     
     .stat-number {
@@ -508,7 +560,7 @@
 
 @media (max-width: 479px) {
     .hero-headline {
-        font-size: var(--text-3xl);
+        font-size: var(--text-2xl);
     }
     
     .hero-stats {
@@ -519,6 +571,10 @@
     .stat-divider {
         width: 40px;
         height: 1px;
+    }
+    
+    .hero-wrapper {
+        padding-top: 60px;
     }
 }
 
@@ -556,4 +612,48 @@
 
 .in-view [data-fade][data-delay="400"] {
     transition-delay: 0.4s;
+}
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+.hero-wrapper {
+    will-change: transform;
+}
+
+.floating-card {
+    will-change: transform;
+}
+
+.dashboard-container {
+    will-change: transform;
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+@media (prefers-reduced-motion: reduce) {
+    .floating-card,
+    .scroll-indicator,
+    .btn-primary-large,
+    .dashboard-container {
+        animation: none;
+    }
+    
+    .btn-primary-large:hover {
+        transform: none;
+    }
+    
+    .dashboard-container:hover {
+        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+    }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .hero-wrapper {
+        min-height: auto;
+        padding: var(--space-8) 0;
+    }
+    
+    .floating-card,
+    .scroll-indicator {
+        display: none;
+    }
 }
