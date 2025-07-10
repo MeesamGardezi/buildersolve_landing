@@ -657,3 +657,91 @@
         display: none;
     }
 }
+
+/* ===== HERO DARK MODE OVERRIDE - KEEP LIGHT FOR IMPACT ===== */
+@media (prefers-color-scheme: dark) {
+    /* Force hero section to stay light for maximum visual impact */
+    #hero-section,
+    .hero-wrapper,
+    .hero-wrapper * {
+        background-color: var(--white) !important;
+        color: var(--gray-900) !important;
+    }
+    
+    /* Ensure specific elements maintain light theme */
+    .hero-headline {
+        color: var(--gray-900) !important;
+    }
+    
+    .hero-subheadline {
+        color: var(--gray-600) !important;
+    }
+    
+    .stat-number {
+        color: var(--primary-blue) !important;
+    }
+    
+    .stat-label {
+        color: var(--gray-600) !important;
+    }
+    
+    .stat-divider {
+        background: var(--gray-300) !important;
+    }
+    
+    /* Dashboard and floating cards stay light */
+    .dashboard-main,
+    .floating-card {
+        background: var(--white) !important;
+        color: var(--gray-900) !important;
+        border-color: var(--gray-200) !important;
+    }
+    
+    .metric-card,
+    .placeholder-chart {
+        background: var(--gray-50) !important;
+    }
+    
+    .metric-label,
+    .card-title {
+        color: var(--gray-600) !important;
+    }
+    
+    .metric-value,
+    .card-value {
+        color: var(--gray-900) !important;
+    }
+    
+    .tab {
+        color: var(--gray-600) !important;
+    }
+    
+    .tab.active {
+        background: var(--white) !important;
+        color: var(--primary-blue) !important;
+    }
+    
+    /* Scroll indicator stays light */
+    .scroll-indicator {
+        background: rgba(255, 255, 255, 0.9) !important;
+        border-color: var(--gray-200) !important;
+    }
+    
+    .scroll-text {
+        color: var(--gray-700) !important;
+    }
+    
+    .scroll-arrow {
+        color: var(--gray-600) !important;
+    }
+    
+    .scroll-indicator:hover .scroll-arrow {
+        color: var(--primary-blue) !important;
+    }
+    
+    /* Hero background elements */
+    .hero-gradient,
+    .hero-pattern {
+        opacity: 0.6 !important;
+    }
+}

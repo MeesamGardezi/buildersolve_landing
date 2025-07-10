@@ -16,6 +16,8 @@
 .navbar.scrolled {
     background: rgba(255, 255, 255, 0.98);
     box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .nav-container {
@@ -55,6 +57,7 @@
     height: 32px;
     color: var(--primary-blue);
     flex-shrink: 0;
+    transition: color var(--transition-fast);
 }
 
 .brand-text {
@@ -63,6 +66,7 @@
     font-weight: var(--font-bold);
     color: var(--gray-900);
     letter-spacing: -0.025em;
+    transition: color var(--transition-fast);
 }
 
 /* ===== DESKTOP NAVIGATION LINKS ===== */
@@ -126,6 +130,23 @@
     cursor: pointer;
     transition: all var(--transition-fast);
     box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.btn-contact:hover::before {
+    left: 100%;
 }
 
 .btn-contact:hover {
@@ -198,6 +219,8 @@
     visibility: hidden;
     transform: translateY(-10px);
     transition: all var(--transition-base);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .mobile-menu.active {
@@ -256,6 +279,23 @@
     border: none;
     cursor: pointer;
     transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-contact-mobile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.btn-contact-mobile:hover::before {
+    left: 100%;
 }
 
 .btn-contact-mobile:hover {
@@ -368,25 +408,49 @@
     .navbar,
     .nav-link,
     .btn-contact,
+    .btn-contact-mobile,
     .mobile-menu,
-    .hamburger-line {
+    .hamburger-line,
+    .brand-link,
+    .brand-icon,
+    .brand-text {
         transition: none;
+    }
+    
+    .btn-contact::before,
+    .btn-contact-mobile::before {
+        display: none;
     }
 }
 
-/* ===== DARK MODE SUPPORT (Future) ===== */
+/* ===== PERFECT DARK MODE ===== */
 @media (prefers-color-scheme: dark) {
+    /* Navbar background and blur */
     .navbar {
-        background: rgba(17, 24, 39, 0.95);
-        border-bottom-color: var(--gray-700);
+        background: rgba(15, 23, 42, 0.95);
+        border-bottom: 1px solid var(--dark-border);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
     }
     
+    .navbar.scrolled {
+        background: rgba(15, 23, 42, 0.98);
+        box-shadow: var(--shadow-dark-sm);
+        border-bottom: 1px solid var(--dark-surface);
+    }
+    
+    /* Brand styling */
     .brand-text {
-        color: var(--white);
+        color: var(--dark-text);
     }
     
+    .brand-icon {
+        color: var(--blue-400);
+    }
+    
+    /* Navigation links */
     .nav-link {
-        color: var(--gray-300);
+        color: var(--dark-text-secondary);
     }
     
     .nav-link:hover,
@@ -394,18 +458,44 @@
         color: var(--blue-400);
     }
     
-    .hamburger-line {
-        background: var(--gray-300);
+    .nav-link::after {
+        background: var(--blue-400);
     }
     
+    /* CTA button - enhanced for dark mode */
+    .btn-contact {
+        background: var(--primary-orange);
+        box-shadow: var(--shadow-dark-sm);
+        border: 1px solid rgba(234, 88, 12, 0.3);
+    }
+    
+    .btn-contact:hover {
+        background: var(--orange-600);
+        box-shadow: var(--shadow-dark-md);
+        border-color: rgba(234, 88, 12, 0.5);
+    }
+    
+    /* Mobile menu toggle */
+    .hamburger-line {
+        background: var(--dark-text-secondary);
+    }
+    
+    .mobile-menu-toggle[aria-expanded="true"] .hamburger-line {
+        background: var(--blue-400);
+    }
+    
+    /* Mobile menu */
     .mobile-menu {
-        background: var(--gray-900);
-        border-bottom-color: var(--gray-700);
+        background: rgba(15, 23, 42, 0.98);
+        border-bottom: 1px solid var(--dark-border);
+        box-shadow: var(--shadow-dark-lg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
     }
     
     .mobile-nav-link {
-        color: var(--gray-300);
-        border-bottom-color: var(--gray-700);
+        color: var(--dark-text-secondary);
+        border-bottom-color: var(--dark-surface);
     }
     
     .mobile-nav-link:hover,
@@ -414,6 +504,50 @@
     }
     
     .mobile-cta {
-        border-top-color: var(--gray-700);
+        border-top-color: var(--dark-border);
+    }
+    
+    /* Mobile CTA button */
+    .btn-contact-mobile {
+        background: var(--primary-orange);
+        box-shadow: var(--shadow-dark-sm);
+        border: 1px solid rgba(234, 88, 12, 0.3);
+    }
+    
+    .btn-contact-mobile:hover {
+        background: var(--orange-600);
+        border-color: rgba(234, 88, 12, 0.5);
+    }
+    
+    /* Focus states for dark mode */
+    .nav-link:focus,
+    .btn-contact:focus,
+    .mobile-menu-toggle:focus,
+    .mobile-nav-link:focus,
+    .btn-contact-mobile:focus {
+        outline-color: var(--blue-400);
+    }
+    
+    /* High contrast adjustments for dark mode */
+    @media (prefers-contrast: high) {
+        .navbar {
+            background: var(--dark-bg);
+            border-bottom: 2px solid var(--dark-text);
+        }
+        
+        .brand-text,
+        .nav-link,
+        .mobile-nav-link {
+            color: var(--dark-text);
+        }
+        
+        .btn-contact,
+        .btn-contact-mobile {
+            border: 2px solid var(--dark-text);
+        }
+        
+        .hamburger-line {
+            background: var(--dark-text);
+        }
     }
 }
