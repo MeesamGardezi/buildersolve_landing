@@ -9,7 +9,7 @@ class HeroSection {
         this.dashboardContainer = null;
         this.floatingCards = [];
         this.scrollIndicator = null;
-        this.statsAnimated = false;
+        this.contactButton = null;
         this.isVisible = false;
         
         this.init();
@@ -54,7 +54,7 @@ class HeroSection {
         this.dashboardContainer = document.querySelector('.dashboard-container');
         this.floatingCards = Array.from(document.querySelectorAll('.floating-card'));
         this.scrollIndicator = document.querySelector('.scroll-indicator');
-        this.statsNumbers = Array.from(document.querySelectorAll('.stat-number'));
+        this.contactButton = document.querySelector('.btn-primary-large');
         this.chartBars = Array.from(document.querySelectorAll('.bar'));
     }
     
@@ -66,7 +66,8 @@ class HeroSection {
         
         // Scroll indicator click
         if (this.scrollIndicator) {
-            this.scrollIndicator.addEventListener('click', () => {
+            this.scrollIndicator.addEventListener('click', (e) => {
+                e.preventDefault();
                 this.scrollToNextSection();
             });
         }
@@ -93,15 +94,30 @@ class HeroSection {
             });
         });
         
-        // Contact button tracking
-        const heroContactBtn = this.heroWrapper.querySelector('[data-contact]');
-        if (heroContactBtn) {
-            heroContactBtn.addEventListener('click', () => {
-                this.trackHeroConversion();
+        // Contact button interactions
+        if (this.contactButton) {
+            this.contactButton.addEventListener('click', () => {
+                this.handleContactClick();
+            });
+            
+            this.contactButton.addEventListener('mouseenter', () => {
+                this.pauseButtonAnimation();
+            });
+            
+            this.contactButton.addEventListener('mouseleave', () => {
+                this.resumeButtonAnimation();
             });
         }
         
-        // Parallax scroll effect
+        // Tab interactions
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                this.handleTabClick(e.target);
+            });
+        });
+        
+        // Parallax scroll effect (throttled)
         window.addEventListener('scroll', this.throttle(() => {
             this.handleParallaxScroll();
         }, 16));
@@ -116,8 +132,14 @@ class HeroSection {
             bar.style.setProperty('--delay', `${index * 0.1}s`);
         });
         
-        // Initialize floating cards positions
+        // Initialize floating cards
         this.initializeFloatingCards();
+        
+        // Add dashboard entrance animation
+        if (this.dashboardContainer) {
+            this.dashboardContainer.style.opacity = '0';
+            this.dashboardContainer.style.transform = 'perspective(1000px) rotateY(-15deg) rotateX(10deg) translateY(50px)';
+        }
     }
     
     /**
@@ -147,11 +169,11 @@ class HeroSection {
      * Animate elements when section becomes visible
      */
     animateOnVisible() {
-        // Animate stats numbers
-        this.animateStatsNumbers();
-        
         // Animate chart bars
         this.animateChartBars();
+        
+        // Animate dashboard entrance
+        this.animateDashboard();
         
         // Start floating cards animation
         this.startFloatingCardsAnimation();
@@ -161,52 +183,16 @@ class HeroSection {
     }
     
     /**
-     * Animate statistics numbers with counting effect
+     * Animate dashboard entrance
      */
-    animateStatsNumbers() {
-        if (this.statsAnimated) return;
-        this.statsAnimated = true;
+    animateDashboard() {
+        if (!this.dashboardContainer) return;
         
-        const statsData = [
-            { element: this.statsNumbers[0], target: 2.2, suffix: 'M+', duration: 2000 },
-            { element: this.statsNumbers[1], target: 30, suffix: '%', duration: 1500 },
-            { element: this.statsNumbers[2], target: 95, suffix: '%', duration: 1800 }
-        ];
-        
-        statsData.forEach(({ element, target, suffix, duration }) => {
-            if (!element) return;
-            
-            this.animateNumber(element, 0, target, duration, suffix);
-        });
-    }
-    
-    /**
-     * Animate number counting effect
-     */
-    animateNumber(element, start, end, duration, suffix = '') {
-        const startTime = performance.now();
-        const isDecimal = end % 1 !== 0;
-        
-        const updateNumber = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            // Easing function
-            const easeOut = 1 - Math.pow(1 - progress, 3);
-            const current = start + (end - start) * easeOut;
-            
-            if (isDecimal) {
-                element.textContent = `$${current.toFixed(1)}${suffix}`;
-            } else {
-                element.textContent = `${Math.floor(current)}${suffix}`;
-            }
-            
-            if (progress < 1) {
-                requestAnimationFrame(updateNumber);
-            }
-        };
-        
-        requestAnimationFrame(updateNumber);
+        setTimeout(() => {
+            this.dashboardContainer.style.transition = 'all 1s ease-out';
+            this.dashboardContainer.style.opacity = '1';
+            this.dashboardContainer.style.transform = 'perspective(1000px) rotateY(-5deg) rotateX(5deg) translateY(0)';
+        }, 300);
     }
     
     /**
@@ -216,7 +202,7 @@ class HeroSection {
         this.chartBars.forEach((bar, index) => {
             setTimeout(() => {
                 bar.style.animation = 'barGrow 1s ease-out forwards';
-            }, index * 100);
+            }, 800 + (index * 100)); // Start after dashboard loads
         });
     }
     
@@ -225,10 +211,10 @@ class HeroSection {
      */
     initializeFloatingCards() {
         this.floatingCards.forEach((card, index) => {
-            // Set initial animation delay
+            // Set initial state
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px) scale(0.8)';
             card.style.animationDelay = `${index}s`;
-            
-            // Add hover transform origin
             card.style.transformOrigin = 'center center';
         });
     }
@@ -238,11 +224,17 @@ class HeroSection {
      */
     startFloatingCardsAnimation() {
         this.floatingCards.forEach((card, index) => {
-            // Stagger the start of animations
             setTimeout(() => {
+                card.style.transition = 'all 0.6s ease-out';
                 card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, 500 + (index * 200));
+                card.style.transform = 'translateY(0) scale(1)';
+                
+                // Start floating animation after entrance
+                setTimeout(() => {
+                    card.style.transition = '';
+                    card.style.animation = `float 3s ease-in-out infinite ${index}s`;
+                }, 600);
+            }, 1000 + (index * 200));
         });
     }
     
@@ -270,7 +262,7 @@ class HeroSection {
      */
     animateFloatingCard(card, isHovering) {
         if (isHovering) {
-            card.style.transform = 'translateY(-15px) scale(1.08)';
+            card.style.transform = 'translateY(-15px) scale(1.1)';
             card.style.boxShadow = 'var(--shadow-2xl)';
             card.style.zIndex = '20';
         } else {
@@ -281,13 +273,72 @@ class HeroSection {
     }
     
     /**
+     * Handle tab clicks
+     */
+    handleTabClick(clickedTab) {
+        const tabs = document.querySelectorAll('.tab');
+        
+        // Remove active class from all tabs
+        tabs.forEach(tab => tab.classList.remove('active'));
+        
+        // Add active class to clicked tab
+        clickedTab.classList.add('active');
+        
+        // Add some animation feedback
+        clickedTab.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            clickedTab.style.transform = 'scale(1)';
+        }, 150);
+        
+        // Track tab interaction
+        this.trackInteraction('tab_click', {
+            tab: clickedTab.textContent.trim(),
+            timestamp: Date.now()
+        });
+    }
+    
+    /**
+     * Handle contact button click
+     */
+    handleContactClick() {
+        // Add click animation
+        if (this.contactButton) {
+            this.contactButton.style.transform = 'translateY(-2px) scale(0.95)';
+            setTimeout(() => {
+                this.contactButton.style.transform = '';
+            }, 150);
+        }
+        
+        // Track conversion
+        this.trackHeroConversion();
+    }
+    
+    /**
+     * Pause button animation on hover
+     */
+    pauseButtonAnimation() {
+        if (this.contactButton) {
+            this.contactButton.style.animationPlayState = 'paused';
+        }
+    }
+    
+    /**
+     * Resume button animation
+     */
+    resumeButtonAnimation() {
+        if (this.contactButton) {
+            this.contactButton.style.animationPlayState = 'running';
+        }
+    }
+    
+    /**
      * Handle parallax scroll effect
      */
     handleParallaxScroll() {
         if (!this.heroWrapper) return;
         
         const scrolled = window.pageYOffset;
-        const rate = scrolled * -0.5;
+        const rate = scrolled * -0.3;
         
         // Move background elements
         const heroBackground = this.heroWrapper.querySelector('.hero-background');
@@ -297,7 +348,7 @@ class HeroSection {
         
         // Move floating cards with different rates
         this.floatingCards.forEach((card, index) => {
-            const cardRate = scrolled * (-0.2 - (index * 0.1));
+            const cardRate = scrolled * (-0.15 - (index * 0.05));
             card.style.transform += ` translateY(${cardRate}px)`;
         });
     }
@@ -338,10 +389,12 @@ class HeroSection {
      */
     trackHeroConversion() {
         this.trackInteraction('hero_conversion', {
-            button: 'get_demo',
+            button: 'contact_us',
             location: 'hero_section',
             timestamp: Date.now()
         });
+        
+        console.log('📞 Contact Us clicked from hero section');
     }
     
     /**
@@ -370,7 +423,7 @@ class HeroSection {
         if (typeof gtag !== 'undefined') {
             gtag('event', action, {
                 event_category: 'hero_section',
-                event_label: data.button || data.section,
+                event_label: data.button || data.section || data.tab,
                 value: data.timestamp
             });
         }
@@ -403,10 +456,20 @@ class HeroSection {
     getMetrics() {
         return {
             isVisible: this.isVisible,
-            statsAnimated: this.statsAnimated,
             floatingCardsCount: this.floatingCards.length,
-            scrollPosition: window.pageYOffset
+            scrollPosition: window.pageYOffset,
+            dashboardLoaded: this.dashboardContainer ? true : false
         };
+    }
+    
+    /**
+     * Refresh animations (useful for dynamic content changes)
+     */
+    refreshAnimations() {
+        if (this.isVisible) {
+            this.animateChartBars();
+            this.startFloatingCardsAnimation();
+        }
     }
     
     /**
@@ -416,7 +479,8 @@ class HeroSection {
         return {
             scrollToNext: this.scrollToNextSection.bind(this),
             getMetrics: this.getMetrics.bind(this),
-            trackConversion: this.trackHeroConversion.bind(this)
+            trackConversion: this.trackHeroConversion.bind(this),
+            refresh: this.refreshAnimations.bind(this)
         };
     }
 }
