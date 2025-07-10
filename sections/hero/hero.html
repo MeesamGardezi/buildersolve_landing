@@ -1,131 +1,359 @@
-<section class="hero-wrapper">
-    <div class="hero-background">
-        <div class="hero-gradient"></div>
-        <div class="hero-pattern"></div>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuilderSolve - Construction Management Platform</title>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts - Inter for premium typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Preload hero images for better performance -->
+    <link rel="preload" as="image" href="assets/images/hero_screenshots/hero_image_1.png">
+    <link rel="preload" as="image" href="assets/images/hero_screenshots/hero_image_2.png">
+    <link rel="preload" as="image" href="assets/images/hero_screenshots/hero_image_3.png">
+
+    <!-- Link to the enhanced CSS file -->
+    <link rel="stylesheet" href="hero.css">
+
+    <!-- SEO and Open Graph -->
+    <meta name="description" content="Stop construction project chaos with BuilderSolve's complete construction management platform. Get control over schedules, budgets, and teams.">
+    <meta name="keywords" content="construction management, project management, building software, construction software, project scheduling">
     
-    <div class="container">
-        <div class="hero-content">
-            <!-- Main Hero Content -->
-            <div class="hero-text">
-                <h1 class="hero-headline" data-fade="up">
-                    Stop The Chaos Controlling Your
-                    <span class="headline-highlight">Construction Projects</span>
-                </h1>
-                
-                <p class="hero-subheadline" data-fade="up" data-delay="100">
-                    BuilderSolve gives you complete control over schedules, budgets, and teams. 
-                    Transform chaos into profit with the only construction management platform that actually works.
-                </p>
-                
-                <div class="hero-stats" data-fade="up" data-delay="200">
-                    <div class="stat-item">
-                        <div class="stat-label">Projects Managed</div>
+    <!-- Open Graph for social sharing -->
+    <meta property="og:title" content="BuilderSolve - Stop Construction Chaos">
+    <meta property="og:description" content="Transform chaos into profit with the only construction management platform that actually works.">
+    <meta property="og:image" content="assets/images/hero_screenshots/hero_image_1.png">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BuilderSolve - Stop Construction Chaos">
+    <meta name="twitter:description" content="Transform chaos into profit with the only construction management platform that actually works.">
+    <meta name="twitter:image" content="assets/images/hero_screenshots/hero_image_1.png">
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section id="hero-section" class="hero-wrapper" role="banner" aria-label="BuilderSolve Hero">
+        <!-- Background Elements -->
+        <div class="hero-background" aria-hidden="true">
+            <div class="hero-gradient"></div>
+            <div class="hero-pattern"></div>
+        </div>
+
+        <div class="container">
+            <div class="hero-content">
+                <!-- Hero Text Content -->
+                <div class="hero-text">
+                    <!-- Main Headline -->
+                    <h1 class="hero-headline" data-fade="up">
+                        Stop The Chaos Controlling Your
+                        <span class="headline-highlight">Construction Projects</span>
+                    </h1>
+
+                    <!-- Value Proposition -->
+                    <p class="hero-subheadline" data-fade="up" data-delay="100">
+                        BuilderSolve gives you complete control over schedules, budgets, and teams.
+                        Transform chaos into profit with the only construction management platform that actually works.
+                    </p>
+
+                    <!-- Trust Indicators - Simple Tags -->
+                    <div class="hero-stats" data-fade="up" data-delay="200">
+                        <div class="stat-item">
+                            <div class="stat-label">Projects Managed</div>
+                        </div>
+                        <div class="stat-divider" aria-hidden="true"></div>
+                        <div class="stat-item">
+                            <div class="stat-label">Cost Reduction</div>
+                        </div>
+                        <div class="stat-divider" aria-hidden="true"></div>
+                        <div class="stat-item">
+                            <div class="stat-label">On-Time Delivery</div>
+                        </div>
                     </div>
-                    <div class="stat-divider"></div>
-                    <div class="stat-item">
-                        <div class="stat-label">Cost Reduction</div>
-                    </div>
-                    <div class="stat-divider"></div>
-                    <div class="stat-item">
-                        <div class="stat-label">On-Time Delivery</div>
+
+                    <!-- Call to Action -->
+                    <div class="hero-cta" data-fade="up" data-delay="300">
+                        <a href="#contact" class="btn-primary-large" role="button"
+                            aria-label="Contact us to get started with BuilderSolve" data-analytics="hero-cta-click">
+                            <span class="btn-text">Contact Us</span>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="btn-icon"
+                                aria-hidden="true">
+                                <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+
+                        <!-- Secondary CTA -->
+                        <div class="cta-secondary" data-fade="up" data-delay="400">
+                            <span class="cta-note">
+                                ✓ Professional consultation &nbsp;•&nbsp; ✓ Custom implementation &nbsp;•&nbsp; ✓
+                                Ongoing support
+                            </span>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="hero-cta" data-fade="up" data-delay="300">
-                    <button class="btn-primary-large btn-animated" data-contact>
-                        <span class="btn-text">Contact Us</span>
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="btn-icon">
-                            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Hero Visual - Fixed Layout -->
-            <div class="hero-visual" data-fade="left" data-delay="200">
-                <div class="dashboard-preview">
-                    <div class="dashboard-container">
-                        <!-- Main Dashboard Screenshot -->
-                        <div class="dashboard-main" data-dashboard="main">
-                            <div class="dashboard-header">
-                                <div class="dashboard-tabs">
-                                    <div class="tab active">Main Summary</div>
-                                    <div class="tab">Production</div>
-                                    <div class="tab">Finance</div>
-                                </div>
-                            </div>
+
+                <!-- Hero Visual - Enhanced Interactive 3-Image Layout -->
+                <div class="hero-visual" data-fade="left" data-delay="200">
+                    <div class="hero-images-container" role="img"
+                        aria-label="BuilderSolve construction management solutions">
+                        
+                        <!-- Main Image - Center-left, largest -->
+                        <div class="hero-image-card hero-image-main" tabindex="0" role="button"
+                             aria-label="View project management dashboard details" data-image-index="0">
+                            <img src="assets/images/hero_screenshots/hero_image_1.png" 
+                                 alt="BuilderSolve project management dashboard showing schedules, budgets, and team coordination"
+                                 class="hero-image" loading="eager" width="380" height="280">
+                            <div class="hero-image-overlay" aria-hidden="true"></div>
                             
-                            <div class="dashboard-content">
-                                <div class="metrics-row">
-                                    <div class="metric-card">
-                                        <div class="metric-label">GOAL LEADS</div>
-                                        <div class="metric-value">249</div>
-                                    </div>
-                                    <div class="metric-card">
-                                        <div class="metric-label">ACTUAL LEADS</div>
-                                        <div class="metric-value">33</div>
-                                    </div>
-                                    <div class="metric-card">
-                                        <div class="metric-label">CLOSED $</div>
-                                        <div class="metric-value">$541,000</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="chart-section">
-                                    <div class="chart-container">
-                                        <div class="chart-bars">
-                                            <div class="bar" style="height: 60%"></div>
-                                            <div class="bar" style="height: 80%"></div>
-                                            <div class="bar" style="height: 45%"></div>
-                                            <div class="bar" style="height: 90%"></div>
-                                            <div class="bar" style="height: 70%"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <!-- Image Description - Hidden by default, shown on hover -->
+                            <div class="image-description" aria-hidden="true">
+                                <h3 class="image-description-title">Project Dashboard</h3>
+                                <p class="image-description-text">
+                                    Complete oversight of all your construction projects. Track schedules, budgets, and team progress in real-time.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Image - Top-right, medium -->
+                        <div class="hero-image-card hero-image-secondary" tabindex="0" role="button"
+                             aria-label="View mobile app features" data-image-index="1">
+                            <img src="assets/images/hero_screenshots/hero_image_2.png" 
+                                 alt="Construction team using BuilderSolve mobile app on job site for task management"
+                                 class="hero-image" loading="lazy" width="280" height="200">
+                            <div class="hero-image-overlay" aria-hidden="true"></div>
+                            
+                            <!-- Image Description -->
+                            <div class="image-description" aria-hidden="true">
+                                <h3 class="image-description-title">Mobile Field Management</h3>
+                                <p class="image-description-text">
+                                    Keep your field teams connected with powerful mobile tools. Update tasks, report issues, and share progress instantly.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Tertiary Image - Bottom-right, smallest -->
+                        <div class="hero-image-card hero-image-tertiary" tabindex="0" role="button"
+                             aria-label="View reporting and analytics features" data-image-index="2">
+                            <img src="assets/images/hero_screenshots/hero_image_3.png" 
+                                 alt="BuilderSolve reporting and analytics interface displaying project performance metrics"
+                                 class="hero-image" loading="lazy" width="240" height="160">
+                            <div class="hero-image-overlay" aria-hidden="true"></div>
+                            
+                            <!-- Image Description -->
+                            <div class="image-description" aria-hidden="true">
+                                <h3 class="image-description-title">Advanced Analytics</h3>
+                                <p class="image-description-text">
+                                    Make data-driven decisions with comprehensive reporting. Monitor KPIs, identify trends, and optimize performance.
+                                </p>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Floating Cards - Fixed Positioning -->
-                    <div class="floating-cards">
-                        <div class="floating-card card-1" data-float="1">
-                            <div class="card-icon">📊</div>
-                            <div class="card-content">
-                                <div class="card-title">Real-time Analytics</div>
-                                <div class="card-value">+$247K profit</div>
-                            </div>
-                        </div>
-                        
-                        <div class="floating-card card-2" data-float="2">
-                            <div class="card-icon">⏰</div>
-                            <div class="card-content">
-                                <div class="card-title">On Schedule</div>
-                                <div class="card-value">12 projects</div>
-                            </div>
-                        </div>
-                        
-                        <div class="floating-card card-3" data-float="3">
-                            <div class="card-icon">👥</div>
-                            <div class="card-content">
-                                <div class="card-title">Team Sync</div>
-                                <div class="card-value">95% efficiency</div>
-                            </div>
-                        </div>
+
+                    <!-- Instructions for interaction (screen reader only) -->
+                    <div class="sr-only" id="image-interaction-instructions">
+                        Use your mouse to hover over any image above to see a detailed view, or use tab and enter keys to navigate and activate images.
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Scroll Indicator -->
+        <button class="scroll-indicator" aria-label="Scroll to see how BuilderSolve works" data-fade="up"
+            data-delay="500" data-scroll-to="#features">
+            <span class="scroll-text">See How It Works</span>
+            <div class="scroll-arrow" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M7 13L12 18L17 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M7 6L12 11L17 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+        </button>
+    </section>
+
+    <!-- Next section placeholder for scroll target -->
+    <section id="features" style="height: 200px; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
+        <h2 style="color: #334155; font-family: 'Inter', sans-serif;">Features Section (Placeholder)</h2>
+    </section>
+
+    <!-- Screen reader only helper texts -->
+    <div class="sr-only">
+        <style>
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
+            }
+        </style>
     </div>
-    
-    <!-- Scroll Indicator -->
-    <div class="scroll-indicator" data-fade="up" data-delay="400">
-        <div class="scroll-text">See how it works</div>
-        <div class="scroll-arrow">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M7 13L12 18L17 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M7 6L12 11L17 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </div>
-    </div>
-</section>
+
+    <!-- Analytics and Performance Monitoring -->
+    <script>
+        // Performance monitoring
+        if ('PerformanceObserver' in window) {
+            const observer = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.name === 'hero-section-loaded') {
+                        console.log(`Hero section loaded in ${entry.duration}ms`);
+                    }
+                }
+            });
+            observer.observe({ entryTypes: ['measure'] });
+        }
+
+        // Mark hero section as loaded
+        window.addEventListener('load', () => {
+            performance.mark('hero-section-end');
+            performance.measure('hero-section-loaded', 'hero-section-start', 'hero-section-end');
+        });
+
+        performance.mark('hero-section-start');
+
+        // Enhanced image loading optimization with error handling
+        const heroImages = document.querySelectorAll('.hero-image');
+        let loadedCount = 0;
+        const totalImages = heroImages.length;
+
+        heroImages.forEach((image, index) => {
+            image.addEventListener('load', () => {
+                loadedCount++;
+                image.style.opacity = '1';
+                console.log(`✅ Hero image ${index + 1} loaded successfully`);
+
+                if (loadedCount === totalImages) {
+                    console.log(`✅ All ${totalImages} hero images loaded successfully`);
+                    // Trigger any post-load animations or setup
+                    document.body.classList.add('images-loaded');
+                }
+            });
+
+            image.addEventListener('error', () => {
+                console.warn(`⚠️ Hero image ${index + 1} failed to load, using fallback`);
+                const imageCard = image.closest('.hero-image-card');
+                if (imageCard) {
+                    imageCard.style.background = 'linear-gradient(135deg, #F1F5F9, #E2E8F0)';
+                    // Add fallback content
+                    const fallback = document.createElement('div');
+                    fallback.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #64748B;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📱</div>
+                            <div style="font-weight: 600;">BuilderSolve ${index + 1}</div>
+                        </div>
+                    `;
+                    image.style.display = 'none';
+                    imageCard.appendChild(fallback);
+                }
+            });
+        });
+
+        // Enhanced accessibility: announce image interactions
+        const announceImageChange = (imageIndex, action) => {
+            const messages = [
+                'Project Management Dashboard',
+                'Mobile Field Management',
+                'Advanced Analytics'
+            ];
+            
+            const message = `${action}: ${messages[imageIndex] || `Image ${imageIndex + 1}`}`;
+            
+            // Create or update live region for screen readers
+            let liveRegion = document.getElementById('image-live-region');
+            if (!liveRegion) {
+                liveRegion = document.createElement('div');
+                liveRegion.id = 'image-live-region';
+                liveRegion.setAttribute('aria-live', 'polite');
+                liveRegion.setAttribute('aria-atomic', 'true');
+                liveRegion.className = 'sr-only';
+                document.body.appendChild(liveRegion);
+            }
+            
+            liveRegion.textContent = message;
+            
+            // Clear after a short delay
+            setTimeout(() => {
+                liveRegion.textContent = '';
+            }, 1000);
+        };
+
+        // Track image interactions for analytics
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageCards = document.querySelectorAll('.hero-image-card');
+            
+            imageCards.forEach((card, index) => {
+                // Mouse events
+                card.addEventListener('mouseenter', () => {
+                    announceImageChange(index, 'Viewing');
+                });
+                
+                // Keyboard events
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        // Simulate hover for keyboard users
+                        card.classList.add('enlarged');
+                        card.closest('.hero-images-container').classList.add('has-enlarged');
+                        announceImageChange(index, 'Selected');
+                    }
+                    
+                    if (e.key === 'Escape') {
+                        // Remove enlarged state
+                        card.classList.remove('enlarged');
+                        card.closest('.hero-images-container').classList.remove('has-enlarged');
+                        announceImageChange(index, 'Deselected');
+                    }
+                });
+                
+                // Handle focus loss for keyboard users
+                card.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        if (!card.matches(':focus-within')) {
+                            card.classList.remove('enlarged');
+                            card.closest('.hero-images-container').classList.remove('has-enlarged');
+                        }
+                    }, 100);
+                });
+            });
+        });
+
+        // Intersection Observer for fade animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const fadeElements = document.querySelectorAll('[data-fade]');
+            fadeElements.forEach(el => observer.observe(el));
+        });
+    </script>
+
+    <!-- Link to the enhanced JavaScript file -->
+    <script src="hero.js"></script>
+</body>
+
+</html>
