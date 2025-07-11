@@ -1,19 +1,8 @@
 /**
- * BuilderSolve Hero Section - Content-Aware Interactive Images
- * Fixed for dynamic content loading with robust initialization
+ * BuilderSolve Hero Section - FIXED VERSION
+ * Fixed scroll disappearing images and hover bugs
  * 
- * Features:
- * - Content-aware initialization (waits for HTML to load)
- * - Interactive image hover/focus with enlargement
- * - Dynamic text descriptions
- * - Professional image interactions
- * - Contact-focused tracking
- * - Accessibility support
- * - Performance monitoring
- * - Error handling
- * 
- * @version 3.1.0 - Fixed for dynamic loading
- * @author BuilderSolve Development Team
+ * @version 3.2.0 - FIXED SCROLL & HOVER ISSUES
  */
 
 class BuilderSolveHero {
@@ -23,12 +12,15 @@ class BuilderSolveHero {
             animationDelay: 100,
             scrollOffset: 100,
             imageLoadTimeout: 5000,
-            performanceThreshold: 16.67, // 60fps target
+            performanceThreshold: 16.67,
             retryAttempts: 3,
             imageHoverDelay: 150,
             imageTransitionDuration: 600,
             keyboardNavigationEnabled: true,
-            contentWaitTimeout: 10000, // 10 seconds max wait for content
+            contentWaitTimeout: 10000,
+            // NEW: Parallax settings
+            parallaxStrength: 0.1,
+            maxParallaxOffset: 50,
             ...options
         };
 
@@ -43,6 +35,9 @@ class BuilderSolveHero {
             currentEnlargedImage: null,
             isKeyboardUser: false,
             contentLoaded: false,
+            // NEW: Track base transforms to avoid accumulation
+            baseTransforms: new Map(),
+            scrollPosition: 0,
             imageDescriptions: [
                 {
                     title: "Project Dashboard",
@@ -128,7 +123,6 @@ class BuilderSolveHero {
             return false;
         }
 
-        // Check for key content elements with more detailed logging
         const headline = heroSection.querySelector('.hero-headline');
         const ctaButton = heroSection.querySelector('.btn-primary-large');
         const imageCard = heroSection.querySelector('.hero-image-card');
@@ -157,7 +151,6 @@ class BuilderSolveHero {
                 return;
             }
 
-            // Set up content timeout
             this.contentWaitTimeout = setTimeout(() => {
                 if (this.contentObserver) {
                     this.contentObserver.disconnect();
@@ -165,12 +158,10 @@ class BuilderSolveHero {
                 reject(new Error('Content loading timeout after 10 seconds'));
             }, this.config.contentWaitTimeout);
 
-            // Watch for content changes
             try {
                 this.contentObserver = new MutationObserver((mutations) => {
                     mutations.forEach((mutation) => {
                         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                            // Check if meaningful content was added
                             if (this.checkContentExists()) {
                                 console.log('✅ Hero content detected, initializing...');
                                 clearTimeout(this.contentWaitTimeout);
@@ -181,7 +172,6 @@ class BuilderSolveHero {
                     });
                 });
 
-                // Start observing
                 this.contentObserver.observe(heroSection, {
                     childList: true,
                     subtree: true
@@ -212,6 +202,9 @@ class BuilderSolveHero {
             this.setupAccessibility();
             this.trackInitialization();
 
+            // FIXED: Store base transforms to prevent accumulation
+            this.storeBaseTransforms();
+
             this.state.isInitialized = true;
             performance.mark('hero-init-end');
             performance.measure('hero-initialization', 'hero-init-start', 'hero-init-end');
@@ -222,6 +215,27 @@ class BuilderSolveHero {
         } catch (error) {
             throw new Error(`Content initialization failed: ${error.message}`);
         }
+    }
+
+    /**
+     * FIXED: Store base transforms to prevent accumulation
+     */
+    storeBaseTransforms() {
+        if (this.elements.imageCards && this.elements.imageCards.length > 0) {
+            this.elements.imageCards.forEach((card, index) => {
+                const computedStyle = window.getComputedStyle(card);
+                const transform = computedStyle.transform;
+                this.state.baseTransforms.set(`card-${index}`, transform !== 'none' ? transform : '');
+            });
+        }
+
+        if (this.elements.imagesContainer) {
+            const computedStyle = window.getComputedStyle(this.elements.imagesContainer);
+            const transform = computedStyle.transform;
+            this.state.baseTransforms.set('container', transform !== 'none' ? transform : '');
+        }
+
+        console.log('📦 Base transforms stored:', this.state.baseTransforms);
     }
 
     /**
@@ -292,7 +306,6 @@ class BuilderSolveHero {
             throw new Error('Hero section not found or invalid');
         }
 
-        // Log what we found with detailed info
         console.log('📦 Cached elements:', {
             heroSection: {
                 exists: !!this.elements.heroSection,
@@ -320,7 +333,6 @@ class BuilderSolveHero {
      * Setup intersection and performance observers with null checks
      */
     setupObservers() {
-        // Intersection Observer for entrance animations - with robust element checking
         if (this.elements.heroSection && 
             this.elements.heroSection.nodeType === Node.ELEMENT_NODE &&
             typeof this.elements.heroSection.getBoundingClientRect === 'function') {
@@ -343,11 +355,6 @@ class BuilderSolveHero {
             }
         } else {
             console.warn('⚠️ Cannot setup intersection observer: hero section invalid or not found');
-            console.log('Hero section debug:', {
-                exists: !!this.elements.heroSection,
-                nodeType: this.elements.heroSection ? this.elements.heroSection.nodeType : 'N/A',
-                hasGetBoundingClientRect: this.elements.heroSection ? typeof this.elements.heroSection.getBoundingClientRect : 'N/A'
-            });
         }
 
         // Performance Observer for monitoring
@@ -434,6 +441,14 @@ class BuilderSolveHero {
             card.setAttribute('data-image-index', index);
             card.setAttribute('tabindex', '0');
             
+            // FIXED: Clear any existing event listeners to prevent duplicates
+            card.removeEventListener('mouseenter', this.handleImageHover);
+            card.removeEventListener('mouseleave', this.handleImageLeave);
+            card.removeEventListener('click', this.handleImageClick);
+            card.removeEventListener('keydown', this.handleImageKeydown);
+            card.removeEventListener('focus', this.handleImageFocus);
+            card.removeEventListener('blur', this.handleImageBlur);
+            
             // Mouse events
             card.addEventListener('mouseenter', (e) => this.handleImageHover(e, index));
             card.addEventListener('mouseleave', (e) => this.handleImageLeave(e, index));
@@ -472,12 +487,18 @@ class BuilderSolveHero {
     }
 
     /**
-     * Handle image hover
+     * FIXED: Handle image hover with better debouncing
      */
     handleImageHover(event, index) {
         // Clear any existing timeout
         if (this.hoverTimeout) {
             clearTimeout(this.hoverTimeout);
+            this.hoverTimeout = null;
+        }
+
+        // FIXED: Don't enlarge if already enlarged unless it's the same image
+        if (this.state.currentEnlargedImage !== null && this.state.currentEnlargedImage !== index) {
+            return; // Don't interfere with already enlarged image
         }
 
         // Delay the enlargement slightly for smoother UX
@@ -494,16 +515,18 @@ class BuilderSolveHero {
     }
 
     /**
-     * Handle image leave
+     * FIXED: Handle image leave with better state management
      */
     handleImageLeave(event, index) {
         // Clear hover timeout if leaving quickly
         if (this.hoverTimeout) {
             clearTimeout(this.hoverTimeout);
+            this.hoverTimeout = null;
         }
 
-        // Only shrink if not keyboard focused
-        if (!this.state.isKeyboardUser || !event.target.matches(':focus')) {
+        // FIXED: Only shrink if this image is currently enlarged and not keyboard focused
+        if (this.state.currentEnlargedImage === index && 
+            (!this.state.isKeyboardUser || !event.target.matches(':focus'))) {
             this.shrinkImage(index, 'leave');
         }
 
@@ -533,9 +556,8 @@ class BuilderSolveHero {
         if (card) {
             card.style.transform += ' scale(0.95)';
             setTimeout(() => {
-                // Remove scale effect while preserving other transforms
-                const currentTransform = card.style.transform;
-                card.style.transform = currentTransform.replace(' scale(0.95)', '');
+                // FIXED: Remove scale effect properly
+                this.refreshCardTransform(index);
             }, 150);
         }
 
@@ -572,7 +594,9 @@ class BuilderSolveHero {
                 
             case 'Escape':
                 event.preventDefault();
-                this.shrinkImage(index, 'keyboard');
+                if (this.state.currentEnlargedImage === index) {
+                    this.shrinkImage(index, 'keyboard');
+                }
                 
                 this.trackEvent('hero_image_keyboard_escape', {
                     image_index: index,
@@ -605,18 +629,19 @@ class BuilderSolveHero {
     }
 
     /**
-     * Handle image blur
+     * FIXED: Handle image blur with better timing
      */
     handleImageBlur(event, index) {
-        // Use setTimeout to check if focus moved to another image
+        // Clear any existing timeout
         if (this.keyboardTimeout) {
             clearTimeout(this.keyboardTimeout);
+            this.keyboardTimeout = null;
         }
 
         this.keyboardTimeout = setTimeout(() => {
             // Check if any image card is still focused
             const focusedImageCard = document.querySelector('.hero-image-card:focus');
-            if (!focusedImageCard && this.state.isKeyboardUser) {
+            if (!focusedImageCard && this.state.isKeyboardUser && this.state.currentEnlargedImage === index) {
                 this.shrinkImage(index, 'blur');
             }
         }, 100);
@@ -652,7 +677,7 @@ class BuilderSolveHero {
     }
 
     /**
-     * Enlarge an image
+     * FIXED: Enlarge an image with better transform management
      */
     enlargeImage(index, triggerType = 'hover') {
         if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
@@ -691,7 +716,7 @@ class BuilderSolveHero {
     }
 
     /**
-     * Shrink an image
+     * FIXED: Shrink an image with proper state cleanup
      */
     shrinkImage(index, triggerType = 'leave') {
         if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
@@ -705,8 +730,13 @@ class BuilderSolveHero {
         card.classList.remove('enlarged');
         container.classList.remove('has-enlarged');
         
-        // Update state
-        this.state.currentEnlargedImage = null;
+        // FIXED: Only update state if this image was actually enlarged
+        if (this.state.currentEnlargedImage === index) {
+            this.state.currentEnlargedImage = null;
+        }
+        
+        // FIXED: Refresh transform to remove any accumulated effects
+        this.refreshCardTransform(index);
         
         // Announce to screen readers
         this.announceImageChange(index, 'normal view');
@@ -719,6 +749,19 @@ class BuilderSolveHero {
         });
 
         console.log(`📱 Image ${index + 1} (${this.getImageName(index)}) returned to normal via ${triggerType}`);
+    }
+
+    /**
+     * FIXED: Refresh card transform to remove accumulation
+     */
+    refreshCardTransform(index) {
+        if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
+        
+        const card = this.elements.imageCards[index];
+        const baseTransform = this.state.baseTransforms.get(`card-${index}`) || '';
+        
+        // Reset to base transform without accumulated effects
+        card.style.transform = baseTransform;
     }
 
     /**
@@ -1057,22 +1100,39 @@ class BuilderSolveHero {
         if (window.innerWidth <= 768 && this.state.currentEnlargedImage !== null) {
             this.shrinkImage(this.state.currentEnlargedImage, 'resize');
         }
+        
+        // FIXED: Refresh base transforms after resize
+        this.storeBaseTransforms();
     }
 
     /**
-     * Handle scroll events for subtle parallax
+     * FIXED: Handle scroll events with proper transform management
      */
     handleScroll() {
         if (!this.state.isVisible || !this.elements.heroSection) return;
 
         const scrolled = window.pageYOffset;
         const heroHeight = this.elements.heroSection.offsetHeight;
-        const scrollProgress = Math.min(scrolled / heroHeight, 1);
+        this.state.scrollPosition = scrolled;
 
-        // Subtle parallax effect on image container
-        if (this.elements.imagesContainer && scrolled < heroHeight) {
-            const translateY = scrolled * 0.1;
-            this.elements.imagesContainer.style.transform += ` translateY(${translateY}px)`;
+        // FIXED: Proper parallax effect with proper transform management
+        if (this.elements.imagesContainer && scrolled <= heroHeight) {
+            const baseTransform = this.state.baseTransforms.get('container') || '';
+            const parallaxOffset = Math.min(scrolled * this.config.parallaxStrength, this.config.maxParallaxOffset);
+            
+            // FIXED: Set transform properly instead of accumulating
+            let newTransform = baseTransform;
+            if (newTransform && newTransform !== 'none') {
+                newTransform += ` translateY(${parallaxOffset}px)`;
+            } else {
+                newTransform = `translateY(${parallaxOffset}px)`;
+            }
+            
+            this.elements.imagesContainer.style.transform = newTransform;
+        } else if (this.elements.imagesContainer && scrolled > heroHeight) {
+            // FIXED: Reset to base transform when scrolled past hero
+            const baseTransform = this.state.baseTransforms.get('container') || '';
+            this.elements.imagesContainer.style.transform = baseTransform;
         }
     }
 
@@ -1375,6 +1435,16 @@ class BuilderSolveHero {
                 }
             },
             
+            // FIXED: Add refresh function
+            refreshImages: () => {
+                this.storeBaseTransforms();
+                if (this.elements.imageCards) {
+                    this.elements.imageCards.forEach((_, index) => {
+                        this.refreshCardTransform(index);
+                    });
+                }
+            },
+            
             // Customization
             updateImageDescription: (index, title, text) => {
                 if (this.state.imageDescriptions[index]) {
@@ -1463,7 +1533,10 @@ const initializeHero = () => {
         imageLoadTimeout: 3000,
         imageHoverDelay: 150,
         keyboardNavigationEnabled: true,
-        contentWaitTimeout: 10000
+        contentWaitTimeout: 10000,
+        // NEW: Scroll settings
+        parallaxStrength: 0.1,
+        maxParallaxOffset: 50
     });
     
     // Export to global scope for external access
@@ -1473,6 +1546,7 @@ const initializeHero = () => {
     window.enlargeHeroImage = (index) => heroInstance.getAPI().enlargeImage(index);
     window.shrinkHeroImages = () => heroInstance.getAPI().shrinkAllImages();
     window.updateHeroImageText = (index, title, text) => heroInstance.getAPI().updateImageDescription(index, title, text);
+    window.refreshHeroImages = () => heroInstance.getAPI().refreshImages();
 };
 
 // Auto-initialize
@@ -1498,16 +1572,3 @@ if (typeof module !== 'undefined' && module.exports) {
 } else if (typeof define === 'function' && define.amd) {
     define(() => BuilderSolveHero);
 }
-
-// Remove problematic service worker registration since sw.js doesn't exist
-// if ('serviceWorker' in navigator) {
-//     window.addEventListener('load', () => {
-//         navigator.serviceWorker.register('/sw.js')
-//             .then(registration => {
-//                 console.log('✅ SW registered:', registration);
-//             })
-//             .catch(error => {
-//                 console.log('❌ SW registration failed:', error);
-//             });
-//     });
-// }
