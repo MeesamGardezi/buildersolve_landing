@@ -1,9 +1,9 @@
 /**
- * BuilderSolve Hero Section - Fortune 500 Quality with Interactive Image Display
- * Clean, service-focused JavaScript for professional UX
+ * BuilderSolve Hero Section - Content-Aware Interactive Images
+ * Fixed for dynamic content loading with robust initialization
  * 
  * Features:
- * - Smooth entrance animations
+ * - Content-aware initialization (waits for HTML to load)
  * - Interactive image hover/focus with enlargement
  * - Dynamic text descriptions
  * - Professional image interactions
@@ -12,7 +12,7 @@
  * - Performance monitoring
  * - Error handling
  * 
- * @version 3.0.0
+ * @version 3.1.0 - Fixed for dynamic loading
  * @author BuilderSolve Development Team
  */
 
@@ -28,6 +28,7 @@ class BuilderSolveHero {
             imageHoverDelay: 150,
             imageTransitionDuration: 600,
             keyboardNavigationEnabled: true,
+            contentWaitTimeout: 10000, // 10 seconds max wait for content
             ...options
         };
 
@@ -41,6 +42,7 @@ class BuilderSolveHero {
             retryCount: 0,
             currentEnlargedImage: null,
             isKeyboardUser: false,
+            contentLoaded: false,
             imageDescriptions: [
                 {
                     title: "Project Dashboard",
@@ -63,10 +65,12 @@ class BuilderSolveHero {
         // Animation controllers
         this.intersectionObserver = null;
         this.performanceObserver = null;
+        this.contentObserver = null;
         
         // Interactive timers
         this.hoverTimeout = null;
         this.keyboardTimeout = null;
+        this.contentWaitTimeout = null;
 
         // Bind methods
         this.handleResize = this.throttle(this.handleResize.bind(this), 250);
@@ -75,7 +79,7 @@ class BuilderSolveHero {
         this.handleImageLoad = this.handleImageLoad.bind(this);
         this.handleImageError = this.handleImageError.bind(this);
         
-        // New interactive methods
+        // Interactive methods
         this.handleImageHover = this.handleImageHover.bind(this);
         this.handleImageLeave = this.handleImageLeave.bind(this);
         this.handleImageClick = this.handleImageClick.bind(this);
@@ -83,18 +87,122 @@ class BuilderSolveHero {
         this.handleImageFocus = this.handleImageFocus.bind(this);
         this.handleImageBlur = this.handleImageBlur.bind(this);
 
+        // Content loading methods
+        this.handleContentMutation = this.handleContentMutation.bind(this);
+
         // Initialize
         this.init();
     }
 
     /**
-     * Initialize the hero section
+     * Initialize the hero section with content awareness
      */
     async init() {
         try {
             performance.mark('hero-init-start');
             
             await this.waitForDOM();
+            
+            // First check if content is already loaded
+            if (this.checkContentExists()) {
+                console.log('✅ Hero content already loaded, initializing immediately');
+                await this.initializeWithContent();
+            } else {
+                console.log('⏳ Hero content not loaded yet, waiting for content...');
+                await this.waitForContent();
+            }
+
+        } catch (error) {
+            this.handleError('Initialization failed', error);
+            await this.retryInitialization();
+        }
+    }
+
+    /**
+     * Check if hero content is already loaded
+     */
+    checkContentExists() {
+        const heroSection = document.getElementById('hero-section');
+        if (!heroSection || heroSection.nodeType !== Node.ELEMENT_NODE) {
+            console.log('🔍 Hero section element not found or invalid');
+            return false;
+        }
+
+        // Check for key content elements with more detailed logging
+        const headline = heroSection.querySelector('.hero-headline');
+        const ctaButton = heroSection.querySelector('.btn-primary-large');
+        const imageCard = heroSection.querySelector('.hero-image-card');
+
+        const hasContent = !!(headline && ctaButton && imageCard);
+        
+        console.log('🔍 Content check:', {
+            heroSection: !!heroSection,
+            headline: !!headline,
+            ctaButton: !!ctaButton,
+            imageCard: !!imageCard,
+            hasContent: hasContent
+        });
+
+        return hasContent;
+    }
+
+    /**
+     * Wait for content to be loaded into hero section
+     */
+    waitForContent() {
+        return new Promise((resolve, reject) => {
+            const heroSection = document.getElementById('hero-section');
+            if (!heroSection || heroSection.nodeType !== Node.ELEMENT_NODE) {
+                reject(new Error('Hero section element not found or invalid'));
+                return;
+            }
+
+            // Set up content timeout
+            this.contentWaitTimeout = setTimeout(() => {
+                if (this.contentObserver) {
+                    this.contentObserver.disconnect();
+                }
+                reject(new Error('Content loading timeout after 10 seconds'));
+            }, this.config.contentWaitTimeout);
+
+            // Watch for content changes
+            try {
+                this.contentObserver = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                            // Check if meaningful content was added
+                            if (this.checkContentExists()) {
+                                console.log('✅ Hero content detected, initializing...');
+                                clearTimeout(this.contentWaitTimeout);
+                                this.contentObserver.disconnect();
+                                this.initializeWithContent().then(resolve).catch(reject);
+                            }
+                        }
+                    });
+                });
+
+                // Start observing
+                this.contentObserver.observe(heroSection, {
+                    childList: true,
+                    subtree: true
+                });
+
+                console.log('👀 Watching for hero content to load...');
+                
+            } catch (error) {
+                clearTimeout(this.contentWaitTimeout);
+                reject(new Error(`MutationObserver setup failed: ${error.message}`));
+            }
+        });
+    }
+
+    /**
+     * Initialize once content is confirmed to exist
+     */
+    async initializeWithContent() {
+        try {
+            this.state.contentLoaded = true;
+            
             this.cacheElements();
             this.setupObservers();
             this.bindEvents();
@@ -112,8 +220,7 @@ class BuilderSolveHero {
             this.logPerformanceMetrics();
 
         } catch (error) {
-            this.handleError('Initialization failed', error);
-            await this.retryInitialization();
+            throw new Error(`Content initialization failed: ${error.message}`);
         }
     }
 
@@ -131,7 +238,7 @@ class BuilderSolveHero {
     }
 
     /**
-     * Cache all DOM elements for performance
+     * Cache all DOM elements for performance with robust null checking
      */
     cacheElements() {
         const selectors = {
@@ -153,21 +260,50 @@ class BuilderSolveHero {
             fadeElements: '[data-fade]'
         };
 
-        // Cache elements with error handling
+        // Cache elements with robust error handling
         Object.entries(selectors).forEach(([key, selector]) => {
             try {
                 const elements = document.querySelectorAll(selector);
-                this.elements[key] = elements.length === 1 ? elements[0] : Array.from(elements);
+                if (elements.length === 0) {
+                    this.elements[key] = key.endsWith('s') ? [] : null;
+                    console.warn(`⚠️ No elements found for: ${selector}`);
+                } else if (elements.length === 1) {
+                    this.elements[key] = elements[0];
+                } else {
+                    this.elements[key] = Array.from(elements);
+                }
             } catch (error) {
-                console.warn(`Failed to cache element: ${selector}`, error);
+                console.warn(`❌ Failed to cache element: ${selector}`, error);
                 this.elements[key] = key.endsWith('s') ? [] : null;
             }
         });
 
+        // Special handling for heroSection to ensure it's a proper Element
+        const heroSectionElement = document.getElementById('hero-section');
+        if (heroSectionElement && heroSectionElement.nodeType === Node.ELEMENT_NODE) {
+            this.elements.heroSection = heroSectionElement;
+        } else {
+            this.elements.heroSection = null;
+            console.warn('⚠️ Hero section not found or not a valid Element');
+        }
+
         // Validate critical elements
         if (!this.elements.heroSection) {
-            throw new Error('Hero section not found');
+            throw new Error('Hero section not found or invalid');
         }
+
+        // Log what we found with detailed info
+        console.log('📦 Cached elements:', {
+            heroSection: {
+                exists: !!this.elements.heroSection,
+                type: this.elements.heroSection ? this.elements.heroSection.constructor.name : 'null',
+                nodeType: this.elements.heroSection ? this.elements.heroSection.nodeType : 'N/A'
+            },
+            ctaButton: !!this.elements.ctaButton,
+            imageCards: this.elements.imageCards ? this.elements.imageCards.length : 0,
+            heroImages: this.elements.heroImages ? this.elements.heroImages.length : 0,
+            fadeElements: this.elements.fadeElements ? this.elements.fadeElements.length : 0
+        });
 
         // Cache individual image cards by type
         if (this.elements.imageCards && this.elements.imageCards.length > 0) {
@@ -181,36 +317,58 @@ class BuilderSolveHero {
     }
 
     /**
-     * Setup intersection and performance observers
+     * Setup intersection and performance observers with null checks
      */
     setupObservers() {
-        // Intersection Observer for entrance animations
-        this.intersectionObserver = new IntersectionObserver(
-            (entries) => this.handleIntersection(entries),
-            {
-                threshold: [0.1, 0.25, 0.5],
-                rootMargin: '-50px 0px -50px 0px'
+        // Intersection Observer for entrance animations - with robust element checking
+        if (this.elements.heroSection && 
+            this.elements.heroSection.nodeType === Node.ELEMENT_NODE &&
+            typeof this.elements.heroSection.getBoundingClientRect === 'function') {
+            
+            try {
+                this.intersectionObserver = new IntersectionObserver(
+                    (entries) => this.handleIntersection(entries),
+                    {
+                        threshold: [0.1, 0.25, 0.5],
+                        rootMargin: '-50px 0px -50px 0px'
+                    }
+                );
+                
+                this.intersectionObserver.observe(this.elements.heroSection);
+                console.log('✅ IntersectionObserver setup successful');
+                
+            } catch (error) {
+                console.warn('⚠️ IntersectionObserver setup failed:', error);
+                this.intersectionObserver = null;
             }
-        );
-
-        if (this.elements.heroSection) {
-            this.intersectionObserver.observe(this.elements.heroSection);
+        } else {
+            console.warn('⚠️ Cannot setup intersection observer: hero section invalid or not found');
+            console.log('Hero section debug:', {
+                exists: !!this.elements.heroSection,
+                nodeType: this.elements.heroSection ? this.elements.heroSection.nodeType : 'N/A',
+                hasGetBoundingClientRect: this.elements.heroSection ? typeof this.elements.heroSection.getBoundingClientRect : 'N/A'
+            });
         }
 
         // Performance Observer for monitoring
         if ('PerformanceObserver' in window) {
-            this.performanceObserver = new PerformanceObserver((list) => {
-                this.analyzePerformance(list.getEntries());
-            });
-            
-            this.performanceObserver.observe({ 
-                entryTypes: ['measure', 'navigation', 'paint'] 
-            });
+            try {
+                this.performanceObserver = new PerformanceObserver((list) => {
+                    this.analyzePerformance(list.getEntries());
+                });
+                
+                this.performanceObserver.observe({ 
+                    entryTypes: ['measure', 'navigation', 'paint'] 
+                });
+                console.log('✅ PerformanceObserver setup successful');
+            } catch (error) {
+                console.warn('⚠️ Performance observer setup failed:', error);
+            }
         }
     }
 
     /**
-     * Bind all event listeners
+     * Bind all event listeners with null checks
      */
     bindEvents() {
         // CTA button interactions
@@ -218,6 +376,9 @@ class BuilderSolveHero {
             this.elements.ctaButton.addEventListener('click', this.handleCTAClick);
             this.elements.ctaButton.addEventListener('mouseenter', this.handleCTAHover.bind(this));
             this.elements.ctaButton.addEventListener('mouseleave', this.handleCTALeave.bind(this));
+            console.log('✅ CTA button events bound');
+        } else {
+            console.warn('⚠️ CTA button not found, skipping CTA events');
         }
 
         // Image loading events
@@ -226,11 +387,15 @@ class BuilderSolveHero {
                 image.addEventListener('load', () => this.handleImageLoad(index));
                 image.addEventListener('error', () => this.handleImageError(index));
             });
+            console.log(`✅ Image events bound for ${this.elements.heroImages.length} images`);
+        } else {
+            console.warn('⚠️ No hero images found, skipping image events');
         }
 
         // Scroll indicator
         if (this.elements.scrollIndicator) {
             this.elements.scrollIndicator.addEventListener('click', this.handleScrollIndicatorClick.bind(this));
+            console.log('✅ Scroll indicator events bound');
         }
 
         // Window events
@@ -251,14 +416,16 @@ class BuilderSolveHero {
         document.addEventListener('mousedown', () => {
             this.state.isKeyboardUser = false;
         });
+
+        console.log('✅ Global events bound');
     }
 
     /**
-     * Setup interactive image handling
+     * Setup interactive image handling with null checks
      */
     setupInteractiveImages() {
         if (!this.elements.imageCards || this.elements.imageCards.length === 0) {
-            console.warn('No image cards found for interactive setup');
+            console.warn('⚠️ No image cards found for interactive setup');
             return;
         }
 
@@ -288,6 +455,8 @@ class BuilderSolveHero {
      * Update image description content
      */
     updateImageDescription(index) {
+        if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
+        
         const card = this.elements.imageCards[index];
         const description = card?.querySelector('.image-description');
         
@@ -462,6 +631,8 @@ class BuilderSolveHero {
      * Navigate between images with keyboard
      */
     navigateImages(direction, currentIndex) {
+        if (!this.elements.imageCards) return;
+        
         const totalImages = this.elements.imageCards.length;
         let newIndex = currentIndex + direction;
         
@@ -484,6 +655,8 @@ class BuilderSolveHero {
      * Enlarge an image
      */
     enlargeImage(index, triggerType = 'hover') {
+        if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
+        
         // Shrink any currently enlarged image first
         if (this.state.currentEnlargedImage !== null && this.state.currentEnlargedImage !== index) {
             this.shrinkImage(this.state.currentEnlargedImage, 'auto');
@@ -521,6 +694,8 @@ class BuilderSolveHero {
      * Shrink an image
      */
     shrinkImage(index, triggerType = 'leave') {
+        if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
+        
         const card = this.elements.imageCards[index];
         const container = this.elements.imagesContainer;
         
@@ -600,7 +775,10 @@ class BuilderSolveHero {
      * Setup image handling with fallbacks
      */
     setupImageHandling() {
-        if (!this.elements.heroImages || this.elements.heroImages.length === 0) return;
+        if (!this.elements.heroImages || this.elements.heroImages.length === 0) {
+            console.warn('⚠️ No hero images found for handling setup');
+            return;
+        }
 
         // Set initial image states
         this.elements.heroImages.forEach(image => {
@@ -639,6 +817,11 @@ class BuilderSolveHero {
      * Initialize entrance animations
      */
     initializeAnimations() {
+        if (!this.elements.fadeElements || this.elements.fadeElements.length === 0) {
+            console.warn('⚠️ No fade elements found for animation setup');
+            return;
+        }
+
         // Set initial states for fade elements
         this.elements.fadeElements.forEach(element => {
             const direction = element.dataset.fade || 'up';
@@ -656,6 +839,8 @@ class BuilderSolveHero {
             element.style.transform = transforms[direction] || transforms.up;
             element.style.transition = `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`;
         });
+
+        console.log(`✅ Animation setup complete for ${this.elements.fadeElements.length} elements`);
     }
 
     /**
@@ -682,7 +867,7 @@ class BuilderSolveHero {
     animateFadeElements() {
         return new Promise((resolve) => {
             let animatedCount = 0;
-            const totalElements = this.elements.fadeElements.length;
+            const totalElements = this.elements.fadeElements ? this.elements.fadeElements.length : 0;
 
             if (totalElements === 0) {
                 resolve();
@@ -711,26 +896,28 @@ class BuilderSolveHero {
     handleCTAClick(event) {
         // Add click animation
         const button = event.target.closest('.btn-primary-large');
-        button.style.transform = 'translateY(-2px) scale(0.98)';
-        button.style.transition = 'transform 0.1s ease-out';
-        
-        setTimeout(() => {
-            button.style.transform = '';
-        }, 150);
+        if (button) {
+            button.style.transform = 'translateY(-2px) scale(0.98)';
+            button.style.transition = 'transform 0.1s ease-out';
+            
+            setTimeout(() => {
+                button.style.transform = '';
+            }, 150);
 
-        // Track conversion
-        this.trackConversion('hero_contact_click', {
-            button_text: button.querySelector('.btn-text').textContent,
-            location: 'hero_section',
-            timestamp: Date.now(),
-            user_agent: navigator.userAgent,
-            viewport: {
-                width: window.innerWidth,
-                height: window.innerHeight
-            }
-        });
+            // Track conversion
+            this.trackConversion('hero_contact_click', {
+                button_text: button.querySelector('.btn-text')?.textContent || 'Contact Us',
+                location: 'hero_section',
+                timestamp: Date.now(),
+                user_agent: navigator.userAgent,
+                viewport: {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                }
+            });
 
-        console.log('📞 Contact Us clicked - tracking conversion');
+            console.log('📞 Contact Us clicked - tracking conversion');
+        }
     }
 
     /**
@@ -760,9 +947,14 @@ class BuilderSolveHero {
      * Handle image loading success
      */
     handleImageLoad(index) {
-        this.state.imagesLoaded[index] = true;
-        const image = this.elements.heroImages[index];
-        image.style.opacity = '1';
+        if (this.state.imagesLoaded) {
+            this.state.imagesLoaded[index] = true;
+        }
+        
+        if (this.elements.heroImages && this.elements.heroImages[index]) {
+            const image = this.elements.heroImages[index];
+            image.style.opacity = '1';
+        }
         
         console.log(`✅ Hero image ${index + 1} loaded successfully`);
         
@@ -773,10 +965,10 @@ class BuilderSolveHero {
         });
 
         // Check if all images are loaded
-        if (this.state.imagesLoaded.every(loaded => loaded)) {
+        if (this.state.imagesLoaded && this.state.imagesLoaded.every(loaded => loaded)) {
             this.trackEvent('all_hero_images_loaded', {
                 timestamp: Date.now(),
-                total_images: this.elements.heroImages.length
+                total_images: this.elements.heroImages ? this.elements.heroImages.length : 0
             });
         }
     }
@@ -788,8 +980,8 @@ class BuilderSolveHero {
         console.warn(`⚠️ Hero image ${index + 1} failed to load, using fallback`);
         
         // Create fallback gradient background
-        const imageCard = this.elements.imageCards[index];
-        if (imageCard) {
+        if (this.elements.imageCards && this.elements.imageCards[index]) {
+            const imageCard = this.elements.imageCards[index];
             imageCard.style.background = 
                 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 50%, #FED7AA 100%)';
             imageCard.style.display = 'flex';
@@ -833,6 +1025,8 @@ class BuilderSolveHero {
     handleScrollIndicatorClick(event) {
         event.preventDefault();
         
+        if (!this.elements.scrollIndicator) return;
+        
         const targetId = this.elements.scrollIndicator.dataset.scrollTo || '#features';
         const targetElement = document.querySelector(targetId);
         
@@ -869,7 +1063,7 @@ class BuilderSolveHero {
      * Handle scroll events for subtle parallax
      */
     handleScroll() {
-        if (!this.state.isVisible) return;
+        if (!this.state.isVisible || !this.elements.heroSection) return;
 
         const scrolled = window.pageYOffset;
         const heroHeight = this.elements.heroSection.offsetHeight;
@@ -934,11 +1128,6 @@ class BuilderSolveHero {
      * Handle global keyboard shortcuts
      */
     handleGlobalKeydown(event) {
-        // Skip to main content (accessibility)
-        if (event.key === 'Tab' && event.target === this.elements.heroSection) {
-            // Focus management logic here
-        }
-
         // Contact shortcut
         if (event.key === 'Enter' && event.target === this.elements.ctaButton) {
             this.handleCTAClick(event);
@@ -983,6 +1172,15 @@ class BuilderSolveHero {
                 card.style.animationPlayState = 'running';
             });
         }
+    }
+
+    /**
+     * Handle content mutation (for debugging)
+     */
+    handleContentMutation(mutations) {
+        mutations.forEach((mutation) => {
+            console.log('Content mutation detected:', mutation);
+        });
     }
 
     /**
@@ -1186,9 +1384,11 @@ class BuilderSolveHero {
             },
             updateAllDescriptions: (descriptions) => {
                 this.state.imageDescriptions = descriptions;
-                this.elements.imageCards.forEach((_, index) => {
-                    this.updateImageDescription(index);
-                });
+                if (this.elements.imageCards) {
+                    this.elements.imageCards.forEach((_, index) => {
+                        this.updateImageDescription(index);
+                    });
+                }
             },
             
             // Tracking
@@ -1211,6 +1411,10 @@ class BuilderSolveHero {
                 }
             },
             
+            // Content detection
+            isContentLoaded: () => this.state.contentLoaded,
+            waitForContent: () => this.waitForContent(),
+            
             // Debugging
             debug: () => ({
                 state: this.state,
@@ -1227,6 +1431,7 @@ class BuilderSolveHero {
         // Clear timeouts
         if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
         if (this.keyboardTimeout) clearTimeout(this.keyboardTimeout);
+        if (this.contentWaitTimeout) clearTimeout(this.contentWaitTimeout);
 
         // Remove event listeners
         window.removeEventListener('resize', this.handleResize);
@@ -1239,6 +1444,10 @@ class BuilderSolveHero {
         
         if (this.performanceObserver) {
             this.performanceObserver.disconnect();
+        }
+
+        if (this.contentObserver) {
+            this.contentObserver.disconnect();
         }
         
         console.log('🧹 BuilderSolve Hero with Interactive Images cleaned up');
@@ -1253,7 +1462,8 @@ const initializeHero = () => {
         animationDelay: 80,
         imageLoadTimeout: 3000,
         imageHoverDelay: 150,
-        keyboardNavigationEnabled: true
+        keyboardNavigationEnabled: true,
+        contentWaitTimeout: 10000
     });
     
     // Export to global scope for external access
@@ -1289,15 +1499,15 @@ if (typeof module !== 'undefined' && module.exports) {
     define(() => BuilderSolveHero);
 }
 
-// Service Worker integration for performance
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('✅ SW registered:', registration);
-            })
-            .catch(error => {
-                console.log('❌ SW registration failed:', error);
-            });
-    });
-}
+// Remove problematic service worker registration since sw.js doesn't exist
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', () => {
+//         navigator.serviceWorker.register('/sw.js')
+//             .then(registration => {
+//                 console.log('✅ SW registered:', registration);
+//             })
+//             .catch(error => {
+//                 console.log('❌ SW registration failed:', error);
+//             });
+//     });
+// }
