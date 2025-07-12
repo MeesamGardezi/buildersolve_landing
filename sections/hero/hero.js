@@ -1,8 +1,8 @@
 /**
- * BuilderSolve Hero Section - FIXED VERSION
- * Fixed scroll disappearing images and hover bugs
+ * BuilderSolve Hero Section - SIMPLIFIED VERSION
+ * Removed hover interactions, fixed scroll behavior
  * 
- * @version 3.2.0 - FIXED SCROLL & HOVER ISSUES
+ * @version 4.0.0 - FIXED SCROLL & REMOVED HOVER
  */
 
 class BuilderSolveHero {
@@ -14,13 +14,7 @@ class BuilderSolveHero {
             imageLoadTimeout: 5000,
             performanceThreshold: 16.67,
             retryAttempts: 3,
-            imageHoverDelay: 150,
-            imageTransitionDuration: 600,
-            keyboardNavigationEnabled: true,
             contentWaitTimeout: 10000,
-            // NEW: Parallax settings
-            parallaxStrength: 0.1,
-            maxParallaxOffset: 50,
             ...options
         };
 
@@ -32,26 +26,8 @@ class BuilderSolveHero {
             imageLoaded: false,
             performanceMetrics: {},
             retryCount: 0,
-            currentEnlargedImage: null,
-            isKeyboardUser: false,
             contentLoaded: false,
-            // NEW: Track base transforms to avoid accumulation
-            baseTransforms: new Map(),
-            scrollPosition: 0,
-            imageDescriptions: [
-                {
-                    title: "Project Dashboard",
-                    text: "Complete oversight of all your construction projects. Track schedules, budgets, and team progress in real-time."
-                },
-                {
-                    title: "Mobile Field Management", 
-                    text: "Keep your field teams connected with powerful mobile tools. Update tasks, report issues, and share progress instantly."
-                },
-                {
-                    title: "Advanced Analytics",
-                    text: "Make data-driven decisions with comprehensive reporting. Monitor KPIs, identify trends, and optimize performance."
-                }
-            ]
+            scrollPosition: 0
         };
 
         // DOM elements cache
@@ -63,8 +39,6 @@ class BuilderSolveHero {
         this.contentObserver = null;
         
         // Interactive timers
-        this.hoverTimeout = null;
-        this.keyboardTimeout = null;
         this.contentWaitTimeout = null;
 
         // Bind methods
@@ -73,16 +47,6 @@ class BuilderSolveHero {
         this.handleCTAClick = this.handleCTAClick.bind(this);
         this.handleImageLoad = this.handleImageLoad.bind(this);
         this.handleImageError = this.handleImageError.bind(this);
-        
-        // Interactive methods
-        this.handleImageHover = this.handleImageHover.bind(this);
-        this.handleImageLeave = this.handleImageLeave.bind(this);
-        this.handleImageClick = this.handleImageClick.bind(this);
-        this.handleImageKeydown = this.handleImageKeydown.bind(this);
-        this.handleImageFocus = this.handleImageFocus.bind(this);
-        this.handleImageBlur = this.handleImageBlur.bind(this);
-
-        // Content loading methods
         this.handleContentMutation = this.handleContentMutation.bind(this);
 
         // Initialize
@@ -198,44 +162,19 @@ class BuilderSolveHero {
             this.bindEvents();
             this.initializeAnimations();
             this.setupImageHandling();
-            this.setupInteractiveImages();
             this.setupAccessibility();
             this.trackInitialization();
-
-            // FIXED: Store base transforms to prevent accumulation
-            this.storeBaseTransforms();
 
             this.state.isInitialized = true;
             performance.mark('hero-init-end');
             performance.measure('hero-initialization', 'hero-init-start', 'hero-init-end');
             
-            console.log('✅ BuilderSolve Hero with Interactive Images initialized successfully');
+            console.log('✅ BuilderSolve Hero initialized successfully');
             this.logPerformanceMetrics();
 
         } catch (error) {
             throw new Error(`Content initialization failed: ${error.message}`);
         }
-    }
-
-    /**
-     * FIXED: Store base transforms to prevent accumulation
-     */
-    storeBaseTransforms() {
-        if (this.elements.imageCards && this.elements.imageCards.length > 0) {
-            this.elements.imageCards.forEach((card, index) => {
-                const computedStyle = window.getComputedStyle(card);
-                const transform = computedStyle.transform;
-                this.state.baseTransforms.set(`card-${index}`, transform !== 'none' ? transform : '');
-            });
-        }
-
-        if (this.elements.imagesContainer) {
-            const computedStyle = window.getComputedStyle(this.elements.imagesContainer);
-            const transform = computedStyle.transform;
-            this.state.baseTransforms.set('container', transform !== 'none' ? transform : '');
-        }
-
-        console.log('📦 Base transforms stored:', this.state.baseTransforms);
     }
 
     /**
@@ -269,7 +208,6 @@ class BuilderSolveHero {
             heroImages: '.hero-image',
             imageCards: '.hero-image-card',
             imagesContainer: '.hero-images-container',
-            imageDescriptions: '.image-description',
             scrollIndicator: '.scroll-indicator',
             fadeElements: '[data-fade]'
         };
@@ -317,16 +255,6 @@ class BuilderSolveHero {
             heroImages: this.elements.heroImages ? this.elements.heroImages.length : 0,
             fadeElements: this.elements.fadeElements ? this.elements.fadeElements.length : 0
         });
-
-        // Cache individual image cards by type
-        if (this.elements.imageCards && this.elements.imageCards.length > 0) {
-            this.elements.mainImageCard = this.elements.imageCards.find(card => 
-                card.classList.contains('hero-image-main'));
-            this.elements.secondaryImageCard = this.elements.imageCards.find(card => 
-                card.classList.contains('hero-image-secondary'));
-            this.elements.tertiaryImageCard = this.elements.imageCards.find(card => 
-                card.classList.contains('hero-image-tertiary'));
-        }
     }
 
     /**
@@ -409,409 +337,10 @@ class BuilderSolveHero {
         window.addEventListener('resize', this.handleResize);
         window.addEventListener('scroll', this.handleScroll, { passive: true });
 
-        // Global keyboard navigation
-        document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
-
         // Visibility change for performance
         document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-        
-        // Detect keyboard vs mouse users
-        document.addEventListener('keydown', () => {
-            this.state.isKeyboardUser = true;
-        }, { once: true });
-        
-        document.addEventListener('mousedown', () => {
-            this.state.isKeyboardUser = false;
-        });
 
         console.log('✅ Global events bound');
-    }
-
-    /**
-     * Setup interactive image handling with null checks
-     */
-    setupInteractiveImages() {
-        if (!this.elements.imageCards || this.elements.imageCards.length === 0) {
-            console.warn('⚠️ No image cards found for interactive setup');
-            return;
-        }
-
-        this.elements.imageCards.forEach((card, index) => {
-            // Set up data attributes
-            card.setAttribute('data-image-index', index);
-            card.setAttribute('tabindex', '0');
-            
-            // FIXED: Clear any existing event listeners to prevent duplicates
-            card.removeEventListener('mouseenter', this.handleImageHover);
-            card.removeEventListener('mouseleave', this.handleImageLeave);
-            card.removeEventListener('click', this.handleImageClick);
-            card.removeEventListener('keydown', this.handleImageKeydown);
-            card.removeEventListener('focus', this.handleImageFocus);
-            card.removeEventListener('blur', this.handleImageBlur);
-            
-            // Mouse events
-            card.addEventListener('mouseenter', (e) => this.handleImageHover(e, index));
-            card.addEventListener('mouseleave', (e) => this.handleImageLeave(e, index));
-            card.addEventListener('click', (e) => this.handleImageClick(e, index));
-            
-            // Keyboard events
-            card.addEventListener('keydown', (e) => this.handleImageKeydown(e, index));
-            card.addEventListener('focus', (e) => this.handleImageFocus(e, index));
-            card.addEventListener('blur', (e) => this.handleImageBlur(e, index));
-            
-            // Update image descriptions
-            this.updateImageDescription(index);
-        });
-
-        console.log(`✅ Set up interactive behavior for ${this.elements.imageCards.length} image cards`);
-    }
-
-    /**
-     * Update image description content
-     */
-    updateImageDescription(index) {
-        if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
-        
-        const card = this.elements.imageCards[index];
-        const description = card?.querySelector('.image-description');
-        
-        if (description && this.state.imageDescriptions[index]) {
-            const titleElement = description.querySelector('.image-description-title');
-            const textElement = description.querySelector('.image-description-text');
-            
-            if (titleElement && textElement) {
-                titleElement.textContent = this.state.imageDescriptions[index].title;
-                textElement.textContent = this.state.imageDescriptions[index].text;
-            }
-        }
-    }
-
-    /**
-     * FIXED: Handle image hover with better debouncing
-     */
-    handleImageHover(event, index) {
-        // Clear any existing timeout
-        if (this.hoverTimeout) {
-            clearTimeout(this.hoverTimeout);
-            this.hoverTimeout = null;
-        }
-
-        // FIXED: Don't enlarge if already enlarged unless it's the same image
-        if (this.state.currentEnlargedImage !== null && this.state.currentEnlargedImage !== index) {
-            return; // Don't interfere with already enlarged image
-        }
-
-        // Delay the enlargement slightly for smoother UX
-        this.hoverTimeout = setTimeout(() => {
-            this.enlargeImage(index, 'hover');
-        }, this.config.imageHoverDelay);
-
-        this.trackEvent('hero_image_hover_start', {
-            image_index: index,
-            image_name: this.getImageName(index),
-            timestamp: Date.now(),
-            interaction_type: 'mouse'
-        });
-    }
-
-    /**
-     * FIXED: Handle image leave with better state management
-     */
-    handleImageLeave(event, index) {
-        // Clear hover timeout if leaving quickly
-        if (this.hoverTimeout) {
-            clearTimeout(this.hoverTimeout);
-            this.hoverTimeout = null;
-        }
-
-        // FIXED: Only shrink if this image is currently enlarged and not keyboard focused
-        if (this.state.currentEnlargedImage === index && 
-            (!this.state.isKeyboardUser || !event.target.matches(':focus'))) {
-            this.shrinkImage(index, 'leave');
-        }
-
-        this.trackEvent('hero_image_hover_end', {
-            image_index: index,
-            image_name: this.getImageName(index),
-            timestamp: Date.now(),
-            interaction_type: 'mouse'
-        });
-    }
-
-    /**
-     * Handle image click
-     */
-    handleImageClick(event, index) {
-        event.preventDefault();
-        
-        // Toggle enlargement on click
-        if (this.state.currentEnlargedImage === index) {
-            this.shrinkImage(index, 'click');
-        } else {
-            this.enlargeImage(index, 'click');
-        }
-
-        // Add click animation
-        const card = event.target.closest('.hero-image-card');
-        if (card) {
-            card.style.transform += ' scale(0.95)';
-            setTimeout(() => {
-                // FIXED: Remove scale effect properly
-                this.refreshCardTransform(index);
-            }, 150);
-        }
-
-        this.trackEvent('hero_image_click', {
-            image_index: index,
-            image_name: this.getImageName(index),
-            timestamp: Date.now(),
-            interaction_type: 'mouse'
-        });
-    }
-
-    /**
-     * Handle image keyboard navigation
-     */
-    handleImageKeydown(event, index) {
-        const { key } = event;
-        
-        switch (key) {
-            case 'Enter':
-            case ' ':
-                event.preventDefault();
-                if (this.state.currentEnlargedImage === index) {
-                    this.shrinkImage(index, 'keyboard');
-                } else {
-                    this.enlargeImage(index, 'keyboard');
-                }
-                
-                this.trackEvent('hero_image_keyboard_activate', {
-                    image_index: index,
-                    key: key,
-                    timestamp: Date.now()
-                });
-                break;
-                
-            case 'Escape':
-                event.preventDefault();
-                if (this.state.currentEnlargedImage === index) {
-                    this.shrinkImage(index, 'keyboard');
-                }
-                
-                this.trackEvent('hero_image_keyboard_escape', {
-                    image_index: index,
-                    timestamp: Date.now()
-                });
-                break;
-                
-            case 'ArrowLeft':
-            case 'ArrowRight':
-                event.preventDefault();
-                this.navigateImages(key === 'ArrowRight' ? 1 : -1, index);
-                break;
-        }
-    }
-
-    /**
-     * Handle image focus
-     */
-    handleImageFocus(event, index) {
-        // Only enlarge on keyboard focus, not mouse focus
-        if (this.state.isKeyboardUser) {
-            this.enlargeImage(index, 'focus');
-        }
-
-        this.trackEvent('hero_image_focus', {
-            image_index: index,
-            timestamp: Date.now(),
-            interaction_type: this.state.isKeyboardUser ? 'keyboard' : 'mouse'
-        });
-    }
-
-    /**
-     * FIXED: Handle image blur with better timing
-     */
-    handleImageBlur(event, index) {
-        // Clear any existing timeout
-        if (this.keyboardTimeout) {
-            clearTimeout(this.keyboardTimeout);
-            this.keyboardTimeout = null;
-        }
-
-        this.keyboardTimeout = setTimeout(() => {
-            // Check if any image card is still focused
-            const focusedImageCard = document.querySelector('.hero-image-card:focus');
-            if (!focusedImageCard && this.state.isKeyboardUser && this.state.currentEnlargedImage === index) {
-                this.shrinkImage(index, 'blur');
-            }
-        }, 100);
-
-        this.trackEvent('hero_image_blur', {
-            image_index: index,
-            timestamp: Date.now()
-        });
-    }
-
-    /**
-     * Navigate between images with keyboard
-     */
-    navigateImages(direction, currentIndex) {
-        if (!this.elements.imageCards) return;
-        
-        const totalImages = this.elements.imageCards.length;
-        let newIndex = currentIndex + direction;
-        
-        // Wrap around
-        if (newIndex < 0) newIndex = totalImages - 1;
-        if (newIndex >= totalImages) newIndex = 0;
-        
-        // Focus the new image
-        this.elements.imageCards[newIndex].focus();
-        
-        this.trackEvent('hero_image_keyboard_navigate', {
-            from_index: currentIndex,
-            to_index: newIndex,
-            direction: direction,
-            timestamp: Date.now()
-        });
-    }
-
-    /**
-     * FIXED: Enlarge an image with better transform management
-     */
-    enlargeImage(index, triggerType = 'hover') {
-        if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
-        
-        // Shrink any currently enlarged image first
-        if (this.state.currentEnlargedImage !== null && this.state.currentEnlargedImage !== index) {
-            this.shrinkImage(this.state.currentEnlargedImage, 'auto');
-        }
-
-        const card = this.elements.imageCards[index];
-        const container = this.elements.imagesContainer;
-        
-        if (!card || !container) return;
-
-        // Add enlarged classes
-        card.classList.add('enlarged');
-        container.classList.add('has-enlarged');
-        
-        // Update state
-        this.state.currentEnlargedImage = index;
-        
-        // Update description content if needed
-        this.updateImageDescription(index);
-        
-        // Announce to screen readers
-        this.announceImageChange(index, 'enlarged');
-        
-        this.trackEvent('hero_image_enlarged', {
-            image_index: index,
-            image_name: this.getImageName(index),
-            trigger_type: triggerType,
-            timestamp: Date.now()
-        });
-
-        console.log(`🔍 Image ${index + 1} (${this.getImageName(index)}) enlarged via ${triggerType}`);
-    }
-
-    /**
-     * FIXED: Shrink an image with proper state cleanup
-     */
-    shrinkImage(index, triggerType = 'leave') {
-        if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
-        
-        const card = this.elements.imageCards[index];
-        const container = this.elements.imagesContainer;
-        
-        if (!card || !container) return;
-
-        // Remove enlarged classes
-        card.classList.remove('enlarged');
-        container.classList.remove('has-enlarged');
-        
-        // FIXED: Only update state if this image was actually enlarged
-        if (this.state.currentEnlargedImage === index) {
-            this.state.currentEnlargedImage = null;
-        }
-        
-        // FIXED: Refresh transform to remove any accumulated effects
-        this.refreshCardTransform(index);
-        
-        // Announce to screen readers
-        this.announceImageChange(index, 'normal view');
-        
-        this.trackEvent('hero_image_shrunk', {
-            image_index: index,
-            image_name: this.getImageName(index),
-            trigger_type: triggerType,
-            timestamp: Date.now()
-        });
-
-        console.log(`📱 Image ${index + 1} (${this.getImageName(index)}) returned to normal via ${triggerType}`);
-    }
-
-    /**
-     * FIXED: Refresh card transform to remove accumulation
-     */
-    refreshCardTransform(index) {
-        if (!this.elements.imageCards || !this.elements.imageCards[index]) return;
-        
-        const card = this.elements.imageCards[index];
-        const baseTransform = this.state.baseTransforms.get(`card-${index}`) || '';
-        
-        // Reset to base transform without accumulated effects
-        card.style.transform = baseTransform;
-    }
-
-    /**
-     * Get image name for analytics
-     */
-    getImageName(index) {
-        const names = ['main_dashboard', 'mobile_field', 'analytics'];
-        return names[index] || `image_${index}`;
-    }
-
-    /**
-     * Announce image changes to screen readers
-     */
-    announceImageChange(index, action) {
-        const imageNames = [
-            'Project Management Dashboard',
-            'Mobile Field Management', 
-            'Advanced Analytics'
-        ];
-        
-        const message = `${imageNames[index] || `Image ${index + 1}`} ${action}`;
-        
-        // Create or update live region
-        let liveRegion = document.getElementById('hero-live-region');
-        if (!liveRegion) {
-            liveRegion = document.createElement('div');
-            liveRegion.id = 'hero-live-region';
-            liveRegion.setAttribute('aria-live', 'polite');
-            liveRegion.setAttribute('aria-atomic', 'true');
-            liveRegion.className = 'sr-only';
-            liveRegion.style.cssText = `
-                position: absolute;
-                width: 1px;
-                height: 1px;
-                padding: 0;
-                margin: -1px;
-                overflow: hidden;
-                clip: rect(0, 0, 0, 0);
-                white-space: nowrap;
-                border: 0;
-            `;
-            document.body.appendChild(liveRegion);
-        }
-        
-        liveRegion.textContent = message;
-        
-        // Clear after announcement
-        setTimeout(() => {
-            liveRegion.textContent = '';
-        }, 1000);
     }
 
     /**
@@ -967,8 +496,6 @@ class BuilderSolveHero {
      * Handle CTA hover effects
      */
     handleCTAHover(event) {
-        const button = event.target.closest('.btn-primary-large');
-        
         // Track hover for engagement analytics
         this.trackEvent('cta_hover', {
             timestamp: Date.now(),
@@ -1036,7 +563,7 @@ class BuilderSolveHero {
             fallbackContent.innerHTML = `
                 <div style="text-align: center; padding: 2rem; color: #64748B;">
                     <div style="font-size: 2rem; margin-bottom: 0.5rem;">📱</div>
-                    <div style="font-weight: 600; color: #374151;">${this.state.imageDescriptions[index]?.title || `BuilderSolve ${index + 1}`}</div>
+                    <div style="font-weight: 600; color: #374151;">BuilderSolve ${index + 1}</div>
                 </div>
             `;
             imageCard.appendChild(fallbackContent);
@@ -1095,18 +622,10 @@ class BuilderSolveHero {
     handleResize() {
         // Update viewport-dependent calculations
         this.updateResponsiveState();
-        
-        // Reset any enlarged states on mobile for better UX
-        if (window.innerWidth <= 768 && this.state.currentEnlargedImage !== null) {
-            this.shrinkImage(this.state.currentEnlargedImage, 'resize');
-        }
-        
-        // FIXED: Refresh base transforms after resize
-        this.storeBaseTransforms();
     }
 
     /**
-     * FIXED: Handle scroll events with proper transform management
+     * FIXED: Handle scroll events - simplified and fixed
      */
     handleScroll() {
         if (!this.state.isVisible || !this.elements.heroSection) return;
@@ -1115,24 +634,15 @@ class BuilderSolveHero {
         const heroHeight = this.elements.heroSection.offsetHeight;
         this.state.scrollPosition = scrolled;
 
-        // FIXED: Proper parallax effect with proper transform management
-        if (this.elements.imagesContainer && scrolled <= heroHeight) {
-            const baseTransform = this.state.baseTransforms.get('container') || '';
-            const parallaxOffset = Math.min(scrolled * this.config.parallaxStrength, this.config.maxParallaxOffset);
-            
-            // FIXED: Set transform properly instead of accumulating
-            let newTransform = baseTransform;
-            if (newTransform && newTransform !== 'none') {
-                newTransform += ` translateY(${parallaxOffset}px)`;
-            } else {
-                newTransform = `translateY(${parallaxOffset}px)`;
-            }
-            
-            this.elements.imagesContainer.style.transform = newTransform;
+        // FIXED: Simple and reliable scroll behavior
+        // Only apply effects within the hero section
+        if (scrolled <= heroHeight && this.elements.imagesContainer) {
+            // Simple parallax effect - much more reliable
+            const parallaxOffset = scrolled * 0.1;
+            this.elements.imagesContainer.style.transform = `translateY(${parallaxOffset}px)`;
         } else if (this.elements.imagesContainer && scrolled > heroHeight) {
-            // FIXED: Reset to base transform when scrolled past hero
-            const baseTransform = this.state.baseTransforms.get('container') || '';
-            this.elements.imagesContainer.style.transform = baseTransform;
+            // FIXED: Reset to normal position when past hero
+            this.elements.imagesContainer.style.transform = 'translateY(0px)';
         }
     }
 
@@ -1162,7 +672,7 @@ class BuilderSolveHero {
         // Add instructions for screen readers
         if (this.elements.imagesContainer) {
             this.elements.imagesContainer.setAttribute('aria-label', 
-                'Interactive image gallery. Use mouse hover or keyboard navigation to explore BuilderSolve features.');
+                'BuilderSolve construction management platform showcase images');
         }
 
         // Announce when animations complete
@@ -1181,21 +691,6 @@ class BuilderSolveHero {
             setTimeout(() => {
                 liveRegion.textContent = '';
             }, 1000);
-        }
-    }
-
-    /**
-     * Handle global keyboard shortcuts
-     */
-    handleGlobalKeydown(event) {
-        // Contact shortcut
-        if (event.key === 'Enter' && event.target === this.elements.ctaButton) {
-            this.handleCTAClick(event);
-        }
-        
-        // Global escape to close any enlarged image
-        if (event.key === 'Escape' && this.state.currentEnlargedImage !== null) {
-            this.shrinkImage(this.state.currentEnlargedImage, 'global_escape');
         }
     }
 
@@ -1322,9 +817,7 @@ class BuilderSolveHero {
             features_enabled: {
                 intersection_observer: !!this.intersectionObserver,
                 performance_observer: !!this.performanceObserver,
-                interactive_images: !!(this.elements.imageCards && this.elements.imageCards.length > 0),
-                image_count: this.elements.heroImages ? this.elements.heroImages.length : 0,
-                keyboard_navigation: this.config.keyboardNavigationEnabled
+                image_count: this.elements.heroImages ? this.elements.heroImages.length : 0
             }
         });
     }
@@ -1422,44 +915,10 @@ class BuilderSolveHero {
             // State
             getState: () => ({ ...this.state }),
             getMetrics: () => ({ ...this.state.performanceMetrics }),
-            getCurrentEnlargedImage: () => this.state.currentEnlargedImage,
             
             // Actions
             triggerAnimations: () => this.triggerEntranceAnimations(),
             scrollToNext: () => this.handleScrollIndicatorClick({ preventDefault: () => {} }),
-            enlargeImage: (index) => this.enlargeImage(index, 'api'),
-            shrinkImage: (index) => this.shrinkImage(index, 'api'),
-            shrinkAllImages: () => {
-                if (this.state.currentEnlargedImage !== null) {
-                    this.shrinkImage(this.state.currentEnlargedImage, 'api');
-                }
-            },
-            
-            // FIXED: Add refresh function
-            refreshImages: () => {
-                this.storeBaseTransforms();
-                if (this.elements.imageCards) {
-                    this.elements.imageCards.forEach((_, index) => {
-                        this.refreshCardTransform(index);
-                    });
-                }
-            },
-            
-            // Customization
-            updateImageDescription: (index, title, text) => {
-                if (this.state.imageDescriptions[index]) {
-                    this.state.imageDescriptions[index] = { title, text };
-                    this.updateImageDescription(index);
-                }
-            },
-            updateAllDescriptions: (descriptions) => {
-                this.state.imageDescriptions = descriptions;
-                if (this.elements.imageCards) {
-                    this.elements.imageCards.forEach((_, index) => {
-                        this.updateImageDescription(index);
-                    });
-                }
-            },
             
             // Tracking
             trackConversion: (data) => this.trackConversion('external_conversion', data),
@@ -1499,8 +958,6 @@ class BuilderSolveHero {
      */
     destroy() {
         // Clear timeouts
-        if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
-        if (this.keyboardTimeout) clearTimeout(this.keyboardTimeout);
         if (this.contentWaitTimeout) clearTimeout(this.contentWaitTimeout);
 
         // Remove event listeners
@@ -1520,7 +977,7 @@ class BuilderSolveHero {
             this.contentObserver.disconnect();
         }
         
-        console.log('🧹 BuilderSolve Hero with Interactive Images cleaned up');
+        console.log('🧹 BuilderSolve Hero cleaned up');
     }
 }
 
@@ -1531,22 +988,11 @@ const initializeHero = () => {
     heroInstance = new BuilderSolveHero({
         animationDelay: 80,
         imageLoadTimeout: 3000,
-        imageHoverDelay: 150,
-        keyboardNavigationEnabled: true,
-        contentWaitTimeout: 10000,
-        // NEW: Scroll settings
-        parallaxStrength: 0.1,
-        maxParallaxOffset: 50
+        contentWaitTimeout: 10000
     });
     
     // Export to global scope for external access
     window.BuilderSolveHero = heroInstance.getAPI();
-    
-    // Add convenient global functions
-    window.enlargeHeroImage = (index) => heroInstance.getAPI().enlargeImage(index);
-    window.shrinkHeroImages = () => heroInstance.getAPI().shrinkAllImages();
-    window.updateHeroImageText = (index, title, text) => heroInstance.getAPI().updateImageDescription(index, title, text);
-    window.refreshHeroImages = () => heroInstance.getAPI().refreshImages();
 };
 
 // Auto-initialize

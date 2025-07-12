@@ -365,7 +365,7 @@
   transform: translateX(4px);
 }
 
-/* ===== ENHANCED HERO IMAGES - INTERACTIVE LAYOUT ===== */
+/* ===== SIMPLIFIED HERO IMAGES - NO HOVER EFFECTS ===== */
 .hero-visual {
   position: relative;
   display: flex;
@@ -383,19 +383,18 @@
   margin: 0 auto;
 }
 
-/* Enhanced image card with interactive states */
+/* Simplified image card - no hover interactions */
 .hero-image-card {
   position: absolute;
   border-radius: var(--radius-2xl);
   overflow: hidden;
   box-shadow: var(--shadow-2xl);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--transition-base);
   background: var(--primary-100);
-  cursor: pointer;
   transform-origin: center;
 }
 
-/* Default positions - when no hover */
+/* Fixed positions - always maintain these positions */
 .hero-image-main {
   width: 380px;
   height: 280px;
@@ -423,123 +422,38 @@
   z-index: 5;
 }
 
-/* ===== INTERACTIVE HOVER STATES ===== */
-
-/* When container is hovered, prepare for the main display */
-.hero-images-container:hover .hero-image-card {
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Large display area for hovered image */
-.hero-image-card.enlarged {
-  width: 500px !important;
-  height: 350px !important;
-  top: 50% !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translate(-50%, -50%) perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1.05) !important;
-  z-index: 30 !important;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.5),
-    0 0 40px rgba(37, 99, 235, 0.15) !important;
-}
-
-/* Hide non-hovered images when one is enlarged */
-.hero-images-container.has-enlarged .hero-image-card:not(.enlarged) {
-  opacity: 0.3;
-  transform: scale(0.8) !important;
-  z-index: 1 !important;
-}
-
 /* Image styling */
 .hero-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity var(--transition-base);
 }
 
-.hero-image-card.enlarged .hero-image {
-  transform: scale(1.02);
-}
-
-/* Enhanced overlay for enlarged state */
+/* Simple overlay for visual depth - no interactive states */
 .hero-image-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(37, 99, 235, 0.1) 0%,
-    rgba(234, 88, 12, 0.1) 100%
-  );
-  opacity: 0;
-  transition: opacity var(--transition-base);
-}
-
-.hero-image-card.enlarged .hero-image-overlay {
-  opacity: 0.7;
-  background: linear-gradient(
-    135deg,
     rgba(37, 99, 235, 0.05) 0%,
     rgba(234, 88, 12, 0.05) 100%
   );
-}
-
-/* ===== IMAGE DESCRIPTION TEXT ===== */
-.image-description {
-  position: absolute;
-  bottom: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-xl);
-  padding: var(--space-4) var(--space-6);
-  box-shadow: var(--shadow-lg);
-  opacity: 0;
-  transform: translateX(-50%) translateY(20px);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.3;
   pointer-events: none;
-  z-index: 35;
-  min-width: 280px;
-  text-align: center;
 }
 
-.hero-image-card.enlarged .image-description {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  transition-delay: 0.3s;
-}
-
-.image-description-title {
-  font-size: var(--text-lg);
-  font-weight: var(--font-bold);
-  color: var(--primary-900);
-  margin-bottom: var(--space-2);
-  line-height: var(--leading-tight);
-}
-
-.image-description-text {
-  font-size: var(--text-sm);
-  color: var(--primary-600);
-  line-height: var(--leading-relaxed);
-  margin: 0;
-}
-
-/* ===== FLOATING ANIMATIONS (simplified when not enlarged) ===== */
-.hero-images-container:not(.has-enlarged) .hero-image-main {
+/* ===== FLOATING ANIMATIONS - ALWAYS ACTIVE ===== */
+.hero-image-main {
   animation: imageFloat1 4s ease-in-out infinite;
 }
 
-.hero-images-container:not(.has-enlarged) .hero-image-secondary {
+.hero-image-secondary {
   animation: imageFloat2 5s ease-in-out infinite 1s;
 }
 
-.hero-images-container:not(.has-enlarged) .hero-image-tertiary {
+.hero-image-tertiary {
   animation: imageFloat3 6s ease-in-out infinite 2s;
 }
 
@@ -568,11 +482,6 @@
   50% {
     transform: perspective(1200px) rotateY(-12deg) rotateX(6deg) translateY(-6px);
   }
-}
-
-/* Stop animations when enlarged */
-.hero-images-container.has-enlarged .hero-image-card {
-  animation: none !important;
 }
 
 /* ===== SCROLL INDICATOR ===== */
@@ -646,11 +555,6 @@
   .hero-images-container {
     max-width: 720px;
   }
-
-  .hero-image-card.enlarged {
-    width: 600px !important;
-    height: 420px !important;
-  }
 }
 
 /* Desktop */
@@ -665,11 +569,6 @@
   
   .hero-images-container {
     max-width: 560px;
-  }
-
-  .hero-image-card.enlarged {
-    width: 450px !important;
-    height: 315px !important;
   }
 }
 
@@ -704,16 +603,6 @@
   .btn-primary-large {
     align-self: center;
     min-width: 240px;
-  }
-
-  .hero-image-card.enlarged {
-    width: 400px !important;
-    height: 280px !important;
-  }
-
-  .image-description {
-    min-width: 240px;
-    bottom: -50px;
   }
 }
 
@@ -756,25 +645,6 @@
     max-width: 400px;
     height: 350px;
   }
-
-  .hero-image-card.enlarged {
-    width: 350px !important;
-    height: 245px !important;
-  }
-
-  .image-description {
-    min-width: 200px;
-    bottom: -45px;
-    padding: var(--space-3) var(--space-4);
-  }
-
-  .image-description-title {
-    font-size: var(--text-base);
-  }
-
-  .image-description-text {
-    font-size: var(--text-xs);
-  }
 }
 
 /* Mobile Small */
@@ -816,16 +686,6 @@
   .hero-image-tertiary {
     display: none;
   }
-
-  .hero-image-card.enlarged {
-    width: 300px !important;
-    height: 210px !important;
-  }
-
-  .image-description {
-    min-width: 180px;
-    bottom: -40px;
-  }
 }
 
 /* ===== CTA SECONDARY STYLING ===== */
@@ -852,20 +712,9 @@
 
 /* Focus indicators */
 .btn-primary-large:focus-visible,
-.scroll-indicator:focus-visible,
-.hero-image-card:focus-visible {
+.scroll-indicator:focus-visible {
   outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
-}
-
-/* Add focus support for keyboard users */
-.hero-image-card {
-  outline: none;
-}
-
-.hero-image-card:focus-visible {
-  outline: 2px solid var(--accent-blue);
-  outline-offset: 4px;
 }
 
 /* Reduced motion support */
@@ -876,15 +725,6 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  
-  .hero-image-card.enlarged {
-    transition-duration: 0.01ms !important;
-  }
-  
-  .image-description {
-    transition-duration: 0.01ms !important;
-    transition-delay: 0s !important;
   }
   
   .scroll-indicator {
@@ -900,11 +740,6 @@
   
   .hero-image-card {
     border: 2px solid var(--primary-900);
-  }
-
-  .image-description {
-    border: 2px solid var(--primary-700);
-    background: white;
   }
 }
 
@@ -944,27 +779,18 @@
     flex-wrap: wrap;
     gap: var(--space-4);
   }
-
-  .image-description {
-    position: static !important;
-    transform: none !important;
-    opacity: 1 !important;
-    margin-top: var(--space-2);
-  }
 }
 
 /* ===== PERFORMANCE OPTIMIZATIONS ===== */
 .hero-image-card,
-.btn-primary-large,
-.image-description {
+.btn-primary-large {
   will-change: transform, opacity;
 }
 
 /* Force hardware acceleration for smooth animations */
 .hero-background,
 .hero-image-card,
-.hero-images-container,
-.image-description {
+.hero-images-container {
   transform: translateZ(0);
 }
 

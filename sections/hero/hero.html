@@ -101,66 +101,34 @@
                     </div>
                 </div>
 
-                <!-- Hero Visual - Enhanced Interactive 3-Image Layout -->
+                <!-- Hero Visual - Simplified 3-Image Layout -->
                 <div class="hero-visual" data-fade="left" data-delay="200">
                     <div class="hero-images-container" role="img"
                         aria-label="BuilderSolve construction management solutions">
                         
                         <!-- Main Image - Center-left, largest -->
-                        <div class="hero-image-card hero-image-main" tabindex="0" role="button"
-                             aria-label="View project management dashboard details" data-image-index="0">
+                        <div class="hero-image-card hero-image-main">
                             <img src="assets/images/hero_screenshots/hero_image_1.png" 
                                  alt="BuilderSolve project management dashboard showing schedules, budgets, and team coordination"
                                  class="hero-image" loading="eager" width="380" height="280">
                             <div class="hero-image-overlay" aria-hidden="true"></div>
-                            
-                            <!-- Image Description - Hidden by default, shown on hover -->
-                            <div class="image-description" aria-hidden="true">
-                                <h3 class="image-description-title">Project Dashboard</h3>
-                                <p class="image-description-text">
-                                    Complete oversight of all your construction projects. Track schedules, budgets, and team progress in real-time.
-                                </p>
-                            </div>
                         </div>
 
                         <!-- Secondary Image - Top-right, medium -->
-                        <div class="hero-image-card hero-image-secondary" tabindex="0" role="button"
-                             aria-label="View mobile app features" data-image-index="1">
+                        <div class="hero-image-card hero-image-secondary">
                             <img src="assets/images/hero_screenshots/hero_image_2.png" 
                                  alt="Construction team using BuilderSolve mobile app on job site for task management"
                                  class="hero-image" loading="lazy" width="280" height="200">
                             <div class="hero-image-overlay" aria-hidden="true"></div>
-                            
-                            <!-- Image Description -->
-                            <div class="image-description" aria-hidden="true">
-                                <h3 class="image-description-title">Mobile Field Management</h3>
-                                <p class="image-description-text">
-                                    Keep your field teams connected with powerful mobile tools. Update tasks, report issues, and share progress instantly.
-                                </p>
-                            </div>
                         </div>
 
                         <!-- Tertiary Image - Bottom-right, smallest -->
-                        <div class="hero-image-card hero-image-tertiary" tabindex="0" role="button"
-                             aria-label="View reporting and analytics features" data-image-index="2">
+                        <div class="hero-image-card hero-image-tertiary">
                             <img src="assets/images/hero_screenshots/hero_image_3.png" 
                                  alt="BuilderSolve reporting and analytics interface displaying project performance metrics"
                                  class="hero-image" loading="lazy" width="240" height="160">
                             <div class="hero-image-overlay" aria-hidden="true"></div>
-                            
-                            <!-- Image Description -->
-                            <div class="image-description" aria-hidden="true">
-                                <h3 class="image-description-title">Advanced Analytics</h3>
-                                <p class="image-description-text">
-                                    Make data-driven decisions with comprehensive reporting. Monitor KPIs, identify trends, and optimize performance.
-                                </p>
-                            </div>
                         </div>
-                    </div>
-
-                    <!-- Instructions for interaction (screen reader only) -->
-                    <div class="sr-only" id="image-interaction-instructions">
-                        Use your mouse to hover over any image above to see a detailed view, or use tab and enter keys to navigate and activate images.
                     </div>
                 </div>
             </div>
@@ -259,75 +227,6 @@
                     image.style.display = 'none';
                     imageCard.appendChild(fallback);
                 }
-            });
-        });
-
-        // Enhanced accessibility: announce image interactions
-        const announceImageChange = (imageIndex, action) => {
-            const messages = [
-                'Project Management Dashboard',
-                'Mobile Field Management',
-                'Advanced Analytics'
-            ];
-            
-            const message = `${action}: ${messages[imageIndex] || `Image ${imageIndex + 1}`}`;
-            
-            // Create or update live region for screen readers
-            let liveRegion = document.getElementById('image-live-region');
-            if (!liveRegion) {
-                liveRegion = document.createElement('div');
-                liveRegion.id = 'image-live-region';
-                liveRegion.setAttribute('aria-live', 'polite');
-                liveRegion.setAttribute('aria-atomic', 'true');
-                liveRegion.className = 'sr-only';
-                document.body.appendChild(liveRegion);
-            }
-            
-            liveRegion.textContent = message;
-            
-            // Clear after a short delay
-            setTimeout(() => {
-                liveRegion.textContent = '';
-            }, 1000);
-        };
-
-        // Track image interactions for analytics
-        document.addEventListener('DOMContentLoaded', () => {
-            const imageCards = document.querySelectorAll('.hero-image-card');
-            
-            imageCards.forEach((card, index) => {
-                // Mouse events
-                card.addEventListener('mouseenter', () => {
-                    announceImageChange(index, 'Viewing');
-                });
-                
-                // Keyboard events
-                card.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        // Simulate hover for keyboard users
-                        card.classList.add('enlarged');
-                        card.closest('.hero-images-container').classList.add('has-enlarged');
-                        announceImageChange(index, 'Selected');
-                    }
-                    
-                    if (e.key === 'Escape') {
-                        // Remove enlarged state
-                        card.classList.remove('enlarged');
-                        card.closest('.hero-images-container').classList.remove('has-enlarged');
-                        announceImageChange(index, 'Deselected');
-                    }
-                });
-                
-                // Handle focus loss for keyboard users
-                card.addEventListener('blur', () => {
-                    setTimeout(() => {
-                        if (!card.matches(':focus-within')) {
-                            card.classList.remove('enlarged');
-                            card.closest('.hero-images-container').classList.remove('has-enlarged');
-                        }
-                    }, 100);
-                });
             });
         });
 
