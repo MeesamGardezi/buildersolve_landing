@@ -1,88 +1,62 @@
-<!-- Dashboard Showcase Section Content -->
+<!-- Simple Dashboard Showcase Section -->
 <div class="dashboard-showcase-wrapper">
     <div class="container">
-        <!-- Section Header -->
-        <div class="showcase-header" data-fade="up">
-            <h2 class="showcase-title">
-                See BuilderSolve in Action
-            </h2>
-            <p class="showcase-subtitle">
-                Experience the power of our comprehensive construction management platform
-            </p>
-        </div>
-
-        <!-- Carousel Container -->
-        <div class="dashboard-carousel" data-fade="up" data-delay="200">
+        <!-- Simple Carousel Container -->
+        <div class="simple-carousel-container">
             <!-- Carousel Track -->
             <div class="carousel-track-container">
                 <div class="carousel-track" id="carousel-track">
-                    <!-- Screenshot 1 -->
+                    <!-- Slide 1 -->
                     <div class="carousel-slide active" data-slide="0">
-                        <div class="screenshot-container">
-                            <img src="assets/images/dashboard_screenshots/dashboard_1.png" 
-                                 alt="BuilderSolve main dashboard showing project overview"
-                                 class="dashboard-screenshot"
-                                 width="800"
-                                 height="450">
-                            <div class="screenshot-overlay">
-                                <div class="screenshot-info">
-                                    <h3>Project Overview Dashboard</h3>
-                                    <p>Get a complete view of all your projects and team performance</p>
-                                </div>
-                            </div>
-                        </div>
+                        <img src="assets/images/dashboard_screenshots/dashboard_1.png" 
+                             alt="BuilderSolve project management dashboard"
+                             class="dashboard-screenshot"
+                             loading="eager"
+                             width="800"
+                             height="450">
                     </div>
 
-                    <!-- Screenshot 2 -->
+                    <!-- Slide 2 -->
                     <div class="carousel-slide" data-slide="1">
-                        <div class="screenshot-container">
-                            <img src="assets/images/dashboard_screenshots/dashboard_2.png" 
-                                 alt="BuilderSolve budget management interface"
-                                 class="dashboard-screenshot"
-                                 width="800"
-                                 height="450">
-                            <div class="screenshot-overlay">
-                                <div class="screenshot-info">
-                                    <h3>Budget Management</h3>
-                                    <p>Track costs and manage budgets with real-time insights</p>
-                                </div>
-                            </div>
-                        </div>
+                        <img src="assets/images/dashboard_screenshots/dashboard_2.png" 
+                             alt="BuilderSolve budget management interface"
+                             class="dashboard-screenshot"
+                             loading="lazy"
+                             width="800"
+                             height="450">
                     </div>
                 </div>
             </div>
 
-            <!-- Navigation Controls -->
-            <div class="carousel-controls">
-                <button class="carousel-btn carousel-btn-prev" aria-label="Previous screenshot">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-
-                <button class="carousel-btn carousel-btn-next" aria-label="Next screenshot">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Dots Navigation -->
-            <div class="carousel-dots">
-                <button class="carousel-dot active" data-slide="0" aria-label="View screenshot 1"></button>
-                <button class="carousel-dot" data-slide="1" aria-label="View screenshot 2"></button>
+            <!-- Progress Bar -->
+            <div class="carousel-progress">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Call to Action -->
-        <div class="showcase-cta" data-fade="up" data-delay="400">
-            <p class="cta-text">Ready to transform your construction management?</p>
-            <button class="btn-primary" data-contact>
-                Get Your Demo
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
+        <!-- Simple Dots Navigation -->
+        <div class="carousel-dots">
+            <button class="carousel-dot active" data-slide="0" aria-label="View dashboard overview"></button>
+            <button class="carousel-dot" data-slide="1" aria-label="View budget management"></button>
+        </div>
+
+        <!-- Content Description - Always Visible -->
+        <div class="showcase-content">
+            <!-- Active Content -->
+            <div class="content-item active" data-content="0">
+                <p class="content-description">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+            </div>
+
+            <!-- Hidden Content -->
+            <div class="content-item" data-content="1">
+                <p class="content-description">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+            </div>
         </div>
     </div>
 </div>
