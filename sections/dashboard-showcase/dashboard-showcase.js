@@ -1,16 +1,16 @@
 /**
- * Simple Dashboard Showcase Carousel
- * Clean and minimal carousel with auto-play and content synchronization
+ * BuilderSolve Dashboard Showcase - FIXED VERSION
+ * Working auto-play, functional dots, proper carousel movement
  * 
- * @version 1.0.0 - Simple Edition
+ * @version 5.0.0 - FULLY FUNCTIONAL
  */
 
-class SimpleDashboardShowcase {
+class DashboardShowcase {
     constructor(options = {}) {
         // Configuration
         this.config = {
-            autoPlayInterval: 4000,
-            transitionDuration: 600,
+            autoPlayInterval: 5000,
+            transitionDuration: 800,
             progressUpdateInterval: 50,
             touchThreshold: 50,
             keyboardEnabled: true,
@@ -19,6 +19,8 @@ class SimpleDashboardShowcase {
             preloadImages: true,
             analyticsEnabled: true,
             accessibilityEnabled: true,
+            retryAttempts: 3,
+            initTimeout: 10000,
             ...options
         };
 
@@ -26,7 +28,7 @@ class SimpleDashboardShowcase {
         this.state = {
             currentSlide: 0,
             totalSlides: 2,
-            isPlaying: true,
+            isPlaying: false,
             isPaused: false,
             isTransitioning: false,
             isInitialized: false,
@@ -36,7 +38,8 @@ class SimpleDashboardShowcase {
             touchStartY: 0,
             hasUserInteracted: false,
             isInView: false,
-            performanceMetrics: {}
+            imagesLoaded: 0,
+            retryCount: 0
         };
 
         // DOM elements cache
@@ -47,17 +50,8 @@ class SimpleDashboardShowcase {
         this.progressTimer = null;
         this.intersectionObserver = null;
         this.resizeObserver = null;
+        this.initTimeout = null;
         
-        // Content data - simplified
-        this.contentData = [
-            {
-                description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
-            },
-            {
-                description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
-            }
-        ];
-
         // Bind methods
         this.handleResize = this.throttle(this.handleResize.bind(this), 250);
         this.handleKeydown = this.handleKeydown.bind(this);
@@ -69,6 +63,9 @@ class SimpleDashboardShowcase {
         this.handleFocus = this.handleFocus.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
         this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
+        this.handleDotClick = this.handleDotClick.bind(this);
+        this.handleImageLoad = this.handleImageLoad.bind(this);
+        this.handleImageError = this.handleImageError.bind(this);
 
         // Initialize
         this.init();
@@ -79,7 +76,7 @@ class SimpleDashboardShowcase {
      */
     async init() {
         try {
-            performance.mark('carousel-init-start');
+            performance.mark('showcase-init-start');
             
             await this.waitForDOM();
             await this.waitForContent();
@@ -90,23 +87,26 @@ class SimpleDashboardShowcase {
             this.setupResizeObserver();
             this.setupAccessibility();
             this.preloadImages();
-            this.updateContent();
-            this.startAutoPlay();
+            this.updateUI();
             
             this.state.isInitialized = true;
             
-            performance.mark('carousel-init-end');
-            performance.measure('carousel-initialization', 'carousel-init-start', 'carousel-init-end');
+            performance.mark('showcase-init-end');
+            performance.measure('showcase-initialization', 'showcase-init-start', 'showcase-init-end');
             
-            this.trackEvent('simple_carousel_initialized', {
-                load_time: performance.getEntriesByName('carousel-initialization')[0]?.duration || 0,
+            this.trackEvent('showcase_initialized', {
+                load_time: performance.getEntriesByName('showcase-initialization')[0]?.duration || 0,
                 total_slides: this.state.totalSlides
             });
             
-            console.log('✅ Simple Dashboard Showcase initialized successfully');
+            console.log('✅ Dashboard Showcase initialized successfully');
+            
+            // Start auto-play after initialization
+            this.startAutoPlay();
             
         } catch (error) {
             this.handleError('Initialization failed', error);
+            this.retryInitialization();
         }
     }
 
@@ -127,13 +127,15 @@ class SimpleDashboardShowcase {
      * Wait for content to be loaded
      */
     waitForContent() {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const checkContent = () => {
                 const showcaseSection = document.querySelector('.dashboard-showcase-wrapper');
                 if (showcaseSection && showcaseSection.querySelector('.premium-carousel-container')) {
                     resolve();
-                } else {
+                } else if (this.state.retryCount < this.config.retryAttempts) {
                     setTimeout(checkContent, 100);
+                } else {
+                    reject(new Error('Content not found after retries'));
                 }
             };
             checkContent();
@@ -145,20 +147,23 @@ class SimpleDashboardShowcase {
      */
     cacheElements() {
         const selectors = {
-            container: '.simple-carousel-container',
+            container: '.premium-carousel-container',
             track: '.carousel-track',
             slides: '.carousel-slide',
             dots: '.carousel-dot',
             progressFill: '.progress-fill',
             contentItems: '.content-item',
-            screenshots: '.dashboard-screenshot'
+            screenshots: '.dashboard-screenshot',
+            showcaseWrapper: '.dashboard-showcase-wrapper'
         };
 
         Object.entries(selectors).forEach(([key, selector]) => {
             const elements = document.querySelectorAll(selector);
             if (elements.length === 0) {
                 this.elements[key] = key.endsWith('s') ? [] : null;
-                console.warn(`⚠️ No elements found for: ${selector}`);
+                if (key === 'container' || key === 'track') {
+                    console.warn(`⚠️ Critical element not found: ${selector}`);
+                }
             } else if (elements.length === 1) {
                 this.elements[key] = elements[0];
             } else {
@@ -171,11 +176,12 @@ class SimpleDashboardShowcase {
             throw new Error('Critical carousel elements not found');
         }
 
-        console.log('📦 Cached carousel elements:', {
+        console.log('📦 Cached showcase elements:', {
             container: !!this.elements.container,
             track: !!this.elements.track,
             slides: this.elements.slides ? this.elements.slides.length : 0,
-            dots: this.elements.dots ? this.elements.dots.length : 0
+            dots: this.elements.dots ? this.elements.dots.length : 0,
+            screenshots: this.elements.screenshots ? this.elements.screenshots.length : 0
         });
     }
 
@@ -183,11 +189,18 @@ class SimpleDashboardShowcase {
      * Setup event listeners
      */
     setupEventListeners() {
-        // Dots navigation
+        // Dots navigation - FIXED: Proper event binding
         if (this.elements.dots && this.elements.dots.length > 0) {
             this.elements.dots.forEach((dot, index) => {
-                dot.addEventListener('click', () => this.goToSlide(index));
+                dot.addEventListener('click', () => this.handleDotClick(index));
+                dot.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.handleDotClick(index);
+                    }
+                });
             });
+            console.log(`✅ Dot navigation setup for ${this.elements.dots.length} dots`);
         }
 
         // Container events
@@ -208,6 +221,14 @@ class SimpleDashboardShowcase {
             this.elements.container.addEventListener('touchend', this.handleTouchEnd, { passive: false });
         }
 
+        // Image loading events
+        if (this.elements.screenshots && this.elements.screenshots.length > 0) {
+            this.elements.screenshots.forEach((img, index) => {
+                img.addEventListener('load', () => this.handleImageLoad(index));
+                img.addEventListener('error', () => this.handleImageError(index));
+            });
+        }
+
         // Global events
         if (this.config.keyboardEnabled) {
             document.addEventListener('keydown', this.handleKeydown);
@@ -223,25 +244,27 @@ class SimpleDashboardShowcase {
      * Setup intersection observer for performance
      */
     setupIntersectionObserver() {
-        if (!this.elements.container) return;
+        if (!this.elements.showcaseWrapper) return;
 
         this.intersectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 this.state.isInView = entry.isIntersecting;
                 
                 if (entry.isIntersecting) {
-                    this.resumeAutoPlay();
-                    this.trackEvent('carousel_in_view');
+                    console.log('📺 Showcase in view - starting auto-play');
+                    this.startAutoPlay();
+                    this.trackEvent('showcase_in_view');
                 } else {
+                    console.log('📺 Showcase out of view - pausing auto-play');
                     this.pauseAutoPlay();
                 }
             });
         }, {
-            threshold: 0.1,
+            threshold: 0.2,
             rootMargin: '50px 0px'
         });
 
-        this.intersectionObserver.observe(this.elements.container);
+        this.intersectionObserver.observe(this.elements.showcaseWrapper);
     }
 
     /**
@@ -271,6 +294,15 @@ class SimpleDashboardShowcase {
             this.elements.track.setAttribute('aria-atomic', 'false');
         }
 
+        // Setup dots accessibility
+        if (this.elements.dots && this.elements.dots.length > 0) {
+            this.elements.dots.forEach((dot, index) => {
+                dot.setAttribute('role', 'button');
+                dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                dot.setAttribute('tabindex', '0');
+            });
+        }
+
         // Update slide accessibility
         this.updateSlideAccessibility();
 
@@ -285,7 +317,6 @@ class SimpleDashboardShowcase {
 
         this.elements.slides.forEach((slide, index) => {
             slide.setAttribute('aria-hidden', index === this.state.currentSlide ? 'false' : 'true');
-            slide.setAttribute('tabindex', index === this.state.currentSlide ? '0' : '-1');
         });
 
         // Update dots
@@ -304,24 +335,27 @@ class SimpleDashboardShowcase {
 
         this.elements.screenshots.forEach((img, index) => {
             if (img.complete) {
-                this.trackEvent('image_preloaded', { index });
-            } else {
-                img.addEventListener('load', () => {
-                    this.trackEvent('image_preloaded', { index });
-                }, { once: true });
-                
-                img.addEventListener('error', () => {
-                    this.trackEvent('image_error', { index });
-                    console.warn(`⚠️ Failed to load image ${index}`);
-                }, { once: true });
+                this.handleImageLoad(index);
             }
         });
     }
 
     /**
-     * Navigate to specific slide
+     * Handle dot click - FIXED: Proper slide navigation
      */
-    goToSlide(index, userTriggered = true) {
+    handleDotClick(index) {
+        if (index === this.state.currentSlide || this.state.isTransitioning) {
+            return;
+        }
+
+        console.log(`🎯 Dot ${index + 1} clicked`);
+        this.goToSlide(index, true);
+    }
+
+    /**
+     * Navigate to specific slide - FIXED: Proper implementation
+     */
+    goToSlide(index, userTriggered = false) {
         if (index < 0 || index >= this.state.totalSlides || 
             index === this.state.currentSlide || 
             this.state.isTransitioning) {
@@ -336,14 +370,8 @@ class SimpleDashboardShowcase {
             this.restartAutoPlay();
         }
 
-        // Update track position
-        this.updateTrackPosition();
-        
-        // Update UI elements
-        this.updateDots();
-        this.updateContent();
-        this.updateProgressBar();
-        this.updateSlideAccessibility();
+        // Update all UI elements
+        this.updateUI();
 
         // Track interaction
         this.trackEvent('slide_changed', {
@@ -379,17 +407,40 @@ class SimpleDashboardShowcase {
     }
 
     /**
-     * Update track position with smooth animation
+     * Update all UI elements - FIXED: Proper carousel movement
+     */
+    updateUI() {
+        this.updateTrackPosition();
+        this.updateDots();
+        this.updateContent();
+        this.updateProgressBar();
+        this.updateSlideAccessibility();
+    }
+
+    /**
+     * Update track position - FIXED: Correct translateX calculation
      */
     updateTrackPosition() {
         if (!this.elements.track) return;
 
-        const translateX = -(this.state.currentSlide * 50); // 50% for each slide
+        // FIXED: Correct calculation for 2-slide carousel
+        const translateX = -(this.state.currentSlide * 50); // 50% for each slide in 200% wide track
         this.elements.track.style.transform = `translateX(${translateX}%)`;
+        
+        // Update slide active states
+        if (this.elements.slides && this.elements.slides.length > 0) {
+            this.elements.slides.forEach((slide, index) => {
+                if (index === this.state.currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
     }
 
     /**
-     * Update dots navigation
+     * Update dots navigation - FIXED: Proper active state management
      */
     updateDots() {
         if (!this.elements.dots || this.elements.dots.length === 0) return;
@@ -419,7 +470,7 @@ class SimpleDashboardShowcase {
     }
 
     /**
-     * Update progress bar
+     * Update progress bar - FIXED: Proper progress calculation
      */
     updateProgressBar() {
         if (!this.elements.progressFill) return;
@@ -430,11 +481,12 @@ class SimpleDashboardShowcase {
     }
 
     /**
-     * Start auto-play functionality
+     * Start auto-play functionality - FIXED: Proper implementation
      */
     startAutoPlay() {
-        if (!this.state.isPlaying || this.autoPlayTimer) return;
+        if (this.state.isPlaying || this.autoPlayTimer) return;
 
+        this.state.isPlaying = true;
         this.state.startTime = Date.now();
         this.startProgressTimer();
         
@@ -479,6 +531,7 @@ class SimpleDashboardShowcase {
         if (!this.state.isPlaying) return;
         
         this.state.isPaused = false;
+        this.state.startTime = Date.now();
         this.startProgressTimer();
         
         console.log('▶️ Auto-play resumed');
@@ -494,7 +547,7 @@ class SimpleDashboardShowcase {
     }
 
     /**
-     * Start progress timer for smooth progress bar
+     * Start progress timer for smooth progress bar - FIXED: Proper timing
      */
     startProgressTimer() {
         if (this.progressTimer) return;
@@ -502,10 +555,12 @@ class SimpleDashboardShowcase {
         this.progressTimer = setInterval(() => {
             if (!this.state.isPaused && this.state.isInView) {
                 const elapsed = Date.now() - this.state.startTime;
-                const progress = Math.min((elapsed / this.config.autoPlayInterval) * 100, 100);
+                const slideProgress = (elapsed / this.config.autoPlayInterval) * 100;
+                const baseProgress = (this.state.currentSlide / this.state.totalSlides) * 100;
+                const totalProgress = baseProgress + (slideProgress / this.state.totalSlides);
                 
                 if (this.elements.progressFill) {
-                    this.elements.progressFill.style.width = `${progress}%`;
+                    this.elements.progressFill.style.width = `${Math.min(totalProgress, 100)}%`;
                 }
             }
         }, this.config.progressUpdateInterval);
@@ -526,7 +581,7 @@ class SimpleDashboardShowcase {
      */
     handleMouseEnter() {
         this.pauseAutoPlay();
-        this.trackEvent('carousel_hover_start');
+        this.trackEvent('showcase_hover_start');
     }
 
     /**
@@ -534,7 +589,7 @@ class SimpleDashboardShowcase {
      */
     handleMouseLeave() {
         this.resumeAutoPlay();
-        this.trackEvent('carousel_hover_end');
+        this.trackEvent('showcase_hover_end');
     }
 
     /**
@@ -542,7 +597,7 @@ class SimpleDashboardShowcase {
      */
     handleFocus() {
         this.pauseAutoPlay();
-        this.trackEvent('carousel_focus');
+        this.trackEvent('showcase_focus');
     }
 
     /**
@@ -550,7 +605,7 @@ class SimpleDashboardShowcase {
      */
     handleBlur() {
         this.resumeAutoPlay();
-        this.trackEvent('carousel_blur');
+        this.trackEvent('showcase_blur');
     }
 
     /**
@@ -574,23 +629,13 @@ class SimpleDashboardShowcase {
                 break;
             case 'Home':
                 event.preventDefault();
-                this.goToSlide(0);
+                this.goToSlide(0, true);
                 this.trackEvent('keyboard_navigation', { key: 'home' });
                 break;
             case 'End':
                 event.preventDefault();
-                this.goToSlide(this.state.totalSlides - 1);
+                this.goToSlide(this.state.totalSlides - 1, true);
                 this.trackEvent('keyboard_navigation', { key: 'end' });
-                break;
-            case ' ':
-            case 'Enter':
-                event.preventDefault();
-                if (this.state.isPlaying) {
-                    this.stopAutoPlay();
-                } else {
-                    this.startAutoPlay();
-                }
-                this.trackEvent('keyboard_navigation', { key: 'toggle' });
                 break;
         }
     }
@@ -656,7 +701,7 @@ class SimpleDashboardShowcase {
         // Recalculate positions if needed
         this.updateTrackPosition();
         
-        this.trackEvent('carousel_resize', {
+        this.trackEvent('showcase_resize', {
             viewport_width: window.innerWidth,
             viewport_height: window.innerHeight
         });
@@ -671,6 +716,30 @@ class SimpleDashboardShowcase {
         } else {
             this.resumeAutoPlay();
         }
+    }
+
+    /**
+     * Handle image load
+     */
+    handleImageLoad(index) {
+        this.state.imagesLoaded++;
+        console.log(`✅ Showcase image ${index + 1} loaded`);
+        
+        this.trackEvent('showcase_image_loaded', {
+            image_index: index,
+            total_loaded: this.state.imagesLoaded
+        });
+    }
+
+    /**
+     * Handle image error
+     */
+    handleImageError(index) {
+        console.warn(`⚠️ Showcase image ${index + 1} failed to load`);
+        
+        this.trackEvent('showcase_image_error', {
+            image_index: index
+        });
     }
 
     /**
@@ -704,12 +773,12 @@ class SimpleDashboardShowcase {
             ...data
         };
 
-        console.log('📊 Carousel event:', eventData);
+        console.log('📊 Showcase event:', eventData);
 
         // Google Analytics 4
         if (typeof gtag !== 'undefined') {
             gtag('event', eventName, {
-                event_category: 'carousel',
+                event_category: 'showcase',
                 event_label: `slide_${this.state.currentSlide}`,
                 value: this.state.currentSlide
             });
@@ -725,17 +794,29 @@ class SimpleDashboardShowcase {
      * Handle errors gracefully
      */
     handleError(message, error) {
-        console.error(`❌ Carousel Error: ${message}`, error);
+        console.error(`❌ Showcase Error: ${message}`, error);
         
-        this.trackEvent('carousel_error', {
+        this.trackEvent('showcase_error', {
             message,
             error: error.message,
             stack: error.stack
         });
+    }
 
-        // Attempt recovery
-        this.stopAutoPlay();
-        this.state.isPlaying = false;
+    /**
+     * Retry initialization on failure
+     */
+    retryInitialization() {
+        if (this.state.retryCount < this.config.retryAttempts) {
+            this.state.retryCount++;
+            console.log(`🔄 Retrying showcase initialization (attempt ${this.state.retryCount})`);
+            
+            setTimeout(() => {
+                this.init();
+            }, 1000 * this.state.retryCount);
+        } else {
+            console.error('❌ Max retry attempts reached for showcase initialization');
+        }
     }
 
     /**
@@ -758,7 +839,7 @@ class SimpleDashboardShowcase {
     getAPI() {
         return {
             // Navigation
-            goToSlide: (index) => this.goToSlide(index),
+            goToSlide: (index) => this.goToSlide(index, true),
             nextSlide: () => this.nextSlide(),
             prevSlide: () => this.prevSlide(),
             
@@ -790,6 +871,7 @@ class SimpleDashboardShowcase {
     destroy() {
         // Stop timers
         this.stopAutoPlay();
+        if (this.initTimeout) clearTimeout(this.initTimeout);
 
         // Remove event listeners
         document.removeEventListener('keydown', this.handleKeydown);
@@ -805,18 +887,18 @@ class SimpleDashboardShowcase {
             this.resizeObserver.disconnect();
         }
 
-        console.log('🧹 Simple carousel cleaned up');
+        console.log('🧹 Dashboard showcase cleaned up');
     }
 }
 
-// Initialize carousel when ready
+// Initialize showcase when ready
 let showcaseInstance = null;
 
 const initializeShowcase = () => {
     if (!showcaseInstance && document.querySelector('.dashboard-showcase-wrapper')) {
-        showcaseInstance = new SimpleDashboardShowcase({
-            autoPlayInterval: 4000,
-            transitionDuration: 600,
+        showcaseInstance = new DashboardShowcase({
+            autoPlayInterval: 5000,
+            transitionDuration: 800,
             touchThreshold: 50,
             analyticsEnabled: true,
             accessibilityEnabled: true
@@ -825,28 +907,29 @@ const initializeShowcase = () => {
         // Export to global scope
         window.DashboardShowcase = showcaseInstance.getAPI();
         
-        console.log('🚀 Simple Dashboard Showcase initialized');
+        console.log('🚀 Dashboard Showcase initialized');
     }
 };
 
-// Auto-initialize
+// Auto-initialize with multiple attempts
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeShowcase);
 } else {
     initializeShowcase();
 }
 
-// Also try after a delay for dynamic content
+// Also try after delays for dynamic content
 setTimeout(initializeShowcase, 500);
 setTimeout(initializeShowcase, 1000);
+setTimeout(initializeShowcase, 2000);
 
-console.log('🚀 Simple dashboard showcase script loaded');
+console.log('🚀 Dashboard showcase script loaded');
 
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SimpleDashboardShowcase;
+    module.exports = DashboardShowcase;
 } else if (typeof define === 'function' && define.amd) {
-    define(() => SimpleDashboardShowcase);
+    define(() => DashboardShowcase);
 }
 
 // Hot reload support

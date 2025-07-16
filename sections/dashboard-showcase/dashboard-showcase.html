@@ -1,29 +1,47 @@
-<!-- Simple Dashboard Showcase Section -->
+<!-- Premium Dashboard Showcase Section -->
 <div class="dashboard-showcase-wrapper">
+    <!-- Background Pattern -->
+    <div class="showcase-background">
+        <div class="showcase-gradient"></div>
+        <div class="showcase-pattern"></div>
+    </div>
+
     <div class="container">
-        <!-- Simple Carousel Container -->
-        <div class="simple-carousel-container">
+        <!-- Section Header -->
+        <div class="showcase-header">
+            <h2 class="showcase-title">See BuilderSolve in Action</h2>
+            <p class="showcase-subtitle">Experience the power of real-time construction management</p>
+        </div>
+
+        <!-- Premium Carousel Container -->
+        <div class="premium-carousel-container">
             <!-- Carousel Track -->
             <div class="carousel-track-container">
                 <div class="carousel-track" id="carousel-track">
-                    <!-- Slide 1 -->
+                    <!-- Slide 1 - Project Dashboard -->
                     <div class="carousel-slide active" data-slide="0">
-                        <img src="assets/images/dashboard_screenshots/dashboard_1.png" 
-                             alt="BuilderSolve project management dashboard"
-                             class="dashboard-screenshot"
-                             loading="eager"
-                             width="800"
-                             height="450">
+                        <div class="screenshot-wrapper">
+                            <img src="assets/images/dashboard_screenshots/dashboard_1.png" 
+                                 alt="BuilderSolve project management dashboard showing real-time project progress and team coordination"
+                                 class="dashboard-screenshot"
+                                 loading="eager"
+                                 width="900"
+                                 height="600">
+                            <div class="screenshot-overlay"></div>
+                        </div>
                     </div>
 
-                    <!-- Slide 2 -->
+                    <!-- Slide 2 - Budget Management -->
                     <div class="carousel-slide" data-slide="1">
-                        <img src="assets/images/dashboard_screenshots/dashboard_2.png" 
-                             alt="BuilderSolve budget management interface"
-                             class="dashboard-screenshot"
-                             loading="lazy"
-                             width="800"
-                             height="450">
+                        <div class="screenshot-wrapper">
+                            <img src="assets/images/dashboard_screenshots/dashboard_2.png" 
+                                 alt="BuilderSolve budget management interface with cost tracking and financial analytics"
+                                 class="dashboard-screenshot"
+                                 loading="lazy"
+                                 width="900"
+                                 height="600">
+                            <div class="screenshot-overlay"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -34,29 +52,85 @@
                     <div class="progress-fill" id="progress-fill"></div>
                 </div>
             </div>
+
+            <!-- Navigation Dots -->
+            <div class="carousel-navigation">
+                <div class="carousel-dots">
+                    <button class="carousel-dot active" 
+                            data-slide="0" 
+                            aria-label="View project dashboard overview"
+                            type="button">
+                        <span class="dot-inner"></span>
+                    </button>
+                    <button class="carousel-dot" 
+                            data-slide="1" 
+                            aria-label="View budget management interface"
+                            type="button">
+                        <span class="dot-inner"></span>
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- Simple Dots Navigation -->
-        <div class="carousel-dots">
-            <button class="carousel-dot active" data-slide="0" aria-label="View dashboard overview"></button>
-            <button class="carousel-dot" data-slide="1" aria-label="View budget management"></button>
-        </div>
-
-        <!-- Content Description - Always Visible -->
+        <!-- Content Description -->
         <div class="showcase-content">
-            <!-- Active Content -->
+            <!-- Content for Slide 1 -->
             <div class="content-item active" data-content="0">
-                <p class="content-description">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                </p>
+                <div class="content-wrapper">
+                    <h3 class="content-title">Real-Time Project Management</h3>
+                    <p class="content-description">
+                        Transform your construction projects with our comprehensive dashboard that provides real-time visibility into project progress, team coordination, and resource allocation. Track every aspect of your builds with precision and control.
+                    </p>
+                    <div class="content-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">📊</div>
+                            <span class="feature-text">Live Progress Tracking</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">👥</div>
+                            <span class="feature-text">Team Coordination</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">⚡</div>
+                            <span class="feature-text">Instant Updates</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Hidden Content -->
+            <!-- Content for Slide 2 -->
             <div class="content-item" data-content="1">
-                <p class="content-description">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                </p>
+                <div class="content-wrapper">
+                    <h3 class="content-title">Advanced Budget Management</h3>
+                    <p class="content-description">
+                        Keep your construction projects profitable with our sophisticated budget management system. Monitor costs, track expenses, and get predictive insights to prevent budget overruns before they happen.
+                    </p>
+                    <div class="content-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">💰</div>
+                            <span class="feature-text">Cost Control</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">📈</div>
+                            <span class="feature-text">Financial Analytics</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🔮</div>
+                            <span class="feature-text">Predictive Insights</span>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="showcase-cta">
+            <button class="btn-demo" data-contact>
+                <span class="btn-text">See Full Demo</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="btn-icon">
+                    <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
     </div>
 </div>
