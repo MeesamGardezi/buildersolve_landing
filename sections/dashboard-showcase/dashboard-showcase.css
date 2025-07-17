@@ -162,7 +162,7 @@
 .dashboard-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   transition: transform 0.6s ease-out;
 }
@@ -218,49 +218,6 @@
 
 .carousel-nav-next {
   right: -24px;
-}
-
-/* ===== DOTS NAVIGATION ===== */
-.carousel-dots {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-3);
-  margin-top: var(--space-8);
-}
-
-.carousel-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  position: relative;
-  overflow: hidden;
-}
-
-.carousel-dot::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, var(--accent-blue), #6366F1);
-  opacity: 0;
-  transition: opacity var(--transition-base);
-}
-
-.carousel-dot.active::before {
-  opacity: 1;
-}
-
-.carousel-dot:hover {
-  transform: scale(1.2);
-  box-shadow: var(--shadow-md);
-}
-
-.carousel-dot:not(.active):hover {
-  background: rgba(255, 255, 255, 0.8);
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -384,11 +341,6 @@
   .carousel-nav {
     display: none; /* Hide arrows on very small screens */
   }
-  
-  .carousel-dot {
-    width: 10px;
-    height: 10px;
-  }
 }
 
 /* ===== ANIMATIONS & TRANSITIONS ===== */
@@ -409,35 +361,10 @@
   animation: slideIn 0.6s ease-out;
 }
 
-/* Auto-play indicator */
-.carousel-dot.active {
-  position: relative;
-  overflow: hidden;
-}
-
-.carousel-dot.active::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
-  transform: translateX(-100%);
-  animation: dotProgress 4s linear infinite;
-}
-
-@keyframes dotProgress {
-  to {
-    transform: translateX(100%);
-  }
-}
-
 /* ===== ACCESSIBILITY ===== */
 
 /* Focus indicators */
-.carousel-nav:focus-visible,
-.carousel-dot:focus-visible {
+.carousel-nav:focus-visible {
   outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
 }
@@ -447,8 +374,7 @@
   .carousel-track,
   .carousel-slide,
   .dashboard-image,
-  .carousel-nav,
-  .carousel-dot {
+  .carousel-nav {
     transition: none !important;
     animation: none !important;
   }
@@ -460,8 +386,7 @@
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .carousel-nav,
-  .carousel-dot {
+  .carousel-nav {
     border: 2px solid var(--primary-900);
   }
 }
@@ -536,10 +461,5 @@
   .carousel-nav:hover {
     background: rgba(30, 41, 59, 1);
     color: var(--dark-text);
-  }
-  
-  .carousel-dot {
-    background: rgba(100, 116, 139, 0.5);
-    border-color: rgba(100, 116, 139, 0.3);
   }
 }
