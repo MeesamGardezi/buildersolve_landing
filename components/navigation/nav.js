@@ -44,7 +44,7 @@ class Navigation {
         this.bindEvents();
         this.handleInitialState();
         
-        console.log('✅ Navigation initialized successfully');
+        // ('✅ Navigation initialized successfully');
     }
     
     /**
@@ -214,7 +214,7 @@ class Navigation {
         this.trackInteraction('contact_click', 'navigation');
         
         // The main.js will handle opening the contact modal
-        console.log('📞 Contact button clicked from navigation');
+        // ('📞 Contact button clicked from navigation');
     }
     
     /**
@@ -310,7 +310,7 @@ class Navigation {
         }
         
         // Send to analytics (placeholder)
-        console.log('📊 Navigation tracking:', data);
+        // ('📊 Navigation tracking:', data);
         
         // Example: Send to Google Analytics, Mixpanel, etc.
         if (typeof gtag !== 'undefined') {

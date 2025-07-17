@@ -37,7 +37,7 @@ const BuilderSolve = {
 
 // ===== INITIALIZATION ===== //
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 BuilderSolve Landing Page Initializing...');
+    // ('🚀 BuilderSolve Landing Page Initializing...');
     initializePage();
 });
 
@@ -64,7 +64,7 @@ async function initializePage() {
         // Hide loading screen
         hideLoadingScreen();
         
-        console.log('✅ BuilderSolve Landing Page Loaded Successfully!');
+        // ('✅ BuilderSolve Landing Page Loaded Successfully!');
         
     } catch (error) {
         console.error('❌ Error initializing page:', error);
@@ -124,7 +124,7 @@ async function loadSection(sectionConfig) {
         sectionElement.setAttribute('data-loaded', 'true');
         BuilderSolve.sectionsLoaded++;
         
-        console.log(`✅ Loaded section: ${id}`);
+        // (`✅ Loaded section: ${id}`);
         
     } catch (error) {
         console.error(`❌ Error loading section ${sectionConfig.id}:`, error);
@@ -149,7 +149,7 @@ async function loadComponents() {
             if (response.ok) {
                 const content = await response.text();
                 element.innerHTML = content;
-                console.log(`✅ Loaded component: ${component.id}`);
+                // (`✅ Loaded component: ${component.id}`);
             }
         } catch (error) {
             console.error(`❌ Error loading component ${component.id}:`, error);
@@ -602,7 +602,7 @@ window.addEventListener('unhandledrejection', (e) => {
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     // Development mode helpers
     window.BuilderSolve = BuilderSolve; // Expose for debugging
-    console.log('🔧 Development mode active');
+    // ('🔧 Development mode active');
 }
 
 // ===== ANALYTICS & TRACKING ===== //
@@ -612,7 +612,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
  */
 function trackInteraction(action, category = 'engagement') {
     // Placeholder for analytics tracking
-    console.log(`📊 Track: ${category} - ${action}`);
+    // (`📊 Track: ${category} - ${action}`);
     
     // Example: Google Analytics, Mixpanel, etc.
     // gtag('event', action, { event_category: category });

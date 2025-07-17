@@ -173,7 +173,7 @@
             const observer = new PerformanceObserver((list) => {
                 for (const entry of list.getEntries()) {
                     if (entry.name === 'hero-section-loaded') {
-                        console.log(`Hero section loaded in ${entry.duration}ms`);
+                        // (`Hero section loaded in ${entry.duration}ms`);
                     }
                 }
             });
@@ -197,10 +197,10 @@
             image.addEventListener('load', () => {
                 loadedCount++;
                 image.style.opacity = '1';
-                console.log(`✅ Hero image ${index + 1} loaded successfully`);
+                // (`✅ Hero image ${index + 1} loaded successfully`);
 
                 if (loadedCount === totalImages) {
-                    console.log(`✅ All ${totalImages} hero images loaded successfully`);
+                    // (`✅ All ${totalImages} hero images loaded successfully`);
                     // Trigger any post-load animations or setup
                     document.body.classList.add('images-loaded');
                 }

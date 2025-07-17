@@ -1,419 +1,490 @@
 /**
- * BuilderSolve Key Features Carousel
- * Modern carousel with 16:9 cards and smooth animations
+ * BuilderSolve Key Features Carousel - Clean & Functional
+ * Focus on working functionality first
  */
 
 class KeyFeaturesCarousel {
-    constructor(options = {}) {
-        // Configuration
-        this.config = {
-            autoplayDelay: 5000,
-            transitionDuration: 500,
-            touchThreshold: 50,
-            ...options
-        };
-
+    constructor() {
         // State
-        this.state = {
-            currentIndex: 0,
-            totalSlides: 0,
-            isAutoPlaying: true,
-            isTransitioning: false,
-            touchStartX: 0,
-            touchEndX: 0
-        };
-
+        this.currentIndex = 0;
+        this.totalSlides = 12;
+        this.isAutoPlaying = true;
+        this.isTransitioning = false;
+        
         // DOM elements
-        this.elements = {};
+        this.track = null;
+        this.cards = [];
+        this.prevBtn = null;
+        this.nextBtn = null;
+        this.viewport = null;
+        this.learnMoreButtons = [];
         
         // Timers
         this.autoplayTimer = null;
         this.transitionTimer = null;
-
+        
+        // Settings
+        this.autoplayDelay = 3000; // 3 seconds
+        this.transitionDuration = 500;
+        
         // Initialize
         this.init();
     }
-
+    
     /**
      * Initialize carousel
      */
-    async init() {
+    init() {
+        // ('🚀 Initializing Key Features Carousel...');
+        
+        // Wait for DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.setup());
+        } else {
+            this.setup();
+        }
+    }
+    
+    /**
+     * Setup carousel after DOM is ready
+     */
+    setup() {
         try {
-            await this.waitForDOM();
             this.cacheElements();
             this.setupCarousel();
             this.bindEvents();
             this.startAutoplay();
-            console.log('✅ Key Features Carousel initialized');
+            this.setupIntersectionObserver();
+            
+            // ('✅ Key Features Carousel initialized successfully!');
         } catch (error) {
-            console.error('❌ Carousel initialization failed:', error);
-            // Retry after a delay
-            setTimeout(() => this.init(), 1000);
+            console.error('❌ Failed to initialize carousel:', error);
+            // Retry after delay
+            setTimeout(() => this.setup(), 1000);
         }
     }
-
-    /**
-     * Wait for DOM to be ready
-     */
-    waitForDOM() {
-        return new Promise(resolve => {
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', resolve);
-            } else {
-                resolve();
-            }
-        });
-    }
-
+    
     /**
      * Cache DOM elements
      */
     cacheElements() {
-        const section = document.getElementById('key-features-section');
-        if (!section) {
-            throw new Error('Key features section not found');
-        }
-
-        this.elements = {
-            section,
-            track: section.querySelector('.features-track'),
-            cards: section.querySelectorAll('.feature-card'),
-            prevBtn: section.querySelector('.features-nav-prev'),
-            nextBtn: section.querySelector('.features-nav-next'),
-            dots: section.querySelectorAll('.feature-dot'),
-            viewport: section.querySelector('.features-viewport')
-        };
-
+        // Find elements
+        this.track = document.getElementById('features-track');
+        this.cards = Array.from(document.querySelectorAll('.feature-card'));
+        this.prevBtn = document.getElementById('prev-btn');
+        this.nextBtn = document.getElementById('next-btn');
+        this.viewport = document.querySelector('.features-viewport');
+        this.learnMoreButtons = Array.from(document.querySelectorAll('.feature-learn-more'));
+        
         // Validate critical elements
-        if (!this.elements.track || !this.elements.cards.length) {
+        if (!this.track || this.cards.length === 0) {
             throw new Error('Critical carousel elements not found');
         }
-
-        this.state.totalSlides = this.elements.cards.length;
+        
+        // Update total slides based on actual cards
+        this.totalSlides = this.cards.length;
+        
+        // (`📦 Cached elements: ${this.cards.length} cards, ${this.learnMoreButtons.length} learn more buttons`);
     }
-
+    
     /**
-     * Setup carousel initial state
+     * Setup initial carousel state
      */
     setupCarousel() {
-        // Set initial card states
-        this.updateCardStates();
+        // Position track for multi-card display
         this.updateTrackPosition();
-        this.updateDots();
+        this.updateCardStates();
     }
-
+    
     /**
-     * Bind event handlers
+     * Bind event listeners
      */
     bindEvents() {
         // Navigation buttons
-        if (this.elements.prevBtn) {
-            this.elements.prevBtn.addEventListener('click', () => this.prev());
+        if (this.prevBtn) {
+            this.prevBtn.addEventListener('click', () => this.prev());
         }
-        if (this.elements.nextBtn) {
-            this.elements.nextBtn.addEventListener('click', () => this.next());
+        
+        if (this.nextBtn) {
+            this.nextBtn.addEventListener('click', () => this.next());
         }
-
-        // Dot navigation
-        this.elements.dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => this.goToSlide(index));
-        });
-
-        // Touch events
-        if (this.elements.viewport) {
-            this.elements.viewport.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });
-            this.elements.viewport.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-            this.elements.viewport.addEventListener('touchend', this.handleTouchEnd.bind(this));
-        }
-
-        // Pause on hover
-        this.elements.section.addEventListener('mouseenter', () => this.pauseAutoplay());
-        this.elements.section.addEventListener('mouseleave', () => this.resumeAutoplay());
-
-        // Card clicks
-        this.elements.cards.forEach((card, index) => {
-            card.addEventListener('click', () => {
-                if (index !== this.state.currentIndex) {
+        
+        // Card clicks - MAKE CARDS CLICKABLE
+        this.cards.forEach((card, index) => {
+            card.addEventListener('click', (e) => {
+                // Don't trigger card click if Learn More button was clicked
+                if (e.target.classList.contains('feature-learn-more')) {
+                    return;
+                }
+                
+                // (`🎯 Card ${index + 1} clicked! Moving to center...`);
+                if (index !== this.currentIndex) {
                     this.goToSlide(index);
                 }
             });
         });
-
+        
+        // Learn More button clicks
+        this.learnMoreButtons.forEach((button, index) => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent card click
+                this.handleLearnMoreClick(index, button);
+            });
+        });
+        
+        // Pause on hover
+        if (this.viewport) {
+            this.viewport.addEventListener('mouseenter', () => this.pauseAutoplay());
+            this.viewport.addEventListener('mouseleave', () => this.resumeAutoplay());
+        }
+        
         // Keyboard navigation
-        document.addEventListener('keydown', this.handleKeyboard.bind(this));
-
-        // Window resize
-        window.addEventListener('resize', this.debounce(() => {
-            this.updateTrackPosition();
-        }, 250));
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') this.prev();
+            if (e.key === 'ArrowRight') this.next();
+            if (e.key === ' ') {
+                e.preventDefault();
+                this.toggleAutoplay();
+            }
+        });
+        
+        // Pause on visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pauseAutoplay();
+            } else {
+                this.resumeAutoplay();
+            }
+        });
     }
+    
+    /**
+     * Handle Learn More button clicks
+     */
+    handleLearnMoreClick(index, button) {
+        const card = this.cards[index];
+        const featureTitle = card.querySelector('.feature-card-title').textContent;
+        
+        // (`📚 Learn More clicked for: ${featureTitle}`);
+        
+        // Add visual feedback
+        button.style.transform = 'translateY(-1px) scale(0.98)';
+        setTimeout(() => {
+            button.style.transform = '';
+        }, 150);
+        
+        // Track the click
+        this.trackEvent('learn_more_click', {
+            feature_title: featureTitle,
+            feature_index: index,
+            timestamp: Date.now()
+        });
+        
+        // Here you can add your learn more functionality
+        // For example: open modal, navigate to page, etc.
+        this.showLearnMoreModal(featureTitle, index);
+    }
+    
+    /**
+     * Show Learn More modal (placeholder implementation)
+     */
+    showLearnMoreModal(featureTitle, index) {
+        // This is a placeholder - you can implement your own modal/navigation logic
+        alert(`Learn more about: ${featureTitle}\n\nThis would typically open a modal or navigate to a detailed page about this feature.`);
+        
+        // Example of what you might do:
+        // window.location.href = `/features/${featureTitle.toLowerCase().replace(/\s+/g, '-')}`;
+        // or
+        // this.openFeatureModal(index);
+    }
+    
+    /**
+     * Track events (same as before)
+     */
+    trackEvent(eventName, data = {}) {
+        const eventData = {
+            event: eventName,
+            component: 'features_carousel',
+            timestamp: Date.now(),
+            ...data
+        };
 
+        // ('📊 Event tracked:', eventData);
+
+        // Google Analytics 4
+        if (typeof gtag !== 'undefined') {
+            gtag('event', eventName, {
+                event_category: 'features_carousel',
+                event_label: data.feature_title || '',
+                value: data.feature_index || 0
+            });
+        }
+
+        // Custom analytics
+        if (window.BuilderSolveAnalytics) {
+            window.BuilderSolveAnalytics.track(eventData);
+        }
+
+        // PostHog
+        if (window.posthog) {
+            window.posthog.capture(eventName, eventData);
+        }
+    }
+    
     /**
      * Go to specific slide
      */
     goToSlide(index) {
-        if (this.state.isTransitioning || index === this.state.currentIndex) {
+        if (this.isTransitioning || index === this.currentIndex) {
             return;
         }
-
+        
         // Validate index
-        if (index < 0) {
-            index = this.state.totalSlides - 1;
-        } else if (index >= this.state.totalSlides) {
-            index = 0;
-        }
-
-        this.state.isTransitioning = true;
-        this.state.currentIndex = index;
-
-        // Update UI
+        if (index < 0) index = this.totalSlides - 1;
+        if (index >= this.totalSlides) index = 0;
+        
+        // (`🎯 Going to slide ${index + 1}/${this.totalSlides}`);
+        
+        this.isTransitioning = true;
+        this.currentIndex = index;
+        
+        // Update everything
         this.updateCardStates();
         this.updateTrackPosition();
-        this.updateDots();
-
-        // Reset transition flag
+        
+        // Reset transition lock
         this.transitionTimer = setTimeout(() => {
-            this.state.isTransitioning = false;
-        }, this.config.transitionDuration);
+            this.isTransitioning = false;
+        }, this.transitionDuration);
     }
-
+    
     /**
-     * Navigate to previous slide
-     */
-    prev() {
-        this.goToSlide(this.state.currentIndex - 1);
-    }
-
-    /**
-     * Navigate to next slide
+     * Go to next slide
      */
     next() {
-        this.goToSlide(this.state.currentIndex + 1);
+        this.goToSlide(this.currentIndex + 1);
     }
-
+    
     /**
-     * Update card active states
+     * Go to previous slide
+     */
+    prev() {
+        this.goToSlide(this.currentIndex - 1);
+    }
+    
+    /**
+     * Update card positions and active states - MULTI-CARD DISPLAY
      */
     updateCardStates() {
-        this.elements.cards.forEach((card, index) => {
+        this.cards.forEach((card, index) => {
+            // Remove all classes
             card.classList.remove('active', 'adjacent');
             
-            if (index === this.state.currentIndex) {
+            // Add appropriate class based on position
+            if (index === this.currentIndex) {
                 card.classList.add('active');
             } else if (
-                index === this.state.currentIndex - 1 ||
-                index === this.state.currentIndex + 1 ||
-                (this.state.currentIndex === 0 && index === this.state.totalSlides - 1) ||
-                (this.state.currentIndex === this.state.totalSlides - 1 && index === 0)
+                index === this.currentIndex - 1 ||
+                index === this.currentIndex + 1 ||
+                (this.currentIndex === 0 && index === this.totalSlides - 1) ||
+                (this.currentIndex === this.totalSlides - 1 && index === 0)
             ) {
                 card.classList.add('adjacent');
             }
         });
     }
-
+    
     /**
-     * Update track position
+     * Update track position for multi-card centering
      */
     updateTrackPosition() {
-        const cardWidth = this.elements.cards[0].offsetWidth;
-        const gap = 24; // Gap between cards
-        const totalWidth = cardWidth + gap;
-        const offset = -(this.state.currentIndex * totalWidth);
+        if (!this.track || !this.viewport) return;
         
-        this.elements.track.style.transform = `translateX(${offset}px)`;
-    }
-
-    /**
-     * Update dot indicators
-     */
-    updateDots() {
-        this.elements.dots.forEach((dot, index) => {
-            if (index === this.state.currentIndex) {
-                dot.classList.add('active');
-                dot.setAttribute('aria-selected', 'true');
-            } else {
-                dot.classList.remove('active');
-                dot.setAttribute('aria-selected', 'false');
-            }
-        });
-    }
-
-    /**
-     * Touch event handlers
-     */
-    handleTouchStart(e) {
-        this.state.touchStartX = e.touches[0].clientX;
-    }
-
-    handleTouchMove(e) {
-        if (!this.state.touchStartX) return;
+        const viewportWidth = this.viewport.offsetWidth;
         
-        const currentX = e.touches[0].clientX;
-        const diff = this.state.touchStartX - currentX;
-
-        if (Math.abs(diff) > 10) {
-            e.preventDefault();
-        }
+        // Get actual card width (responsive)
+        const cardWidth = this.cards[0] ? this.cards[0].offsetWidth : 320;
+        const cardMargin = 24; // Match CSS margin (var(--space-3) * 2)
+        const totalCardWidth = cardWidth + cardMargin;
+        
+        // Calculate center position
+        const centerOffset = (viewportWidth - cardWidth) / 2;
+        const slideOffset = this.currentIndex * totalCardWidth;
+        
+        // Position track to center the active card
+        this.track.style.transform = `translateX(${centerOffset - slideOffset}px)`;
     }
-
-    handleTouchEnd(e) {
-        if (!this.state.touchStartX) return;
-
-        const endX = e.changedTouches[0].clientX;
-        const diff = this.state.touchStartX - endX;
-
-        if (Math.abs(diff) > this.config.touchThreshold) {
-            if (diff > 0) {
-                this.next();
-            } else {
-                this.prev();
-            }
-        }
-
-        this.state.touchStartX = 0;
-    }
-
+    
     /**
-     * Keyboard navigation
-     */
-    handleKeyboard(e) {
-        if (!this.elements.section.contains(document.activeElement)) return;
-
-        switch(e.key) {
-            case 'ArrowLeft':
-                e.preventDefault();
-                this.prev();
-                break;
-            case 'ArrowRight':
-                e.preventDefault();
-                this.next();
-                break;
-        }
-    }
-
-    /**
-     * Autoplay functionality
+     * Start autoplay
      */
     startAutoplay() {
-        if (!this.state.isAutoPlaying || this.state.totalSlides <= 1) return;
-
+        if (!this.isAutoPlaying) return;
+        
         this.stopAutoplay();
         this.autoplayTimer = setInterval(() => {
             this.next();
-        }, this.config.autoplayDelay);
+        }, this.autoplayDelay);
+        
+        // ('▶️ Autoplay started');
     }
-
+    
+    /**
+     * Stop autoplay
+     */
     stopAutoplay() {
         if (this.autoplayTimer) {
             clearInterval(this.autoplayTimer);
             this.autoplayTimer = null;
         }
     }
-
+    
+    /**
+     * Pause autoplay
+     */
     pauseAutoplay() {
         this.stopAutoplay();
     }
-
+    
+    /**
+     * Resume autoplay
+     */
     resumeAutoplay() {
-        if (this.state.isAutoPlaying) {
+        if (this.isAutoPlaying) {
             this.startAutoplay();
         }
     }
-
+    
     /**
-     * Utility: Debounce function
+     * Toggle autoplay
      */
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
+    toggleAutoplay() {
+        this.isAutoPlaying = !this.isAutoPlaying;
+        
+        if (this.isAutoPlaying) {
+            this.startAutoplay();
+        } else {
+            this.stopAutoplay();
+        }
+        
+        // (`🔄 Autoplay ${this.isAutoPlaying ? 'enabled' : 'disabled'}`);
+    }
+    
+    /**
+     * Setup intersection observer for animations
+     */
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '-50px 0px'
+        });
+        
+        // Observe fade elements
+        const fadeElements = document.querySelectorAll('[data-fade]');
+        fadeElements.forEach(el => observer.observe(el));
+    }
+    
+    /**
+     * Handle window resize
+     */
+    handleResize() {
+        this.updateTrackPosition();
+    }
+    
+    /**
+     * Get current state
+     */
+    getState() {
+        return {
+            currentIndex: this.currentIndex,
+            totalSlides: this.totalSlides,
+            isAutoPlaying: this.isAutoPlaying,
+            isTransitioning: this.isTransitioning
         };
     }
-
+    
+    /**
+     * Get public API for external access
+     */
+    getAPI() {
+        return {
+            // Navigation
+            goToSlide: (index) => this.goToSlide(index),
+            next: () => this.next(),
+            prev: () => this.prev(),
+            
+            // Autoplay control
+            play: () => {
+                this.isAutoPlaying = true;
+                this.startAutoplay();
+            },
+            pause: () => {
+                this.isAutoPlaying = false;
+                this.stopAutoplay();
+            },
+            
+            // State
+            getState: () => this.getState(),
+            
+            // Learn More functionality
+            triggerLearnMore: (index) => {
+                if (this.learnMoreButtons[index]) {
+                    this.handleLearnMoreClick(index, this.learnMoreButtons[index]);
+                }
+            }
+        };
+    }
+    
     /**
      * Destroy carousel
      */
     destroy() {
         this.stopAutoplay();
+        
         if (this.transitionTimer) {
             clearTimeout(this.transitionTimer);
         }
         
-        // Remove event listeners
-        document.removeEventListener('keydown', this.handleKeyboard);
-        
-        console.log('🧹 Key Features Carousel destroyed');
+        // ('🧹 Carousel destroyed');
     }
 }
 
-// Initialize carousel when DOM is ready
-let keyFeaturesCarousel;
+// Initialize carousel
+let carousel = null;
 
-function initKeyFeatures() {
-    // Check if section exists
-    const section = document.getElementById('key-features-section');
-    if (!section) {
-        console.log('⏳ Key features section not found, retrying...');
-        setTimeout(initKeyFeatures, 500);
-        return;
-    }
-
-    // Initialize carousel
-    keyFeaturesCarousel = new KeyFeaturesCarousel({
-        autoplayDelay: 5000,
-        transitionDuration: 500
+function initializeCarousel() {
+    // ('🔥 Starting carousel initialization...');
+    
+    // Create carousel instance
+    carousel = new KeyFeaturesCarousel();
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        if (carousel) {
+            carousel.handleResize();
+        }
     });
-
-    // Add fade-in animations
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('in-view');
-            }
-        });
-    }, { threshold: 0.1 });
-
-    // Observe fade elements
-    const fadeElements = section.querySelectorAll('[data-fade]');
-    fadeElements.forEach(el => observer.observe(el));
-
-    // Export API
-    window.BuilderSolveKeyFeatures = {
-        prev: () => keyFeaturesCarousel?.prev(),
-        next: () => keyFeaturesCarousel?.next(),
-        goToSlide: (index) => keyFeaturesCarousel?.goToSlide(index),
-        destroy: () => keyFeaturesCarousel?.destroy()
-    };
+    
+    // Export for debugging and external access
+    window.KeyFeaturesCarousel = carousel.getAPI();
+    
+    // ('✅ Carousel setup complete!');
 }
 
-// Initialize on DOM ready
+// Auto-initialize
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initKeyFeatures);
+    document.addEventListener('DOMContentLoaded', initializeCarousel);
 } else {
-    initKeyFeatures();
+    initializeCarousel();
 }
 
-// Handle dynamic content loading
-if (typeof MutationObserver !== 'undefined') {
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList') {
-                const section = document.getElementById('key-features-section');
-                if (section && !keyFeaturesCarousel) {
-                    initKeyFeatures();
-                    observer.disconnect();
-                }
-            }
-        });
-    });
-
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = KeyFeaturesCarousel;
 }

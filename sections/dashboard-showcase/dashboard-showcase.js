@@ -73,10 +73,10 @@ class DashboardShowcase {
             
             // Check if content is already loaded
             if (this.checkContentExists()) {
-                console.log('✅ Dashboard showcase content already loaded');
+                // ('✅ Dashboard showcase content already loaded');
                 await this.initializeWithContent();
             } else {
-                console.log('⏳ Dashboard showcase content not loaded yet, waiting...');
+                // ('⏳ Dashboard showcase content not loaded yet, waiting...');
                 await this.waitForContent();
             }
 
@@ -123,7 +123,7 @@ class DashboardShowcase {
                     mutations.forEach((mutation) => {
                         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                             if (this.checkContentExists()) {
-                                console.log('✅ Dashboard showcase content detected');
+                                // ('✅ Dashboard showcase content detected');
                                 clearTimeout(this.contentWaitTimeout);
                                 this.contentObserver.disconnect();
                                 this.initializeWithContent().then(resolve).catch(reject);
@@ -137,7 +137,7 @@ class DashboardShowcase {
                     subtree: true
                 });
 
-                console.log('👀 Watching for dashboard showcase content...');
+                // ('👀 Watching for dashboard showcase content...');
                 
             } catch (error) {
                 clearTimeout(this.contentWaitTimeout);
@@ -153,37 +153,37 @@ class DashboardShowcase {
         try {
             this.state.contentLoaded = true;
             
-            console.log('🔧 Starting dashboard showcase initialization...');
+            // ('🔧 Starting dashboard showcase initialization...');
             
             this.cacheElements();
-            console.log('✅ Elements cached');
+            // ('✅ Elements cached');
             
             this.calculateSlideCount();
-            console.log('✅ Slide count calculated:', this.state.totalSlides);
+            // ('✅ Slide count calculated:', this.state.totalSlides);
             
             this.setupObservers();
-            console.log('✅ Observers setup');
+            // ('✅ Observers setup');
             
             this.bindEvents();
-            console.log('✅ Events bound');
+            // ('✅ Events bound');
             
             this.setupImageHandling();
-            console.log('✅ Image handling setup');
+            // ('✅ Image handling setup');
             
             this.setupAccessibility();
-            console.log('✅ Accessibility setup');
+            // ('✅ Accessibility setup');
             
             // Start autoplay after a small delay to ensure everything is ready
             setTimeout(() => {
                 this.startAutoplay();
-                console.log('✅ Autoplay started after delay');
+                // ('✅ Autoplay started after delay');
             }, 100);
             
             this.state.isInitialized = true;
             performance.mark('dashboard-showcase-init-end');
             performance.measure('dashboard-showcase-initialization', 'dashboard-showcase-init-start', 'dashboard-showcase-init-end');
             
-            console.log('✅ Dashboard showcase initialized successfully');
+            // ('✅ Dashboard showcase initialized successfully');
             this.trackInitialization();
 
         } catch (error) {
@@ -260,7 +260,7 @@ class DashboardShowcase {
             throw new Error('Critical dashboard showcase elements not found');
         }
 
-        console.log('📦 Dashboard showcase elements cached:', {
+        // ('📦 Dashboard showcase elements cached:', {
             section: !!this.elements.section,
             carousel: !!this.elements.carousel,
             track: !!this.elements.track,
@@ -280,7 +280,7 @@ class DashboardShowcase {
             throw new Error('No slides found in dashboard showcase');
         }
 
-        console.log(`📊 Dashboard showcase: ${this.state.totalSlides} slides detected`);
+        // (`📊 Dashboard showcase: ${this.state.totalSlides} slides detected`);
     }
 
     /**
@@ -299,7 +299,7 @@ class DashboardShowcase {
             );
             
             this.intersectionObserver.observe(this.elements.section);
-            console.log('✅ Dashboard showcase intersection observer setup');
+            // ('✅ Dashboard showcase intersection observer setup');
             
         } catch (error) {
             console.warn('⚠️ Dashboard showcase intersection observer setup failed:', error);
@@ -323,14 +323,14 @@ class DashboardShowcase {
      */
     triggerFadeAnimations() {
         if (!this.elements.fadeElements || this.elements.fadeElements.length === 0) {
-            console.log('⚠️ No fade elements found for dashboard showcase');
+            // ('⚠️ No fade elements found for dashboard showcase');
             return;
         }
 
         this.elements.fadeElements.forEach((element, index) => {
             setTimeout(() => {
                 element.classList.add('in-view');
-                console.log(`✅ Added in-view to fade element ${index + 1}`);
+                // (`✅ Added in-view to fade element ${index + 1}`);
             }, index * this.config.animationDelay);
         });
     }
@@ -381,7 +381,7 @@ class DashboardShowcase {
             });
         }
 
-        console.log('✅ Dashboard showcase events bound');
+        // ('✅ Dashboard showcase events bound');
     }
 
     /**
@@ -575,7 +575,7 @@ class DashboardShowcase {
             this.elements.images[index].style.opacity = '1';
         }
         
-        console.log(`✅ Dashboard showcase image ${index + 1} loaded`);
+        // (`✅ Dashboard showcase image ${index + 1} loaded`);
         this.trackInteraction('image_loaded', { index });
     }
 
@@ -609,21 +609,21 @@ class DashboardShowcase {
      * Go to specific slide
      */
     goToSlide(slideIndex) {
-        console.log(`🎯 goToSlide called with index: ${slideIndex}`, {
+        // (`🎯 goToSlide called with index: ${slideIndex}`, {
             currentSlide: this.state.currentSlide,
             totalSlides: this.state.totalSlides,
             isTransitioning: this.state.isTransitioning
         });
 
         if (this.state.isTransitioning || slideIndex === this.state.currentSlide) {
-            console.log('⏸️ goToSlide blocked:', {
+            // ('⏸️ goToSlide blocked:', {
                 reason: this.state.isTransitioning ? 'transitioning' : 'same slide'
             });
             return;
         }
         
         if (slideIndex < 0 || slideIndex >= this.state.totalSlides) {
-            console.log('❌ goToSlide blocked: invalid index');
+            // ('❌ goToSlide blocked: invalid index');
             return;
         }
 
@@ -631,13 +631,13 @@ class DashboardShowcase {
         const previousSlide = this.state.currentSlide;
         this.state.currentSlide = slideIndex;
 
-        console.log(`📱 Moving from slide ${previousSlide} to slide ${slideIndex}`);
+        // (`📱 Moving from slide ${previousSlide} to slide ${slideIndex}`);
 
         // Update track position
         if (this.elements.track) {
             const translateX = -slideIndex * 100;
             this.elements.track.style.transform = `translateX(${translateX}%)`;
-            console.log(`🎬 Track transform: translateX(${translateX}%)`);
+            // (`🎬 Track transform: translateX(${translateX}%)`);
         } else {
             console.error('❌ Track element not found!');
         }
@@ -650,7 +650,7 @@ class DashboardShowcase {
         // Reset transition flag
         this.transitionTimer = setTimeout(() => {
             this.state.isTransitioning = false;
-            console.log('✅ Transition complete');
+            // ('✅ Transition complete');
         }, this.config.transitionDuration);
 
         // Announce slide change
@@ -662,7 +662,7 @@ class DashboardShowcase {
             to: slideIndex 
         });
 
-        console.log(`📱 Dashboard showcase: Moved to slide ${slideIndex + 1}`);
+        // (`📱 Dashboard showcase: Moved to slide ${slideIndex + 1}`);
     }
 
     /**
@@ -716,7 +716,7 @@ class DashboardShowcase {
      */
     startAutoplay() {
         if (!this.state.isAutoPlaying || this.state.totalSlides <= 1) {
-            console.log('🚫 Autoplay not started:', {
+            // ('🚫 Autoplay not started:', {
                 isAutoPlaying: this.state.isAutoPlaying,
                 totalSlides: this.state.totalSlides
             });
@@ -729,7 +729,7 @@ class DashboardShowcase {
         }
 
         this.autoplayTimer = setInterval(this.autoplayTick, this.config.autoplayDelay);
-        console.log(`▶️ Dashboard showcase autoplay started (${this.config.autoplayDelay}ms interval)`);
+        // (`▶️ Dashboard showcase autoplay started (${this.config.autoplayDelay}ms interval)`);
     }
 
     /**
@@ -740,7 +740,7 @@ class DashboardShowcase {
             clearInterval(this.autoplayTimer);
             this.autoplayTimer = null;
         }
-        console.log('⏸️ Dashboard showcase autoplay stopped');
+        // ('⏸️ Dashboard showcase autoplay stopped');
     }
 
     /**
@@ -780,7 +780,7 @@ class DashboardShowcase {
      * Autoplay tick
      */
     autoplayTick() {
-        console.log('🔄 Autoplay tick:', {
+        // ('🔄 Autoplay tick:', {
             isPaused: this.state.isPaused,
             isTransitioning: this.state.isTransitioning,
             currentSlide: this.state.currentSlide,
@@ -790,7 +790,7 @@ class DashboardShowcase {
         if (!this.state.isPaused && !this.state.isTransitioning) {
             this.goToNextSlide();
         } else {
-            console.log('⏸️ Autoplay tick skipped - paused or transitioning');
+            // ('⏸️ Autoplay tick skipped - paused or transitioning');
         }
     }
 
@@ -818,7 +818,7 @@ class DashboardShowcase {
             ...data
         };
 
-        console.log('📊 Dashboard showcase interaction:', eventData);
+        // ('📊 Dashboard showcase interaction:', eventData);
 
         // Analytics integration
         if (typeof gtag !== 'undefined') {
@@ -868,7 +868,7 @@ class DashboardShowcase {
     async retryInitialization() {
         if (this.state.retryCount < this.config.retryAttempts) {
             this.state.retryCount++;
-            console.log(`🔄 Retrying dashboard showcase initialization (attempt ${this.state.retryCount})`);
+            // (`🔄 Retrying dashboard showcase initialization (attempt ${this.state.retryCount})`);
             
             setTimeout(() => {
                 this.init();
@@ -898,7 +898,7 @@ class DashboardShowcase {
             stopAutoplay: this.stopAutoplay.bind(this),
             toggleAutoplay: this.toggleAutoplay.bind(this),
             restartAutoplay: () => {
-                console.log('🔄 Manually restarting autoplay...');
+                // ('🔄 Manually restarting autoplay...');
                 this.stopAutoplay();
                 this.state.isAutoPlaying = true;
                 this.state.isPaused = false;
@@ -946,7 +946,7 @@ class DashboardShowcase {
             this.contentObserver.disconnect();
         }
         
-        console.log('🧹 Dashboard showcase cleaned up');
+        // ('🧹 Dashboard showcase cleaned up');
     }
 }
 
@@ -954,7 +954,7 @@ class DashboardShowcase {
 let dashboardShowcaseInstance;
 
 const initializeDashboardShowcase = () => {
-    console.log('🚀 Starting Dashboard Showcase initialization...');
+    // ('🚀 Starting Dashboard Showcase initialization...');
     
     dashboardShowcaseInstance = new DashboardShowcase({
         autoplayDelay: 4000,
@@ -968,14 +968,14 @@ const initializeDashboardShowcase = () => {
     
     // Debug helper - you can call this in console to restart autoplay
     window.debugDashboardShowcase = () => {
-        console.log('🔧 Dashboard Showcase Debug Info:');
-        console.log(dashboardShowcaseInstance.getAPI().debug());
+        // ('🔧 Dashboard Showcase Debug Info:');
+        // (dashboardShowcaseInstance.getAPI().debug());
         
         // Manual restart function
-        console.log('💡 To restart autoplay manually, run: window.BuilderSolveDashboardShowcase.restartAutoplay()');
+        // ('💡 To restart autoplay manually, run: window.BuilderSolveDashboardShowcase.restartAutoplay()');
     };
     
-    console.log('✅ Dashboard Showcase API exported to window.BuilderSolveDashboardShowcase');
+    // ('✅ Dashboard Showcase API exported to window.BuilderSolveDashboardShowcase');
 };
 
 // Auto-initialize
