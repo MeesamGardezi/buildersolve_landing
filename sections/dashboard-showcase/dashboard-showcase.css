@@ -1,4 +1,4 @@
-/* ===== DASHBOARD SHOWCASE SECTION - PREMIUM STYLING ===== */
+/* ===== DASHBOARD SHOWCASE SECTION - FIXED LIGHT THEME ===== */
 
 /* ===== SPACING CONTROL GUIDE ===== */
 /* 
@@ -431,35 +431,5 @@
   transition-delay: 0.4s;
 }
 
-/* ===== DARK MODE SUPPORT ===== */
-@media (prefers-color-scheme: dark) {
-  .dashboard-showcase-wrapper {
-    background: linear-gradient(
-      135deg,
-      #0F172A 0%,
-      #1E293B 25%,
-      #334155 50%,
-      #475569 75%,
-      #64748B 100%
-    );
-  }
-  
-  .dashboard-title {
-    color: var(--dark-text);
-  }
-  
-  .dashboard-subtitle {
-    color: var(--dark-text-secondary);
-  }
-  
-  .carousel-nav {
-    background: rgba(30, 41, 59, 0.9);
-    border-color: rgba(100, 116, 139, 0.3);
-    color: var(--dark-text);
-  }
-  
-  .carousel-nav:hover {
-    background: rgba(30, 41, 59, 1);
-    color: var(--dark-text);
-  }
-}
+/* ===== DASHBOARD SHOWCASE STAYS LIGHT - NO DARK MODE ===== */
+/* Dashboard showcase section maintains light theme regardless of system preference */

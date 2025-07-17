@@ -49,7 +49,7 @@
     --gray-900: #111827;
     --black: #000000;
     
-    /* Dark Mode Colors */
+    /* Dark Mode Colors (available but not auto-applied) */
     --dark-bg: #0f172a;
     --dark-bg-secondary: #1e293b;
     --dark-surface: #334155;
@@ -145,7 +145,7 @@
     --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
     
-    /* Dark Mode Shadows */
+    /* Dark Mode Shadows (available for manual use) */
     --shadow-dark-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
     --shadow-dark-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
     --shadow-dark-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
@@ -656,62 +656,6 @@ p, .body {
     }
 }
 
-/* ===== SELECTIVE DARK MODE SUPPORT ===== */
-@media (prefers-color-scheme: dark) {
-    /* Only apply dark mode to specific sections, not globally */
-    /* This allows individual sections to override as needed */
-    
-    /* Future sections that should be dark */
-    .section:not(#hero-section) {
-        background-color: var(--dark-bg);
-        color: var(--dark-text);
-    }
-    
-    .lead {
-        color: var(--dark-text-secondary);
-    }
-    
-    /* Loading screen */
-    #loading-screen {
-        background: var(--dark-bg);
-    }
-    
-    .loading-spinner {
-        border-color: var(--dark-surface);
-        border-top-color: var(--blue-400);
-    }
-    
-    .loading-text {
-        color: var(--dark-text-secondary);
-    }
-    
-    /* Back to top button */
-    .back-to-top {
-        background: var(--blue-600);
-        box-shadow: var(--shadow-dark-lg);
-    }
-    
-    .back-to-top:hover {
-        background: var(--blue-500);
-        box-shadow: var(--shadow-dark-xl);
-    }
-    
-    /* Modal system */
-    .modal-overlay {
-        background: rgba(0, 0, 0, 0.9);
-    }
-    
-    .modal-content {
-        background: var(--dark-bg-secondary);
-        color: var(--dark-text);
-    }
-    
-    .modal-close {
-        background: var(--dark-surface);
-        color: var(--dark-text);
-    }
-    
-    .modal-close:hover {
-        background: var(--dark-border);
-    }
-}
+/* ===== NO AUTO DARK MODE - REMOVED @media (prefers-color-scheme: dark) ===== */
+/* Dark mode variables are available in :root but no automatic switching */
+/* Individual sections can manually apply dark styles as needed */

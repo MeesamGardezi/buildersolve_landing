@@ -10,6 +10,9 @@ class KeyFeaturesCarousel {
         this.totalSlides = 12;
         this.isAutoPlaying = true;
         this.isTransitioning = false;
+        this.contentLoaded = false;
+        this.retryCount = 0;
+        this.maxRetries = 5;
         
         // DOM elements
         this.track = null;
@@ -22,6 +25,7 @@ class KeyFeaturesCarousel {
         // Timers
         this.autoplayTimer = null;
         this.transitionTimer = null;
+        this.retryTimer = null;
         
         // Settings
         this.autoplayDelay = 3000; // 3 seconds
@@ -32,10 +36,10 @@ class KeyFeaturesCarousel {
     }
     
     /**
-     * Initialize carousel
+     * Initialize carousel with content detection
      */
     init() {
-        // ('🚀 Initializing Key Features Carousel...');
+        console.log('🚀 Initializing Key Features Carousel...');
         
         // Wait for DOM
         if (document.readyState === 'loading') {
@@ -50,17 +54,123 @@ class KeyFeaturesCarousel {
      */
     setup() {
         try {
+            // Check if content exists first
+            if (this.checkContentExists()) {
+                console.log('✅ Key features content found, initializing...');
+                this.initializeCarousel();
+            } else {
+                console.log('⏳ Key features content not found, waiting...');
+                this.waitForContent();
+            }
+        } catch (error) {
+            console.error('❌ Failed to setup carousel:', error);
+            this.retrySetup();
+        }
+    }
+    
+    /**
+     * Check if the carousel content exists
+     */
+    checkContentExists() {
+        const section = document.getElementById('key-features-section');
+        if (!section) {
+            console.log('🔍 Key features section not found');
+            return false;
+        }
+        
+        const track = section.querySelector('#features-track');
+        const cards = section.querySelectorAll('.feature-card');
+        const prevBtn = section.querySelector('#prev-btn');
+        const nextBtn = section.querySelector('#next-btn');
+        
+        const hasContent = !!(track && cards.length > 0 && prevBtn && nextBtn);
+        
+        console.log('🔍 Content check:', {
+            section: !!section,
+            track: !!track,
+            cards: cards.length,
+            prevBtn: !!prevBtn,
+            nextBtn: !!nextBtn,
+            hasContent
+        });
+        
+        return hasContent;
+    }
+    
+    /**
+     * Wait for content to be loaded
+     */
+    waitForContent() {
+        const section = document.getElementById('key-features-section');
+        if (!section) {
+            console.error('❌ Key features section not found');
+            this.retrySetup();
+            return;
+        }
+        
+        // Set up mutation observer to watch for content
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    if (this.checkContentExists()) {
+                        console.log('✅ Key features content detected!');
+                        observer.disconnect();
+                        this.initializeCarousel();
+                    }
+                }
+            });
+        });
+        
+        observer.observe(section, {
+            childList: true,
+            subtree: true
+        });
+        
+        // Timeout fallback
+        setTimeout(() => {
+            observer.disconnect();
+            if (!this.contentLoaded) {
+                console.warn('⏰ Timeout waiting for content, retrying...');
+                this.retrySetup();
+            }
+        }, 3000);
+    }
+    
+    /**
+     * Retry setup with exponential backoff
+     */
+    retrySetup() {
+        if (this.retryCount >= this.maxRetries) {
+            console.error(`❌ Max retries (${this.maxRetries}) reached for key features carousel`);
+            return;
+        }
+        
+        this.retryCount++;
+        const delay = Math.min(1000 * this.retryCount, 5000); // Max 5 second delay
+        
+        console.log(`🔄 Retrying key features setup (attempt ${this.retryCount}/${this.maxRetries}) in ${delay}ms`);
+        
+        this.retryTimer = setTimeout(() => {
+            this.setup();
+        }, delay);
+    }
+    
+    /**
+     * Initialize the carousel with all functionality
+     */
+    initializeCarousel() {
+        try {
             this.cacheElements();
             this.setupCarousel();
             this.bindEvents();
             this.startAutoplay();
             this.setupIntersectionObserver();
+            this.contentLoaded = true;
             
-            // ('✅ Key Features Carousel initialized successfully!');
+            console.log('✅ Key Features Carousel initialized successfully!');
         } catch (error) {
             console.error('❌ Failed to initialize carousel:', error);
-            // Retry after delay
-            setTimeout(() => this.setup(), 1000);
+            this.retrySetup();
         }
     }
     
@@ -68,13 +178,18 @@ class KeyFeaturesCarousel {
      * Cache DOM elements
      */
     cacheElements() {
-        // Find elements
-        this.track = document.getElementById('features-track');
-        this.cards = Array.from(document.querySelectorAll('.feature-card'));
-        this.prevBtn = document.getElementById('prev-btn');
-        this.nextBtn = document.getElementById('next-btn');
-        this.viewport = document.querySelector('.features-viewport');
-        this.learnMoreButtons = Array.from(document.querySelectorAll('.feature-learn-more'));
+        const section = document.getElementById('key-features-section');
+        if (!section) {
+            throw new Error('Key features section not found');
+        }
+        
+        // Find elements within the section
+        this.track = section.querySelector('#features-track');
+        this.cards = Array.from(section.querySelectorAll('.feature-card'));
+        this.prevBtn = section.querySelector('#prev-btn');
+        this.nextBtn = section.querySelector('#next-btn');
+        this.viewport = section.querySelector('.features-viewport');
+        this.learnMoreButtons = Array.from(section.querySelectorAll('.feature-learn-more'));
         
         // Validate critical elements
         if (!this.track || this.cards.length === 0) {
@@ -84,7 +199,7 @@ class KeyFeaturesCarousel {
         // Update total slides based on actual cards
         this.totalSlides = this.cards.length;
         
-        // (`📦 Cached elements: ${this.cards.length} cards, ${this.learnMoreButtons.length} learn more buttons`);
+        console.log(`📦 Cached elements: ${this.cards.length} cards, ${this.learnMoreButtons.length} learn more buttons`);
     }
     
     /**
@@ -117,7 +232,7 @@ class KeyFeaturesCarousel {
                     return;
                 }
                 
-                // (`🎯 Card ${index + 1} clicked! Moving to center...`);
+                console.log(`🎯 Card ${index + 1} clicked! Moving to center...`);
                 if (index !== this.currentIndex) {
                     this.goToSlide(index);
                 }
@@ -165,7 +280,7 @@ class KeyFeaturesCarousel {
         const card = this.cards[index];
         const featureTitle = card.querySelector('.feature-card-title').textContent;
         
-        // (`📚 Learn More clicked for: ${featureTitle}`);
+        console.log(`📚 Learn More clicked for: ${featureTitle}`);
         
         // Add visual feedback
         button.style.transform = 'translateY(-1px) scale(0.98)';
@@ -199,7 +314,7 @@ class KeyFeaturesCarousel {
     }
     
     /**
-     * Track events (same as before)
+     * Track events
      */
     trackEvent(eventName, data = {}) {
         const eventData = {
@@ -209,7 +324,7 @@ class KeyFeaturesCarousel {
             ...data
         };
 
-        // ('📊 Event tracked:', eventData);
+        console.log('📊 Event tracked:', eventData);
 
         // Google Analytics 4
         if (typeof gtag !== 'undefined') {
@@ -243,7 +358,7 @@ class KeyFeaturesCarousel {
         if (index < 0) index = this.totalSlides - 1;
         if (index >= this.totalSlides) index = 0;
         
-        // (`🎯 Going to slide ${index + 1}/${this.totalSlides}`);
+        console.log(`🎯 Going to slide ${index + 1}/${this.totalSlides}`);
         
         this.isTransitioning = true;
         this.currentIndex = index;
@@ -326,7 +441,7 @@ class KeyFeaturesCarousel {
             this.next();
         }, this.autoplayDelay);
         
-        // ('▶️ Autoplay started');
+        console.log('▶️ Autoplay started');
     }
     
     /**
@@ -367,7 +482,7 @@ class KeyFeaturesCarousel {
             this.stopAutoplay();
         }
         
-        // (`🔄 Autoplay ${this.isAutoPlaying ? 'enabled' : 'disabled'}`);
+        console.log(`🔄 Autoplay ${this.isAutoPlaying ? 'enabled' : 'disabled'}`);
     }
     
     /**
@@ -405,7 +520,8 @@ class KeyFeaturesCarousel {
             currentIndex: this.currentIndex,
             totalSlides: this.totalSlides,
             isAutoPlaying: this.isAutoPlaying,
-            isTransitioning: this.isTransitioning
+            isTransitioning: this.isTransitioning,
+            contentLoaded: this.contentLoaded
         };
     }
     
@@ -437,6 +553,12 @@ class KeyFeaturesCarousel {
                 if (this.learnMoreButtons[index]) {
                     this.handleLearnMoreClick(index, this.learnMoreButtons[index]);
                 }
+            },
+            
+            // Manual restart
+            restart: () => {
+                console.log('🔄 Manually restarting key features carousel...');
+                this.setup();
             }
         };
     }
@@ -451,7 +573,11 @@ class KeyFeaturesCarousel {
             clearTimeout(this.transitionTimer);
         }
         
-        // ('🧹 Carousel destroyed');
+        if (this.retryTimer) {
+            clearTimeout(this.retryTimer);
+        }
+        
+        console.log('🧹 Carousel destroyed');
     }
 }
 
@@ -459,7 +585,7 @@ class KeyFeaturesCarousel {
 let carousel = null;
 
 function initializeCarousel() {
-    // ('🔥 Starting carousel initialization...');
+    console.log('🔥 Starting key features carousel initialization...');
     
     // Create carousel instance
     carousel = new KeyFeaturesCarousel();
@@ -474,7 +600,7 @@ function initializeCarousel() {
     // Export for debugging and external access
     window.KeyFeaturesCarousel = carousel.getAPI();
     
-    // ('✅ Carousel setup complete!');
+    console.log('✅ Key features carousel setup complete!');
 }
 
 // Auto-initialize

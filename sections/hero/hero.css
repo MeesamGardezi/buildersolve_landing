@@ -1,4 +1,4 @@
-/* ===== BUILDERSFOLVE HERO SECTION - FORTUNE 500 QUALITY ===== */
+/* ===== BUILDERSFOLVE HERO SECTION - FIXED LIGHT THEME ===== */
 
 /* ===== DESIGN SYSTEM FOUNDATION ===== */
 :root {
@@ -743,17 +743,6 @@
   }
 }
 
-/* Dark mode override - Keep hero light for conversion */
-@media (prefers-color-scheme: dark) {
-  #hero-section {
-    color-scheme: light;
-  }
-  
-  .hero-wrapper * {
-    color-scheme: light;
-  }
-}
-
 /* ===== PRINT STYLES ===== */
 @media print {
   .hero-wrapper {
@@ -829,3 +818,6 @@
 .in-view [data-fade][data-delay="400"] {
   transition-delay: 0.4s;
 }
+
+/* ===== HERO STAYS LIGHT - NO DARK MODE OVERRIDE ===== */
+/* Hero section maintains light theme regardless of system preference */

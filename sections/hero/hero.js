@@ -64,10 +64,10 @@ class BuilderSolveHero {
             
             // First check if content is already loaded
             if (this.checkContentExists()) {
-                // ('✅ Hero content already loaded, initializing immediately');
+                console.log('✅ Hero content already loaded, initializing immediately');
                 await this.initializeWithContent();
             } else {
-                // ('⏳ Hero content not loaded yet, waiting for content...');
+                console.log('⏳ Hero content not loaded yet, waiting for content...');
                 await this.waitForContent();
             }
 
@@ -83,7 +83,7 @@ class BuilderSolveHero {
     checkContentExists() {
         const heroSection = document.getElementById('hero-section');
         if (!heroSection || heroSection.nodeType !== Node.ELEMENT_NODE) {
-            // ('🔍 Hero section element not found or invalid');
+            console.log('🔍 Hero section element not found or invalid');
             return false;
         }
 
@@ -93,7 +93,7 @@ class BuilderSolveHero {
 
         const hasContent = !!(headline && ctaButton && imageCard);
         
-        // ('🔍 Content check:', {
+        console.log('🔍 Content check:', {
             heroSection: !!heroSection,
             headline: !!headline,
             ctaButton: !!ctaButton,
@@ -127,7 +127,7 @@ class BuilderSolveHero {
                     mutations.forEach((mutation) => {
                         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                             if (this.checkContentExists()) {
-                                // ('✅ Hero content detected, initializing...');
+                                console.log('✅ Hero content detected, initializing...');
                                 clearTimeout(this.contentWaitTimeout);
                                 this.contentObserver.disconnect();
                                 this.initializeWithContent().then(resolve).catch(reject);
@@ -141,7 +141,7 @@ class BuilderSolveHero {
                     subtree: true
                 });
 
-                // ('👀 Watching for hero content to load...');
+                console.log('👀 Watching for hero content to load...');
                 
             } catch (error) {
                 clearTimeout(this.contentWaitTimeout);
@@ -169,7 +169,7 @@ class BuilderSolveHero {
             performance.mark('hero-init-end');
             performance.measure('hero-initialization', 'hero-init-start', 'hero-init-end');
             
-            // ('✅ BuilderSolve Hero initialized successfully');
+            console.log('✅ BuilderSolve Hero initialized successfully');
             this.logPerformanceMetrics();
 
         } catch (error) {
@@ -244,7 +244,7 @@ class BuilderSolveHero {
             throw new Error('Hero section not found or invalid');
         }
 
-        // ('📦 Cached elements:', {
+        console.log('📦 Cached elements:', {
             heroSection: {
                 exists: !!this.elements.heroSection,
                 type: this.elements.heroSection ? this.elements.heroSection.constructor.name : 'null',
@@ -275,7 +275,7 @@ class BuilderSolveHero {
                 );
                 
                 this.intersectionObserver.observe(this.elements.heroSection);
-                // ('✅ IntersectionObserver setup successful');
+                console.log('✅ IntersectionObserver setup successful');
                 
             } catch (error) {
                 console.warn('⚠️ IntersectionObserver setup failed:', error);
@@ -295,7 +295,7 @@ class BuilderSolveHero {
                 this.performanceObserver.observe({ 
                     entryTypes: ['measure', 'navigation', 'paint'] 
                 });
-                // ('✅ PerformanceObserver setup successful');
+                console.log('✅ PerformanceObserver setup successful');
             } catch (error) {
                 console.warn('⚠️ Performance observer setup failed:', error);
             }
@@ -311,7 +311,7 @@ class BuilderSolveHero {
             this.elements.ctaButton.addEventListener('click', this.handleCTAClick);
             this.elements.ctaButton.addEventListener('mouseenter', this.handleCTAHover.bind(this));
             this.elements.ctaButton.addEventListener('mouseleave', this.handleCTALeave.bind(this));
-            // ('✅ CTA button events bound');
+            console.log('✅ CTA button events bound');
         } else {
             console.warn('⚠️ CTA button not found, skipping CTA events');
         }
@@ -322,7 +322,7 @@ class BuilderSolveHero {
                 image.addEventListener('load', () => this.handleImageLoad(index));
                 image.addEventListener('error', () => this.handleImageError(index));
             });
-            // (`✅ Image events bound for ${this.elements.heroImages.length} images`);
+            console.log(`✅ Image events bound for ${this.elements.heroImages.length} images`);
         } else {
             console.warn('⚠️ No hero images found, skipping image events');
         }
@@ -330,7 +330,7 @@ class BuilderSolveHero {
         // Scroll indicator
         if (this.elements.scrollIndicator) {
             this.elements.scrollIndicator.addEventListener('click', this.handleScrollIndicatorClick.bind(this));
-            // ('✅ Scroll indicator events bound');
+            console.log('✅ Scroll indicator events bound');
         }
 
         // Window events
@@ -340,7 +340,7 @@ class BuilderSolveHero {
         // Visibility change for performance
         document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
 
-        // ('✅ Global events bound');
+        console.log('✅ Global events bound');
     }
 
     /**
@@ -412,7 +412,7 @@ class BuilderSolveHero {
             element.style.transition = `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`;
         });
 
-        // (`✅ Animation setup complete for ${this.elements.fadeElements.length} elements`);
+        console.log(`✅ Animation setup complete for ${this.elements.fadeElements.length} elements`);
     }
 
     /**
@@ -488,7 +488,7 @@ class BuilderSolveHero {
                 }
             });
 
-            // ('📞 Contact Us clicked - tracking conversion');
+            console.log('📞 Contact Us clicked - tracking conversion');
         }
     }
 
@@ -526,7 +526,7 @@ class BuilderSolveHero {
             image.style.opacity = '1';
         }
         
-        // (`✅ Hero image ${index + 1} loaded successfully`);
+        console.log(`✅ Hero image ${index + 1} loaded successfully`);
         
         this.trackEvent('hero_image_loaded', {
             image_index: index,
@@ -734,7 +734,7 @@ class BuilderSolveHero {
      */
     handleContentMutation(mutations) {
         mutations.forEach((mutation) => {
-            // ('Content mutation detected:', mutation);
+            console.log('Content mutation detected:', mutation);
         });
     }
 
@@ -749,7 +749,7 @@ class BuilderSolveHero {
             ...data
         };
 
-        // ('📊 Event tracked:', eventData);
+        console.log('📊 Event tracked:', eventData);
 
         // Google Analytics 4
         if (typeof gtag !== 'undefined') {
@@ -843,7 +843,7 @@ class BuilderSolveHero {
      */
     logPerformanceMetrics() {
         const metrics = this.state.performanceMetrics;
-        // ('📈 Hero Performance Metrics:', metrics);
+        console.log('📈 Hero Performance Metrics:', metrics);
         
         // Track performance
         this.trackEvent('performance_metrics', metrics);
@@ -870,7 +870,7 @@ class BuilderSolveHero {
     async retryInitialization() {
         if (this.state.retryCount < this.config.retryAttempts) {
             this.state.retryCount++;
-            // (`🔄 Retrying initialization (attempt ${this.state.retryCount})`);
+            console.log(`🔄 Retrying initialization (attempt ${this.state.retryCount})`);
             
             setTimeout(() => {
                 this.init();
@@ -977,7 +977,7 @@ class BuilderSolveHero {
             this.contentObserver.disconnect();
         }
         
-        // ('🧹 BuilderSolve Hero cleaned up');
+        console.log('🧹 BuilderSolve Hero cleaned up');
     }
 }
 
