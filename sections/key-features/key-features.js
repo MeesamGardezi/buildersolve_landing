@@ -1,34 +1,28 @@
 /**
- * BuilderSolve Key Features Carousel - Clean & Functional
- * Focus on working functionality first
+ * Simple Static Card Deck Features
+ * Works with pre-built HTML cards - much more reliable!
  */
 
-class KeyFeaturesCarousel {
+class SimpleCardDeck {
     constructor() {
         // State
         this.currentIndex = 0;
-        this.totalSlides = 12;
-        this.isAutoPlaying = true;
         this.isTransitioning = false;
-        this.contentLoaded = false;
-        this.retryCount = 0;
-        this.maxRetries = 5;
+        this.isAutoPlaying = true;
+        this.visibleCards = 4;
         
         // DOM elements
-        this.track = null;
-        this.cards = [];
+        this.container = null;
+        this.allCards = [];
         this.prevBtn = null;
         this.nextBtn = null;
-        this.viewport = null;
-        this.learnMoreButtons = [];
+        this.progressCurrent = null;
         
         // Timers
         this.autoplayTimer = null;
-        this.transitionTimer = null;
-        this.retryTimer = null;
         
         // Settings
-        this.autoplayDelay = 3000; // 3 seconds
+        this.autoplayDelay = 4000;
         this.transitionDuration = 500;
         
         // Initialize
@@ -36,179 +30,217 @@ class KeyFeaturesCarousel {
     }
     
     /**
-     * Initialize carousel with content detection
+     * Initialize the card deck
      */
     init() {
-        console.log('🚀 Initializing Key Features Carousel...');
+        console.log('🃏 Initializing Simple Card Deck...');
         
-        // Wait for DOM
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.setup());
-        } else {
+        // Wait for content to be loaded
+        setTimeout(() => {
             this.setup();
-        }
+        }, 100);
     }
     
     /**
-     * Setup carousel after DOM is ready
+     * Setup the card deck
      */
     setup() {
         try {
-            // Check if content exists first
-            if (this.checkContentExists()) {
-                console.log('✅ Key features content found, initializing...');
-                this.initializeCarousel();
+            if (this.findElements()) {
+                this.arrangeCards();
+                this.bindEvents();
+                this.updateProgress();
+                this.startAutoplay();
+                this.setupIntersectionObserver();
+                
+                console.log(`✅ Simple Card Deck initialized with ${this.allCards.length} cards!`);
             } else {
-                console.log('⏳ Key features content not found, waiting...');
-                this.waitForContent();
+                console.log('⏳ Retrying card deck setup...');
+                setTimeout(() => this.setup(), 500);
             }
         } catch (error) {
-            console.error('❌ Failed to setup carousel:', error);
-            this.retrySetup();
+            console.error('❌ Failed to setup card deck:', error);
         }
     }
     
     /**
-     * Check if the carousel content exists
+     * Find all the DOM elements
      */
-    checkContentExists() {
-        const section = document.getElementById('key-features-section');
-        if (!section) {
-            console.log('🔍 Key features section not found');
+    findElements() {
+        // Find container
+        this.container = document.getElementById('deck-container');
+        if (!this.container) {
+            console.log('🔍 Deck container not found yet...');
             return false;
         }
         
-        const track = section.querySelector('#features-track');
-        const cards = section.querySelectorAll('.feature-card');
-        const prevBtn = section.querySelector('#prev-btn');
-        const nextBtn = section.querySelector('#next-btn');
+        // Find all cards
+        this.allCards = Array.from(this.container.querySelectorAll('.feature-deck-card'));
+        if (this.allCards.length === 0) {
+            console.log('🔍 No cards found yet...');
+            return false;
+        }
         
-        const hasContent = !!(track && cards.length > 0 && prevBtn && nextBtn);
+        // Find navigation buttons
+        this.prevBtn = document.getElementById('deck-prev-btn');
+        this.nextBtn = document.getElementById('deck-next-btn');
         
-        console.log('🔍 Content check:', {
-            section: !!section,
-            track: !!track,
-            cards: cards.length,
-            prevBtn: !!prevBtn,
-            nextBtn: !!nextBtn,
-            hasContent
-        });
+        // Find progress indicator
+        this.progressCurrent = document.querySelector('.progress-current');
+        this.progressTotal = document.querySelector('.progress-total');
         
-        return hasContent;
+        console.log(`📦 Found ${this.allCards.length} cards and navigation elements`);
+        return true;
     }
     
     /**
-     * Wait for content to be loaded
+     * Arrange cards in the stack
      */
-    waitForContent() {
-        const section = document.getElementById('key-features-section');
-        if (!section) {
-            console.error('❌ Key features section not found');
-            this.retrySetup();
-            return;
-        }
-        
-        // Set up mutation observer to watch for content
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    if (this.checkContentExists()) {
-                        console.log('✅ Key features content detected!');
-                        observer.disconnect();
-                        this.initializeCarousel();
-                    }
+    arrangeCards() {
+        this.allCards.forEach((card, index) => {
+            const stackPosition = this.getStackPosition(index);
+            this.positionCard(card, stackPosition);
+            
+            // Set click handler for top card
+            card.addEventListener('click', (e) => {
+                if (stackPosition === 0 && !e.target.classList.contains('card-learn-more')) {
+                    this.nextCard();
                 }
             });
-        });
-        
-        observer.observe(section, {
-            childList: true,
-            subtree: true
-        });
-        
-        // Timeout fallback
-        setTimeout(() => {
-            observer.disconnect();
-            if (!this.contentLoaded) {
-                console.warn('⏰ Timeout waiting for content, retrying...');
-                this.retrySetup();
+            
+            // Handle learn more button
+            const learnMoreBtn = card.querySelector('.card-learn-more');
+            if (learnMoreBtn) {
+                learnMoreBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.handleLearnMore(card);
+                });
             }
-        }, 3000);
+        });
+        
+        // Update progress total
+        if (this.progressTotal) {
+            this.progressTotal.textContent = this.allCards.length;
+        }
     }
     
     /**
-     * Retry setup with exponential backoff
+     * Get stack position for a card based on current index
      */
-    retrySetup() {
-        if (this.retryCount >= this.maxRetries) {
-            console.error(`❌ Max retries (${this.maxRetries}) reached for key features carousel`);
+    getStackPosition(cardIndex) {
+        const position = (cardIndex - this.currentIndex + this.allCards.length) % this.allCards.length;
+        return position < this.visibleCards ? position : -1; // -1 means hidden
+    }
+    
+    /**
+     * Position a card in the stack
+     */
+    positionCard(card, stackPosition) {
+        if (stackPosition === -1) {
+            // Hide card
+            card.style.display = 'none';
             return;
         }
         
-        this.retryCount++;
-        const delay = Math.min(1000 * this.retryCount, 5000); // Max 5 second delay
+        // Show card
+        card.style.display = 'block';
         
-        console.log(`🔄 Retrying key features setup (attempt ${this.retryCount}/${this.maxRetries}) in ${delay}ms`);
+        // Position in stack
+        const yOffset = stackPosition * 8;
+        const scale = 1 - (stackPosition * 0.04);
+        const opacity = stackPosition === 0 ? 1 : Math.max(0.3, 0.8 - (stackPosition * 0.15));
+        const zIndex = this.visibleCards - stackPosition;
         
-        this.retryTimer = setTimeout(() => {
-            this.setup();
-        }, delay);
-    }
-    
-    /**
-     * Initialize the carousel with all functionality
-     */
-    initializeCarousel() {
-        try {
-            this.cacheElements();
-            this.setupCarousel();
-            this.bindEvents();
-            this.startAutoplay();
-            this.setupIntersectionObserver();
-            this.contentLoaded = true;
-            
-            console.log('✅ Key Features Carousel initialized successfully!');
-        } catch (error) {
-            console.error('❌ Failed to initialize carousel:', error);
-            this.retrySetup();
+        // Apply transforms
+        card.style.transform = `translate3d(0, ${yOffset}px, 0) scale(${scale})`;
+        card.style.opacity = opacity;
+        card.style.zIndex = zIndex;
+        card.style.transition = `all ${this.transitionDuration}ms ease-out`;
+        
+        // Add/remove active class
+        if (stackPosition === 0) {
+            card.classList.add('active');
+        } else {
+            card.classList.remove('active');
         }
     }
     
     /**
-     * Cache DOM elements
+     * Move to next card
      */
-    cacheElements() {
-        const section = document.getElementById('key-features-section');
-        if (!section) {
-            throw new Error('Key features section not found');
-        }
+    nextCard() {
+        if (this.isTransitioning) return;
         
-        // Find elements within the section
-        this.track = section.querySelector('#features-track');
-        this.cards = Array.from(section.querySelectorAll('.feature-card'));
-        this.prevBtn = section.querySelector('#prev-btn');
-        this.nextBtn = section.querySelector('#next-btn');
-        this.viewport = section.querySelector('.features-viewport');
-        this.learnMoreButtons = Array.from(section.querySelectorAll('.feature-learn-more'));
+        this.isTransitioning = true;
+        console.log('🃏 Next card...');
         
-        // Validate critical elements
-        if (!this.track || this.cards.length === 0) {
-            throw new Error('Critical carousel elements not found');
-        }
+        // Move to next index
+        this.currentIndex = (this.currentIndex + 1) % this.allCards.length;
         
-        // Update total slides based on actual cards
-        this.totalSlides = this.cards.length;
+        // Rearrange all cards
+        this.allCards.forEach((card, index) => {
+            const stackPosition = this.getStackPosition(index);
+            this.positionCard(card, stackPosition);
+        });
         
-        console.log(`📦 Cached elements: ${this.cards.length} cards, ${this.learnMoreButtons.length} learn more buttons`);
+        this.updateProgress();
+        
+        // Reset transition lock
+        setTimeout(() => {
+            this.isTransitioning = false;
+        }, this.transitionDuration);
+        
+        this.trackEvent('next_card');
     }
     
     /**
-     * Setup initial carousel state
+     * Move to previous card
      */
-    setupCarousel() {
-        // Position track for multi-card display
-        this.updateTrackPosition();
-        this.updateCardStates();
+    prevCard() {
+        if (this.isTransitioning) return;
+        
+        this.isTransitioning = true;
+        console.log('🃏 Previous card...');
+        
+        // Move to previous index
+        this.currentIndex = this.currentIndex === 0 ? this.allCards.length - 1 : this.currentIndex - 1;
+        
+        // Rearrange all cards
+        this.allCards.forEach((card, index) => {
+            const stackPosition = this.getStackPosition(index);
+            this.positionCard(card, stackPosition);
+        });
+        
+        this.updateProgress();
+        
+        // Reset transition lock
+        setTimeout(() => {
+            this.isTransitioning = false;
+        }, this.transitionDuration);
+        
+        this.trackEvent('prev_card');
+    }
+    
+    /**
+     * Update progress indicator
+     */
+    updateProgress() {
+        if (this.progressCurrent) {
+            this.progressCurrent.textContent = this.currentIndex + 1;
+        }
+    }
+    
+    /**
+     * Handle learn more clicks
+     */
+    handleLearnMore(card) {
+        const title = card.querySelector('.card-title')?.textContent || 'Feature';
+        console.log(`📚 Learn More clicked for: ${title}`);
+        
+        this.trackEvent('learn_more_click', { feature: title });
+        
+        // Your learn more implementation
+        alert(`Learn more about: ${title}\n\nThis would open a modal or detailed page.`);
     }
     
     /**
@@ -217,51 +249,28 @@ class KeyFeaturesCarousel {
     bindEvents() {
         // Navigation buttons
         if (this.prevBtn) {
-            this.prevBtn.addEventListener('click', () => this.prev());
+            this.prevBtn.addEventListener('click', () => this.prevCard());
         }
         
         if (this.nextBtn) {
-            this.nextBtn.addEventListener('click', () => this.next());
-        }
-        
-        // Card clicks - MAKE CARDS CLICKABLE
-        this.cards.forEach((card, index) => {
-            card.addEventListener('click', (e) => {
-                // Don't trigger card click if Learn More button was clicked
-                if (e.target.classList.contains('feature-learn-more')) {
-                    return;
-                }
-                
-                console.log(`🎯 Card ${index + 1} clicked! Moving to center...`);
-                if (index !== this.currentIndex) {
-                    this.goToSlide(index);
-                }
-            });
-        });
-        
-        // Learn More button clicks
-        this.learnMoreButtons.forEach((button, index) => {
-            button.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent card click
-                this.handleLearnMoreClick(index, button);
-            });
-        });
-        
-        // Pause on hover
-        if (this.viewport) {
-            this.viewport.addEventListener('mouseenter', () => this.pauseAutoplay());
-            this.viewport.addEventListener('mouseleave', () => this.resumeAutoplay());
+            this.nextBtn.addEventListener('click', () => this.nextCard());
         }
         
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') this.prev();
-            if (e.key === 'ArrowRight') this.next();
+            if (e.key === 'ArrowLeft') this.prevCard();
+            if (e.key === 'ArrowRight') this.nextCard();
             if (e.key === ' ') {
                 e.preventDefault();
                 this.toggleAutoplay();
             }
         });
+        
+        // Pause on hover
+        if (this.container) {
+            this.container.addEventListener('mouseenter', () => this.pauseAutoplay());
+            this.container.addEventListener('mouseleave', () => this.resumeAutoplay());
+        }
         
         // Pause on visibility change
         document.addEventListener('visibilitychange', () => {
@@ -271,163 +280,8 @@ class KeyFeaturesCarousel {
                 this.resumeAutoplay();
             }
         });
-    }
-    
-    /**
-     * Handle Learn More button clicks
-     */
-    handleLearnMoreClick(index, button) {
-        const card = this.cards[index];
-        const featureTitle = card.querySelector('.feature-card-title').textContent;
         
-        console.log(`📚 Learn More clicked for: ${featureTitle}`);
-        
-        // Add visual feedback
-        button.style.transform = 'translateY(-1px) scale(0.98)';
-        setTimeout(() => {
-            button.style.transform = '';
-        }, 150);
-        
-        // Track the click
-        this.trackEvent('learn_more_click', {
-            feature_title: featureTitle,
-            feature_index: index,
-            timestamp: Date.now()
-        });
-        
-        // Here you can add your learn more functionality
-        // For example: open modal, navigate to page, etc.
-        this.showLearnMoreModal(featureTitle, index);
-    }
-    
-    /**
-     * Show Learn More modal (placeholder implementation)
-     */
-    showLearnMoreModal(featureTitle, index) {
-        // This is a placeholder - you can implement your own modal/navigation logic
-        alert(`Learn more about: ${featureTitle}\n\nThis would typically open a modal or navigate to a detailed page about this feature.`);
-        
-        // Example of what you might do:
-        // window.location.href = `/features/${featureTitle.toLowerCase().replace(/\s+/g, '-')}`;
-        // or
-        // this.openFeatureModal(index);
-    }
-    
-    /**
-     * Track events
-     */
-    trackEvent(eventName, data = {}) {
-        const eventData = {
-            event: eventName,
-            component: 'features_carousel',
-            timestamp: Date.now(),
-            ...data
-        };
-
-        console.log('📊 Event tracked:', eventData);
-
-        // Google Analytics 4
-        if (typeof gtag !== 'undefined') {
-            gtag('event', eventName, {
-                event_category: 'features_carousel',
-                event_label: data.feature_title || '',
-                value: data.feature_index || 0
-            });
-        }
-
-        // Custom analytics
-        if (window.BuilderSolveAnalytics) {
-            window.BuilderSolveAnalytics.track(eventData);
-        }
-
-        // PostHog
-        if (window.posthog) {
-            window.posthog.capture(eventName, eventData);
-        }
-    }
-    
-    /**
-     * Go to specific slide
-     */
-    goToSlide(index) {
-        if (this.isTransitioning || index === this.currentIndex) {
-            return;
-        }
-        
-        // Validate index
-        if (index < 0) index = this.totalSlides - 1;
-        if (index >= this.totalSlides) index = 0;
-        
-        console.log(`🎯 Going to slide ${index + 1}/${this.totalSlides}`);
-        
-        this.isTransitioning = true;
-        this.currentIndex = index;
-        
-        // Update everything
-        this.updateCardStates();
-        this.updateTrackPosition();
-        
-        // Reset transition lock
-        this.transitionTimer = setTimeout(() => {
-            this.isTransitioning = false;
-        }, this.transitionDuration);
-    }
-    
-    /**
-     * Go to next slide
-     */
-    next() {
-        this.goToSlide(this.currentIndex + 1);
-    }
-    
-    /**
-     * Go to previous slide
-     */
-    prev() {
-        this.goToSlide(this.currentIndex - 1);
-    }
-    
-    /**
-     * Update card positions and active states - MULTI-CARD DISPLAY
-     */
-    updateCardStates() {
-        this.cards.forEach((card, index) => {
-            // Remove all classes
-            card.classList.remove('active', 'adjacent');
-            
-            // Add appropriate class based on position
-            if (index === this.currentIndex) {
-                card.classList.add('active');
-            } else if (
-                index === this.currentIndex - 1 ||
-                index === this.currentIndex + 1 ||
-                (this.currentIndex === 0 && index === this.totalSlides - 1) ||
-                (this.currentIndex === this.totalSlides - 1 && index === 0)
-            ) {
-                card.classList.add('adjacent');
-            }
-        });
-    }
-    
-    /**
-     * Update track position for multi-card centering
-     */
-    updateTrackPosition() {
-        if (!this.track || !this.viewport) return;
-        
-        const viewportWidth = this.viewport.offsetWidth;
-        
-        // Get actual card width (responsive)
-        const cardWidth = this.cards[0] ? this.cards[0].offsetWidth : 320;
-        const cardMargin = 24; // Match CSS margin (var(--space-3) * 2)
-        const totalCardWidth = cardWidth + cardMargin;
-        
-        // Calculate center position
-        const centerOffset = (viewportWidth - cardWidth) / 2;
-        const slideOffset = this.currentIndex * totalCardWidth;
-        
-        // Position track to center the active card
-        this.track.style.transform = `translateX(${centerOffset - slideOffset}px)`;
+        console.log('✅ Events bound successfully');
     }
     
     /**
@@ -438,10 +292,12 @@ class KeyFeaturesCarousel {
         
         this.stopAutoplay();
         this.autoplayTimer = setInterval(() => {
-            this.next();
+            if (!this.isTransitioning) {
+                this.nextCard();
+            }
         }, this.autoplayDelay);
         
-        console.log('▶️ Autoplay started');
+        console.log(`▶️ Autoplay started (${this.autoplayDelay}ms)`);
     }
     
     /**
@@ -486,7 +342,7 @@ class KeyFeaturesCarousel {
     }
     
     /**
-     * Setup intersection observer for animations
+     * Setup intersection observer for fade animations
      */
     setupIntersectionObserver() {
         const observer = new IntersectionObserver((entries) => {
@@ -506,36 +362,49 @@ class KeyFeaturesCarousel {
     }
     
     /**
-     * Handle window resize
+     * Track events
      */
-    handleResize() {
-        this.updateTrackPosition();
-    }
-    
-    /**
-     * Get current state
-     */
-    getState() {
-        return {
-            currentIndex: this.currentIndex,
-            totalSlides: this.totalSlides,
-            isAutoPlaying: this.isAutoPlaying,
-            isTransitioning: this.isTransitioning,
-            contentLoaded: this.contentLoaded
+    trackEvent(eventName, data = {}) {
+        const eventData = {
+            event: eventName,
+            component: 'simple_card_deck',
+            timestamp: Date.now(),
+            current_index: this.currentIndex,
+            total_cards: this.allCards.length,
+            ...data
         };
+
+        console.log('📊 Event tracked:', eventData);
+
+        // Google Analytics
+        if (typeof gtag !== 'undefined') {
+            gtag('event', eventName, {
+                event_category: 'card_deck_features',
+                event_label: data.feature || '',
+                value: this.currentIndex
+            });
+        }
+
+        // Custom analytics
+        if (window.BuilderSolveAnalytics) {
+            window.BuilderSolveAnalytics.track(eventData);
+        }
     }
     
     /**
-     * Get public API for external access
+     * Public API
      */
     getAPI() {
         return {
-            // Navigation
-            goToSlide: (index) => this.goToSlide(index),
-            next: () => this.next(),
-            prev: () => this.prev(),
-            
-            // Autoplay control
+            next: () => this.nextCard(),
+            prev: () => this.prevCard(),
+            goTo: (index) => {
+                if (index >= 0 && index < this.allCards.length) {
+                    this.currentIndex = index;
+                    this.arrangeCards();
+                    this.updateProgress();
+                }
+            },
             play: () => {
                 this.isAutoPlaying = true;
                 this.startAutoplay();
@@ -544,73 +413,43 @@ class KeyFeaturesCarousel {
                 this.isAutoPlaying = false;
                 this.stopAutoplay();
             },
-            
-            // State
-            getState: () => this.getState(),
-            
-            // Learn More functionality
-            triggerLearnMore: (index) => {
-                if (this.learnMoreButtons[index]) {
-                    this.handleLearnMoreClick(index, this.learnMoreButtons[index]);
-                }
-            },
-            
-            // Manual restart
-            restart: () => {
-                console.log('🔄 Manually restarting key features carousel...');
-                this.setup();
-            }
+            getCurrentIndex: () => this.currentIndex,
+            getTotalCards: () => this.allCards.length,
+            getCurrentCard: () => this.allCards[this.currentIndex]
         };
     }
     
     /**
-     * Destroy carousel
+     * Cleanup
      */
     destroy() {
         this.stopAutoplay();
-        
-        if (this.transitionTimer) {
-            clearTimeout(this.transitionTimer);
-        }
-        
-        if (this.retryTimer) {
-            clearTimeout(this.retryTimer);
-        }
-        
-        console.log('🧹 Carousel destroyed');
+        console.log('🧹 Simple card deck destroyed');
     }
 }
 
-// Initialize carousel
-let carousel = null;
+// Initialize
+let simpleCardDeck = null;
 
-function initializeCarousel() {
-    console.log('🔥 Starting key features carousel initialization...');
+function initializeSimpleCardDeck() {
+    console.log('🚀 Starting Simple Card Deck...');
     
-    // Create carousel instance
-    carousel = new KeyFeaturesCarousel();
+    simpleCardDeck = new SimpleCardDeck();
     
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        if (carousel) {
-            carousel.handleResize();
-        }
-    });
+    // Export for debugging
+    window.SimpleCardDeck = simpleCardDeck.getAPI();
     
-    // Export for debugging and external access
-    window.KeyFeaturesCarousel = carousel.getAPI();
-    
-    console.log('✅ Key features carousel setup complete!');
+    console.log('✅ Simple Card Deck ready!');
 }
 
 // Auto-initialize
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeCarousel);
+    document.addEventListener('DOMContentLoaded', initializeSimpleCardDeck);
 } else {
-    initializeCarousel();
+    initializeSimpleCardDeck();
 }
 
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = KeyFeaturesCarousel;
+    module.exports = SimpleCardDeck;
 }
