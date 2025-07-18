@@ -1,15 +1,15 @@
 /**
- * Simple Static Card Deck Features
- * Works with pre-built HTML cards - much more reliable!
+ * Enhanced Solid Card Deck with Swipe Support
+ * Features: Solid cards, small corner visibility, smooth swipe animations
  */
 
-class SimpleCardDeck {
+class EnhancedCardDeck {
     constructor() {
         // State
         this.currentIndex = 0;
         this.isTransitioning = false;
         this.isAutoPlaying = true;
-        this.visibleCards = 4;
+        this.visibleCards = 5; // Show more cards with small corners
         
         // DOM elements
         this.container = null;
@@ -18,12 +18,21 @@ class SimpleCardDeck {
         this.nextBtn = null;
         this.progressCurrent = null;
         
+        // Touch/Swipe state
+        this.touchStartX = 0;
+        this.touchStartY = 0;
+        this.touchCurrentX = 0;
+        this.touchCurrentY = 0;
+        this.isSwiping = false;
+        this.swipeThreshold = 100; // Minimum distance for swipe
+        this.swipeVelocityThreshold = 0.5; // Minimum velocity
+        
         // Timers
         this.autoplayTimer = null;
         
         // Settings
-        this.autoplayDelay = 4000;
-        this.transitionDuration = 500;
+        this.autoplayDelay = 5000; // Increased for better UX
+        this.transitionDuration = 600;
         
         // Initialize
         this.init();
@@ -33,7 +42,7 @@ class SimpleCardDeck {
      * Initialize the card deck
      */
     init() {
-        console.log('🃏 Initializing Simple Card Deck...');
+        console.log('🃏 Initializing Enhanced Card Deck...');
         
         // Wait for content to be loaded
         setTimeout(() => {
@@ -49,11 +58,12 @@ class SimpleCardDeck {
             if (this.findElements()) {
                 this.arrangeCards();
                 this.bindEvents();
+                this.setupSwipeHandlers();
                 this.updateProgress();
                 this.startAutoplay();
                 this.setupIntersectionObserver();
                 
-                console.log(`✅ Simple Card Deck initialized with ${this.allCards.length} cards!`);
+                console.log(`✅ Enhanced Card Deck initialized with ${this.allCards.length} cards!`);
             } else {
                 console.log('⏳ Retrying card deck setup...');
                 setTimeout(() => this.setup(), 500);
@@ -85,6 +95,18 @@ class SimpleCardDeck {
         this.prevBtn = document.getElementById('deck-prev-btn');
         this.nextBtn = document.getElementById('deck-next-btn');
         
+        if (!this.prevBtn) {
+            console.log('⚠️ Previous button not found');
+        } else {
+            console.log('✅ Previous button found');
+        }
+        
+        if (!this.nextBtn) {
+            console.log('⚠️ Next button not found');
+        } else {
+            console.log('✅ Next button found');
+        }
+        
         // Find progress indicator
         this.progressCurrent = document.querySelector('.progress-current');
         this.progressTotal = document.querySelector('.progress-total');
@@ -94,7 +116,7 @@ class SimpleCardDeck {
     }
     
     /**
-     * Arrange cards in the stack
+     * Arrange cards in the stack with small corner visibility
      */
     arrangeCards() {
         this.allCards.forEach((card, index) => {
@@ -133,7 +155,7 @@ class SimpleCardDeck {
     }
     
     /**
-     * Position a card in the stack
+     * Position a card in the stack with corner visibility effect
      */
     positionCard(card, stackPosition) {
         if (stackPosition === -1) {
@@ -145,43 +167,216 @@ class SimpleCardDeck {
         // Show card
         card.style.display = 'block';
         
-        // Position in stack
-        const yOffset = stackPosition * 8;
-        const scale = 1 - (stackPosition * 0.04);
-        const opacity = stackPosition === 0 ? 1 : Math.max(0.3, 0.8 - (stackPosition * 0.15));
-        const zIndex = this.visibleCards - stackPosition;
+        // Enhanced positioning for corner visibility
+        const yOffset = stackPosition * 12; // Increased offset to show more corner
+        const xOffset = stackPosition * 8; // Slight horizontal offset for corner effect
+        const scale = 1 - (stackPosition * 0.02); // Less scaling to keep cards more visible
+        const rotation = stackPosition * 1.5; // Slight rotation for organic feel
+        const opacity = stackPosition === 0 ? 1 : Math.max(0.4, 0.9 - (stackPosition * 0.1));
+        const zIndex = this.visibleCards - stackPosition + 100; // Higher z-index for proper stacking
         
-        // Apply transforms
-        card.style.transform = `translate3d(0, ${yOffset}px, 0) scale(${scale})`;
+        // Apply transforms with corner visibility
+        card.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 0) scale(${scale}) rotate(${rotation}deg)`;
         card.style.opacity = opacity;
         card.style.zIndex = zIndex;
-        card.style.transition = `all ${this.transitionDuration}ms ease-out`;
+        card.style.transition = `all ${this.transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1)`;
         
         // Add/remove active class
         if (stackPosition === 0) {
             card.classList.add('active');
+            card.style.pointerEvents = 'auto';
         } else {
             card.classList.remove('active');
+            card.style.pointerEvents = 'none'; // Prevent interaction with background cards
         }
     }
     
     /**
-     * Move to next card
+     * Setup swipe event handlers
      */
-    nextCard() {
+    setupSwipeHandlers() {
+        if (!this.container) return;
+        
+        // Touch events
+        this.container.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+        this.container.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+        this.container.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+        
+        // Mouse events for desktop testing
+        this.container.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        this.container.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        this.container.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+        this.container.addEventListener('mouseleave', (e) => this.handleMouseUp(e));
+        
+        console.log('👆 Swipe handlers setup complete');
+    }
+    
+    /**
+     * Handle touch/mouse start
+     */
+    handleTouchStart(e) {
+        this.pauseAutoplay();
+        
+        const touch = e.touches ? e.touches[0] : e;
+        this.touchStartX = touch.clientX;
+        this.touchStartY = touch.clientY;
+        this.touchCurrentX = touch.clientX;
+        this.touchCurrentY = touch.clientY;
+        this.isSwiping = false;
+        this.startTime = Date.now();
+        
+        // Prevent default to avoid scrolling issues
+        if (e.touches) {
+            e.preventDefault();
+        }
+    }
+    
+    /**
+     * Handle mouse down (for desktop)
+     */
+    handleMouseDown(e) {
+        e.preventDefault();
+        this.handleTouchStart(e);
+        this.isMouseDown = true;
+    }
+    
+    /**
+     * Handle touch/mouse move
+     */
+    handleTouchMove(e) {
+        if (!this.touchStartX || this.isTransitioning) return;
+        
+        const touch = e.touches ? e.touches[0] : e;
+        if (!this.isMouseDown && !e.touches) return;
+        
+        this.touchCurrentX = touch.clientX;
+        this.touchCurrentY = touch.clientY;
+        
+        const deltaX = this.touchCurrentX - this.touchStartX;
+        const deltaY = this.touchCurrentY - this.touchStartY;
+        
+        // Check if this is a horizontal swipe
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+            this.isSwiping = true;
+            
+            // Prevent vertical scrolling during horizontal swipe
+            if (e.touches) {
+                e.preventDefault();
+            }
+            
+            // Apply swipe animation to active card
+            const activeCard = this.allCards[this.currentIndex];
+            if (activeCard && Math.abs(deltaX) > 20) {
+                const swipeClass = deltaX > 0 ? 'swiping-right' : 'swiping-left';
+                activeCard.className = activeCard.className.replace(/swiping-(left|right)/g, '');
+                activeCard.classList.add(swipeClass);
+            }
+        }
+    }
+    
+    /**
+     * Handle mouse move (for desktop)
+     */
+    handleMouseMove(e) {
+        if (this.isMouseDown) {
+            this.handleTouchMove(e);
+        }
+    }
+    
+    /**
+     * Handle touch/mouse end
+     */
+    handleTouchEnd(e) {
+        if (!this.touchStartX) return;
+        
+        const deltaX = this.touchCurrentX - this.touchStartX;
+        const deltaTime = Date.now() - this.startTime;
+        const velocity = Math.abs(deltaX) / deltaTime;
+        
+        // Remove swiping classes
+        const activeCard = this.allCards[this.currentIndex];
+        if (activeCard) {
+            activeCard.classList.remove('swiping-left', 'swiping-right');
+        }
+        
+        // Determine if swipe should trigger navigation
+        const shouldSwipe = this.isSwiping && (
+            Math.abs(deltaX) > this.swipeThreshold || 
+            velocity > this.swipeVelocityThreshold
+        );
+        
+        if (shouldSwipe) {
+            if (deltaX > 0) {
+                console.log('👈 Swipe right detected');
+                this.prevCard('swipe');
+            } else {
+                console.log('👉 Swipe left detected');
+                this.nextCard('swipe');
+            }
+        }
+        
+        // Reset state
+        this.touchStartX = 0;
+        this.touchStartY = 0;
+        this.touchCurrentX = 0;
+        this.touchCurrentY = 0;
+        this.isSwiping = false;
+        this.isMouseDown = false;
+        
+        // Resume autoplay after a delay
+        setTimeout(() => {
+            this.resumeAutoplay();
+        }, 2000);
+    }
+    
+    /**
+     * Handle mouse up (for desktop)
+     */
+    handleMouseUp(e) {
+        if (this.isMouseDown) {
+            this.handleTouchEnd(e);
+        }
+    }
+    
+    /**
+     * Move to next card with optional animation type
+     */
+    nextCard(animationType = 'button') {
         if (this.isTransitioning) return;
         
         this.isTransitioning = true;
-        console.log('🃏 Next card...');
+        console.log(`🃏 Next card (${animationType})...`);
+        
+        const currentCard = this.allCards[this.currentIndex];
+        
+        // Apply exit animation for swipe
+        if (animationType === 'swipe' && currentCard) {
+            currentCard.classList.add('swipe-out-left');
+        }
         
         // Move to next index
         this.currentIndex = (this.currentIndex + 1) % this.allCards.length;
         
         // Rearrange all cards
-        this.allCards.forEach((card, index) => {
-            const stackPosition = this.getStackPosition(index);
-            this.positionCard(card, stackPosition);
-        });
+        setTimeout(() => {
+            this.allCards.forEach((card, index) => {
+                const stackPosition = this.getStackPosition(index);
+                this.positionCard(card, stackPosition);
+                
+                // Add enter animation for new active card
+                if (stackPosition === 0 && animationType === 'swipe') {
+                    card.classList.add('swipe-in');
+                    setTimeout(() => card.classList.remove('swipe-in'), 400);
+                }
+            });
+            
+            // Clean up exit animation
+            if (currentCard) {
+                setTimeout(() => {
+                    currentCard.classList.remove('swipe-out-left');
+                }, 300);
+            }
+        }, animationType === 'swipe' ? 100 : 0);
         
         this.updateProgress();
         
@@ -190,35 +385,63 @@ class SimpleCardDeck {
             this.isTransitioning = false;
         }, this.transitionDuration);
         
-        this.trackEvent('next_card');
+        this.trackEvent('next_card', { method: animationType });
     }
     
     /**
-     * Move to previous card
+     * Move to previous card with optional animation type
      */
-    prevCard() {
-        if (this.isTransitioning) return;
+    prevCard(animationType = 'button') {
+        if (this.isTransitioning) {
+            console.log('⏸️ Previous card blocked - transition in progress');
+            return;
+        }
         
         this.isTransitioning = true;
-        console.log('🃏 Previous card...');
+        console.log(`🃏 Previous card (${animationType})... Current: ${this.currentIndex}`);
+        
+        const currentCard = this.allCards[this.currentIndex];
+        
+        // Apply exit animation for swipe
+        if (animationType === 'swipe' && currentCard) {
+            currentCard.classList.add('swipe-out-right');
+        }
         
         // Move to previous index
-        this.currentIndex = this.currentIndex === 0 ? this.allCards.length - 1 : this.currentIndex - 1;
+        const newIndex = this.currentIndex === 0 ? this.allCards.length - 1 : this.currentIndex - 1;
+        console.log(`📍 Moving from ${this.currentIndex} to ${newIndex}`);
+        this.currentIndex = newIndex;
         
         // Rearrange all cards
-        this.allCards.forEach((card, index) => {
-            const stackPosition = this.getStackPosition(index);
-            this.positionCard(card, stackPosition);
-        });
+        setTimeout(() => {
+            this.allCards.forEach((card, index) => {
+                const stackPosition = this.getStackPosition(index);
+                this.positionCard(card, stackPosition);
+                
+                // Add enter animation for new active card
+                if (stackPosition === 0 && animationType === 'swipe') {
+                    card.classList.add('swipe-in');
+                    setTimeout(() => card.classList.remove('swipe-in'), 400);
+                }
+            });
+            
+            // Clean up exit animation
+            if (currentCard) {
+                setTimeout(() => {
+                    currentCard.classList.remove('swipe-out-right');
+                }, 300);
+            }
+        }, animationType === 'swipe' ? 100 : 0);
         
         this.updateProgress();
         
         // Reset transition lock
         setTimeout(() => {
             this.isTransitioning = false;
+            console.log('✅ Previous card transition complete');
         }, this.transitionDuration);
         
-        this.trackEvent('prev_card');
+        this.trackEvent('prev_card', { method: animationType });
     }
     
     /**
@@ -240,7 +463,15 @@ class SimpleCardDeck {
         this.trackEvent('learn_more_click', { feature: title });
         
         // Your learn more implementation
-        alert(`Learn more about: ${title}\n\nThis would open a modal or detailed page.`);
+        this.showFeatureModal(title, card);
+    }
+    
+    /**
+     * Show feature modal (placeholder)
+     */
+    showFeatureModal(title, card) {
+        const description = card.querySelector('.card-description')?.textContent || '';
+        alert(`Learn more about: ${title}\n\n${description}\n\nThis would open a detailed modal or page.`);
     }
     
     /**
@@ -249,20 +480,41 @@ class SimpleCardDeck {
     bindEvents() {
         // Navigation buttons
         if (this.prevBtn) {
-            this.prevBtn.addEventListener('click', () => this.prevCard());
+            this.prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.prevCard('button');
+            });
         }
         
         if (this.nextBtn) {
-            this.nextBtn.addEventListener('click', () => this.nextCard());
+            this.nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.nextCard('button');
+            });
         }
         
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') this.prevCard();
-            if (e.key === 'ArrowRight') this.nextCard();
-            if (e.key === ' ') {
-                e.preventDefault();
-                this.toggleAutoplay();
+            if (!this.container || !this.isInViewport(this.container)) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    this.prevCard('keyboard');
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    this.nextCard('keyboard');
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    this.toggleAutoplay();
+                    break;
+                case 'Escape':
+                    this.pauseAutoplay();
+                    break;
             }
         });
         
@@ -281,7 +533,24 @@ class SimpleCardDeck {
             }
         });
         
+        // Pause on focus loss
+        window.addEventListener('blur', () => this.pauseAutoplay());
+        window.addEventListener('focus', () => this.resumeAutoplay());
+        
         console.log('✅ Events bound successfully');
+    }
+    
+    /**
+     * Check if element is in viewport
+     */
+    isInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
     }
     
     /**
@@ -292,8 +561,8 @@ class SimpleCardDeck {
         
         this.stopAutoplay();
         this.autoplayTimer = setInterval(() => {
-            if (!this.isTransitioning) {
-                this.nextCard();
+            if (!this.isTransitioning && !this.isSwiping) {
+                this.nextCard('auto');
             }
         }, this.autoplayDelay);
         
@@ -321,7 +590,7 @@ class SimpleCardDeck {
      * Resume autoplay
      */
     resumeAutoplay() {
-        if (this.isAutoPlaying) {
+        if (this.isAutoPlaying && !this.isSwiping) {
             this.startAutoplay();
         }
     }
@@ -367,7 +636,7 @@ class SimpleCardDeck {
     trackEvent(eventName, data = {}) {
         const eventData = {
             event: eventName,
-            component: 'simple_card_deck',
+            component: 'enhanced_card_deck',
             timestamp: Date.now(),
             current_index: this.currentIndex,
             total_cards: this.allCards.length,
@@ -379,8 +648,8 @@ class SimpleCardDeck {
         // Google Analytics
         if (typeof gtag !== 'undefined') {
             gtag('event', eventName, {
-                event_category: 'card_deck_features',
-                event_label: data.feature || '',
+                event_category: 'enhanced_card_deck_features',
+                event_label: data.feature || data.method || '',
                 value: this.currentIndex
             });
         }
@@ -396,13 +665,14 @@ class SimpleCardDeck {
      */
     getAPI() {
         return {
-            next: () => this.nextCard(),
-            prev: () => this.prevCard(),
+            next: (type = 'api') => this.nextCard(type),
+            prev: (type = 'api') => this.prevCard(type),
             goTo: (index) => {
-                if (index >= 0 && index < this.allCards.length) {
+                if (index >= 0 && index < this.allCards.length && index !== this.currentIndex) {
                     this.currentIndex = index;
                     this.arrangeCards();
                     this.updateProgress();
+                    this.trackEvent('goto_card', { target_index: index });
                 }
             },
             play: () => {
@@ -415,7 +685,12 @@ class SimpleCardDeck {
             },
             getCurrentIndex: () => this.currentIndex,
             getTotalCards: () => this.allCards.length,
-            getCurrentCard: () => this.allCards[this.currentIndex]
+            getCurrentCard: () => this.allCards[this.currentIndex],
+            isPlaying: () => this.isAutoPlaying,
+            isSwiping: () => this.isSwiping,
+            setSwipeThreshold: (threshold) => {
+                this.swipeThreshold = Math.max(50, Math.min(200, threshold));
+            }
         };
     }
     
@@ -424,32 +699,45 @@ class SimpleCardDeck {
      */
     destroy() {
         this.stopAutoplay();
-        console.log('🧹 Simple card deck destroyed');
+        
+        // Remove event listeners
+        if (this.container) {
+            this.container.removeEventListener('touchstart', this.handleTouchStart);
+            this.container.removeEventListener('touchmove', this.handleTouchMove);
+            this.container.removeEventListener('touchend', this.handleTouchEnd);
+            this.container.removeEventListener('mousedown', this.handleMouseDown);
+            this.container.removeEventListener('mousemove', this.handleMouseMove);
+            this.container.removeEventListener('mouseup', this.handleMouseUp);
+            this.container.removeEventListener('mouseleave', this.handleMouseUp);
+        }
+        
+        console.log('🧹 Enhanced card deck destroyed');
     }
 }
 
 // Initialize
-let simpleCardDeck = null;
+let enhancedCardDeck = null;
 
-function initializeSimpleCardDeck() {
-    console.log('🚀 Starting Simple Card Deck...');
+function initializeEnhancedCardDeck() {
+    console.log('🚀 Starting Enhanced Card Deck...');
     
-    simpleCardDeck = new SimpleCardDeck();
+    enhancedCardDeck = new EnhancedCardDeck();
     
-    // Export for debugging
-    window.SimpleCardDeck = simpleCardDeck.getAPI();
+    // Export for debugging and external control
+    window.EnhancedCardDeck = enhancedCardDeck.getAPI();
     
-    console.log('✅ Simple Card Deck ready!');
+    console.log('✅ Enhanced Card Deck ready!');
+    console.log('💡 Try swiping left/right or using arrow keys!');
 }
 
 // Auto-initialize
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeSimpleCardDeck);
+    document.addEventListener('DOMContentLoaded', initializeEnhancedCardDeck);
 } else {
-    initializeSimpleCardDeck();
+    initializeEnhancedCardDeck();
 }
 
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SimpleCardDeck;
+    module.exports = EnhancedCardDeck;
 }

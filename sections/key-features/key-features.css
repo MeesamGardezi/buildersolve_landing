@@ -1,4 +1,4 @@
-/* ===== STATIC CARD DECK FEATURES - SIMPLE & RELIABLE ===== */
+/* ===== SOLID CARD DECK FEATURES - SWIPEABLE ===== */
 
 /* ===== SECTION FOUNDATION ===== */
 #key-features-section {
@@ -127,6 +127,7 @@
     margin: 0 auto;
     transform: translateZ(0);
     perspective: 1000px;
+    touch-action: pan-y pinch-zoom; /* Allow vertical scroll but handle horizontal */
 }
 
 /* ===== INDIVIDUAL FEATURE CARDS ===== */
@@ -164,18 +165,58 @@
     transform: translate3d(0, -8px, 0) scale(1.02) !important;
 }
 
-/* ===== CARD INNER CONTENT ===== */
+/* ===== SWIPE ANIMATION STATES ===== */
+.feature-deck-card.swiping-left {
+    transform: translate3d(-100px, 0, 0) scale(0.95) !important;
+    opacity: 0.7 !important;
+    transition: all 0.2s ease-out !important;
+}
+
+.feature-deck-card.swiping-right {
+    transform: translate3d(100px, 0, 0) scale(0.95) !important;
+    opacity: 0.7 !important;
+    transition: all 0.2s ease-out !important;
+}
+
+.feature-deck-card.swipe-out-left {
+    transform: translate3d(-120%, 0, 0) rotate(-15deg) !important;
+    opacity: 0 !important;
+    transition: all 0.3s ease-in !important;
+}
+
+.feature-deck-card.swipe-out-right {
+    transform: translate3d(120%, 0, 0) rotate(15deg) !important;
+    opacity: 0 !important;
+    transition: all 0.3s ease-in !important;
+}
+
+.feature-deck-card.swipe-in {
+    animation: swipeIn 0.4s ease-out forwards;
+}
+
+@keyframes swipeIn {
+    0% {
+        transform: translate3d(0, 20px, 0) scale(0.9);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* ===== CARD INNER CONTENT - SOLID DESIGN ===== */
 .card-inner {
     width: 100%;
     height: 100%;
-    background: rgba(30, 41, 59, 0.95);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(100, 116, 139, 0.3);
+    /* SOLID BACKGROUND - NO MORE TRANSPARENCY */
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    border: 2px solid rgba(100, 116, 139, 0.4);
     border-radius: var(--radius-2xl);
     overflow: hidden;
     box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 8px 16px rgba(0, 0, 0, 0.2);
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        0 4px 10px rgba(0, 0, 0, 0.1);
     
     /* Card layout */
     display: flex;
@@ -187,14 +228,16 @@
     /* Smooth transitions */
     transition: 
         box-shadow 0.3s ease-out,
-        border-color 0.3s ease-out;
+        border-color 0.3s ease-out,
+        background 0.3s ease-out;
 }
 
 .feature-deck-card:hover .card-inner {
+    background: linear-gradient(135deg, #334155 0%, #475569 100%);
     box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.4),
-        0 12px 24px rgba(0, 0, 0, 0.3);
-    border-color: rgba(147, 197, 253, 0.5);
+        0 12px 35px rgba(0, 0, 0, 0.3),
+        0 6px 15px rgba(0, 0, 0, 0.15);
+    border-color: rgba(147, 197, 253, 0.6);
 }
 
 /* ===== CARD HEADER ===== */
@@ -203,7 +246,8 @@
     display: flex;
     align-items: center;
     gap: var(--space-4);
-    border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+    border-bottom: 1px solid rgba(100, 116, 139, 0.3);
+    background: rgba(15, 23, 42, 0.2);
 }
 
 .card-icon {
@@ -211,6 +255,7 @@
     line-height: 1;
     flex-shrink: 0;
     transition: transform 0.3s ease-out;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .feature-deck-card:hover .card-icon {
@@ -224,6 +269,7 @@
     color: #F1F5F9;
     line-height: var(--leading-tight);
     margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* ===== CARD CONTENT ===== */
@@ -232,19 +278,22 @@
     padding: var(--space-6) var(--space-8);
     display: flex;
     align-items: center;
+    background: rgba(15, 23, 42, 0.1);
 }
 
 .card-description {
     font-size: var(--text-base);
-    color: #CBD5E1;
+    color: #E2E8F0;
     line-height: var(--leading-relaxed);
     margin: 0;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
 /* ===== CARD FOOTER ===== */
 .card-footer {
     padding: var(--space-6) var(--space-8) var(--space-8);
-    border-top: 1px solid rgba(100, 116, 139, 0.2);
+    border-top: 1px solid rgba(100, 116, 139, 0.3);
+    background: rgba(15, 23, 42, 0.2);
 }
 
 .card-learn-more {
@@ -260,7 +309,9 @@
     font-size: var(--text-sm);
     font-weight: var(--font-semibold);
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 
+        0 3px 8px rgba(59, 130, 246, 0.3),
+        0 1px 3px rgba(0, 0, 0, 0.2);
     
     transform: translateZ(0);
     
@@ -273,7 +324,9 @@
 .card-learn-more:hover {
     background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
     transform: translateY(-2px) translateZ(0);
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    box-shadow: 
+        0 5px 15px rgba(59, 130, 246, 0.4),
+        0 2px 5px rgba(0, 0, 0, 0.25);
 }
 
 .card-learn-more:active {
@@ -306,9 +359,8 @@
     position: absolute;
     width: 56px;
     height: 56px;
-    background: rgba(30, 41, 59, 0.9);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(100, 116, 139, 0.3);
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    border: 2px solid rgba(100, 116, 139, 0.4);
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
@@ -317,20 +369,26 @@
     color: #F1F5F9;
     pointer-events: auto;
     
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        0 2px 5px rgba(0, 0, 0, 0.1);
+    
     transform: translateZ(0);
     
     transition: 
-        background-color 0.2s ease-out,
+        background 0.2s ease-out,
         transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
         box-shadow 0.2s ease-out,
         border-color 0.2s ease-out;
 }
 
 .deck-nav:hover {
-    background: #3B82F6;
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
     color: white;
     transform: scale(1.1) translateZ(0);
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+    box-shadow: 
+        0 6px 20px rgba(59, 130, 246, 0.3),
+        0 3px 8px rgba(0, 0, 0, 0.2);
     border-color: rgba(59, 130, 246, 0.6);
 }
 
@@ -340,11 +398,11 @@
 }
 
 .deck-nav-prev {
-    left: -80px;
+    left: -120px;
 }
 
 .deck-nav-next {
-    right: -80px;
+    right: -120px;
 }
 
 /* ===== PROGRESS INDICATOR ===== */
@@ -363,10 +421,12 @@
     color: #CBD5E1;
     
     padding: var(--space-3) var(--space-6);
-    background: rgba(30, 41, 59, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(100, 116, 139, 0.3);
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    border: 1px solid rgba(100, 116, 139, 0.4);
     border-radius: var(--radius-xl);
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .progress-current {
@@ -380,6 +440,25 @@
 
 .progress-total {
     color: rgba(203, 213, 225, 0.7);
+}
+
+/* ===== SWIPE INSTRUCTION ===== */
+.swipe-instruction {
+    position: absolute;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(203, 213, 225, 0.6);
+    font-size: var(--text-sm);
+    text-align: center;
+    opacity: 0;
+    animation: fadeInOut 3s ease-in-out infinite;
+    animation-delay: 2s;
+}
+
+@keyframes fadeInOut {
+    0%, 70%, 100% { opacity: 0; }
+    10%, 60% { opacity: 1; }
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -414,11 +493,11 @@
     }
     
     .deck-nav-prev {
-        left: -70px;
+        left: -100px;
     }
     
     .deck-nav-next {
-        right: -70px;
+        right: -100px;
     }
 }
 
@@ -454,11 +533,11 @@
     }
     
     .deck-nav-prev {
-        left: -60px;
+        left: -80px;
     }
     
     .deck-nav-next {
-        right: -60px;
+        right: -80px;
     }
 }
 
@@ -518,11 +597,11 @@
     }
     
     .deck-nav-prev {
-        left: -50px;
+        left: -70px;
     }
     
     .deck-nav-next {
-        right: -50px;
+        right: -70px;
     }
 }
 
@@ -557,11 +636,11 @@
     }
     
     .deck-nav-prev {
-        left: -40px;
+        left: -60px;
     }
     
     .deck-nav-next {
-        right: -40px;
+        right: -60px;
     }
     
     .deck-progress {
@@ -633,6 +712,10 @@
     .card-icon {
         transform: none !important;
     }
+    
+    .swipe-instruction {
+        animation: none;
+    }
 }
 
 /* ===== HIGH CONTRAST MODE ===== */
@@ -646,7 +729,7 @@
     }
     
     .card-inner {
-        border: 2px solid rgba(147, 197, 253, 0.6);
+        border: 2px solid rgba(147, 197, 253, 0.8);
     }
 }
 
