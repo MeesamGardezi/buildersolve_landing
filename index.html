@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuilderSolve - Construction Management That Actually Works</title>
+    <meta name="description" content="Stop losing money on construction projects. BuilderSolve gives you complete control over schedules, budgets, and teams in one powerful platform.">
+    
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- Component CSS -->
+    <link rel="stylesheet" href="components/navigation/nav.css">
+    <link rel="stylesheet" href="components/footer/footer.css">
+    <link rel="stylesheet" href="components/buttons/cta-buttons.css">
+    
+    <!-- Section CSS -->
+    <link rel="stylesheet" href="sections/hero/hero.css">
+    <link rel="stylesheet" href="sections/problem-solution/problem-solution.css">
+    <link rel="stylesheet" href="sections/dashboard-showcase/dashboard-showcase.css">
+    <link rel="stylesheet" href="sections/key-features/key-features.css">
+    <link rel="stylesheet" href="sections/social-proof/social-proof.css">
+    <link rel="stylesheet" href="sections/final-cta/final-cta.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+</head>
+<body class="loading">
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading BuilderSolve...</div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav id="navigation" class="nav-container"></nav>
+    
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section id="hero-section" class="section" data-section="hero"></section>
+
+        <!-- Key Features Section -->
+        <section id="key-features-section"  class="section" data-section="key-features-section"></section>
+        
+        <!-- Dashboard Showcase Section -->
+        <section id="dashboard-showcase-section" class="section" data-section="dashboard-showcase"></section>
+
+        <!-- Problem/Solution Section -->
+        <section id="problem-solution-section" class="section" data-section="problem-solution"></section>
+        
+        <!-- Social Proof Section -->
+        <section id="social-proof-section" class="section" data-section="social-proof"></section>
+        
+        <!-- Final CTA Section -->
+        <section id="final-cta-section" class="section" data-section="final-cta"></section>
+    </main>
+    
+    <!-- Footer -->
+    <footer id="footer" class="footer-container"></footer>
+    
+    <!-- Scroll Progress Indicator -->
+    <div id="scroll-progress" class="scroll-progress"></div>
+    
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 4L4 12h6v8h4v-8h6l-8-8z" fill="currentColor"/>
+        </svg>
+    </button>
+    
+    <!-- Contact Modal (triggered from CTAs) -->
+    <div id="contact-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+            <div id="contact-form-container"></div>
+        </div>
+    </div>
+    
+    <!-- Global JS -->
+    <script src="js/utils.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Component JS -->
+    <script src="components/navigation/nav.js"></script>
+    <script src="components/footer/footer.js"></script>
+    <script src="components/buttons/cta-buttons.js"></script>
+    
+    <!-- Section JS -->
+    <script src="sections/hero/hero.js"></script>
+    <script src="sections/problem-solution/problem-solution.js"></script>
+    <script src="sections/dashboard-showcase/dashboard-showcase.js"></script>
+    <script src="sections/key-features/key-features.js"></script>
+    <script src="sections/social-proof/social-proof.js"></script>
+    <script src="sections/final-cta/final-cta.js"></script>
+    <script src="sections/contact-form/contact-form.js"></script>
+</body>
+</html>
