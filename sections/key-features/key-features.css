@@ -1,4 +1,4 @@
-/* ===== SIMPLE 5-CARD FEATURES LAYOUT ===== */
+/* ===== IMAGE-BASED 5-CARD FEATURES LAYOUT ===== */
 
 :root {
     --primary-blue: #0066CC;
@@ -70,12 +70,21 @@
     display: none;
 }
 
-/* ===== CARDS ===== */
-.feature-card {
+/* ===== FEATURE ITEMS ===== */
+.feature-item {
     flex: 1 1 auto;
     min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* ===== IMAGE CARDS ===== */
+.feature-card {
+    position: relative;
+    width: 100%;
+    height: 200px;
     background: var(--bg-white);
-    border: 1px solid var(--border-200);
     border-radius: 12px;
     box-shadow: var(--shadow-md);
     overflow: hidden;
@@ -86,66 +95,29 @@
 .feature-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
-    border-color: var(--primary-blue);
 }
 
-/* ===== CARD HEADER ===== */
-.card-header {
-    padding: 1.5rem 1.5rem 1rem;
-    text-align: center;
-    background: var(--bg-gray-50);
-    border-bottom: 1px solid var(--border-200);
-}
-
-.card-icon {
-    font-size: 2.5rem;
-    margin-bottom: 0.75rem;
-    display: block;
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: var(--transition);
 }
 
-.feature-card:hover .card-icon {
-    transform: scale(1.1);
+.feature-card:hover .card-image {
+    transform: scale(1.05);
 }
 
-.card-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text-900);
-    margin: 0;
-    line-height: 1.4;
-}
-
-/* ===== CARD CONTENT ===== */
-.card-content {
-    padding: 1.25rem 1.5rem;
-    text-align: center;
-    height: 120px;
-    display: flex;
-    align-items: center;
-}
-
-.card-description {
-    font-size: 0.9rem;
-    color: var(--text-700);
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* ===== CARD FOOTER ===== */
-.card-footer {
-    padding: 1rem 1.5rem 1.5rem;
-    text-align: center;
-    border-top: 1px solid var(--border-200);
-    background: var(--bg-gray-50);
-}
-
+/* ===== LEARN MORE BUTTON OVERLAY ===== */
 .card-learn-more {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.625rem 1.25rem;
-    background: var(--primary-blue);
+    padding: 0.625rem 1rem;
+    background: rgba(0, 102, 204, 0.9);
     color: white;
     border: none;
     border-radius: 6px;
@@ -153,12 +125,15 @@
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
-    text-decoration: none;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transform: translateY(10px);
 }
 
-.card-learn-more:hover {
-    background: var(--primary-blue-dark);
-    transform: translateY(-1px);
+.feature-card:hover .card-learn-more {
+    opacity: 1;
+    transform: translateY(0);
+    background: rgba(0, 68, 153, 0.95);
 }
 
 .card-learn-more::after {
@@ -170,6 +145,17 @@
     transform: translateX(3px);
 }
 
+/* ===== CARD TITLES ===== */
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-900);
+    margin: 1rem 0 0 0;
+    line-height: 1.4;
+    text-align: left;
+    width: 100%;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 
 /* Desktop - All 5 cards in a row */
@@ -178,7 +164,7 @@
         overflow-x: visible;
     }
     
-    .feature-card {
+    .feature-item {
         min-width: 0;
     }
 }
@@ -189,12 +175,16 @@
         padding: 0 1rem;
     }
     
-    .feature-card {
+    .feature-item {
         min-width: 260px;
     }
     
     .features-container {
         gap: 1.25rem;
+    }
+
+    .feature-card {
+        height: 180px;
     }
 }
 
@@ -228,18 +218,18 @@
         padding-right: 1.5rem;
     }
     
-    .feature-card {
+    .feature-item {
         min-width: 240px;
         flex-shrink: 0;
     }
-    
-    .card-content {
-        height: 100px;
-        padding: 1rem 1.25rem;
+
+    .feature-card {
+        height: 160px;
     }
     
-    .card-description {
-        font-size: 0.85rem;
+    .card-title {
+        font-size: 1.125rem;
+        margin: 0.75rem 0 0 0;
     }
 }
 
@@ -267,25 +257,24 @@
         padding-right: 0.75rem;
     }
     
-    .feature-card {
+    .feature-item {
         min-width: 220px;
     }
-    
-    .card-content {
-        height: 90px;
-        padding: 0.75rem 1rem;
+
+    .feature-card {
+        height: 140px;
     }
     
-    .card-description {
+    .card-title {
+        font-size: 1rem;
+        margin: 0.5rem 0 0 0;
+    }
+    
+    .card-learn-more {
+        padding: 0.5rem 0.875rem;
         font-size: 0.8rem;
-    }
-    
-    .card-header {
-        padding: 1.25rem 1.25rem 0.75rem;
-    }
-    
-    .card-footer {
-        padding: 0.75rem 1.25rem 1.25rem;
+        bottom: 0.75rem;
+        right: 0.75rem;
     }
 }
 
@@ -303,7 +292,7 @@
 /* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
     .feature-card,
-    .card-icon,
+    .card-image,
     .card-learn-more {
         transition: none !important;
     }
@@ -343,7 +332,7 @@
         scroll-snap-type: x mandatory;
     }
     
-    .feature-card {
+    .feature-item {
         scroll-snap-align: start;
     }
 }

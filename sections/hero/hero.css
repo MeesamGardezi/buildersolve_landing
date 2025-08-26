@@ -22,22 +22,22 @@
   --accent-blue-hover: #1D4ED8;
   --accent-blue-light: #DBEAFE;
 
-  /* Typography Scale */
+  /* Typography Scale - Increased */
   --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  /* Font Sizes */
-  --text-xs: 0.625rem;     /* 10px */
-  --text-sm: 0.75rem;      /* 12px */
-  --text-base: 0.875rem;   /* 14px */
-  --text-lg: 1rem;         /* 16px */
-  --text-xl: 1.125rem;     /* 18px */
-  --text-2xl: 1.25rem;     /* 20px */
-  --text-3xl: 1.5rem;      /* 24px */
-  --text-4xl: 1.75rem;     /* 28px */
-  --text-5xl: 2rem;        /* 32px */
-  --text-6xl: 2.25rem;     /* 36px */
-  --text-7xl: 2.5rem;      /* 40px */
+  /* Font Sizes - Slightly Increased */
+  --text-xs: 0.6875rem;    /* 11px - was 10px */
+  --text-sm: 0.8125rem;    /* 13px - was 12px */
+  --text-base: 0.9375rem;  /* 15px - was 14px */
+  --text-lg: 1.0625rem;    /* 17px - was 16px */
+  --text-xl: 1.1875rem;    /* 19px - was 18px */
+  --text-2xl: 1.3125rem;   /* 21px - was 20px */
+  --text-3xl: 1.5625rem;   /* 25px - was 24px */
+  --text-4xl: 1.875rem;    /* 30px - was 28px */
+  --text-5xl: 2.125rem;    /* 34px - was 32px */
+  --text-6xl: 2.375rem;    /* 38px - was 36px */
+  --text-7xl: 2.625rem;    /* 42px - was 40px */
 
   /* Font Weights */
   --font-light: 300;
@@ -144,12 +144,12 @@ body {
   padding-bottom: var(--space-12);
 }
 
-/* ===== BACKGROUND ELEMENTS ===== */
+/* ===== BACKGROUND ELEMENTS - FULL WIDTH ===== */
 .hero-background {
   position: absolute;
   left: 0;
   top: 0;
-  width: 50%;
+  width: 100%;
   height: 100%;
   z-index: 0;
   overflow: hidden;
@@ -157,7 +157,8 @@ body {
     135deg,
     var(--primary-50) 0%,
     rgba(255, 255, 255, 0.95) 35%,
-    var(--accent-orange-light) 100%
+    var(--accent-orange-light) 70%,
+    rgba(37, 99, 235, 0.1) 100%
   );
 }
 
@@ -166,18 +167,20 @@ body {
   inset: 0;
   background: 
     radial-gradient(ellipse at top left, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom right, rgba(234, 88, 12, 0.15) 0%, transparent 50%);
+    radial-gradient(ellipse at bottom right, rgba(234, 88, 12, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.8) 20%, transparent 70%);
 }
 
 .hero-pattern {
   position: absolute;
   inset: 0;
-  opacity: 0.6;
+  opacity: 0.4;
   background-image: 
     radial-gradient(circle at 25% 25%, var(--accent-blue) 1px, transparent 1px),
-    radial-gradient(circle at 75% 75%, var(--accent-orange) 1px, transparent 1px);
-  background-size: 40px 40px, 50px 50px;
-  background-position: 0 0, 25px 25px;
+    radial-gradient(circle at 75% 75%, var(--accent-orange) 1px, transparent 1px),
+    radial-gradient(circle at 50% 10%, var(--primary-300) 0.5px, transparent 0.5px);
+  background-size: 40px 40px, 50px 50px, 30px 30px;
+  background-position: 0 0, 25px 25px, 15px 35px;
   animation: patternFloat 8s ease-in-out infinite;
 }
 
@@ -186,35 +189,6 @@ body {
   25% { transform: translate(-10px, -5px) rotate(1deg); }
   50% { transform: translate(5px, -10px) rotate(-1deg); }
   75% { transform: translate(-5px, 5px) rotate(0.5deg); }
-}
-
-/* ===== BACKGROUND IMAGE - RIGHT SIDE ===== */
-.hero-bg-image {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  z-index: 0;
-  background-image: url('assets/images/house_image.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  /* filter: grayscale(100%) brightness(0.5) contrast(1.2); */
-  opacity: 0.6;
-}
-
-.hero-bg-image::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(15, 23, 42, 0.2) 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(37, 99, 235, 0.1) 100%
-  );
-  mix-blend-mode: overlay;
 }
 
 /* ===== CONTENT LAYOUT ===== */
@@ -306,7 +280,7 @@ body {
   flex-shrink: 0;
 }
 
-/* ===== CTA BUTTON - ADJUSTED ===== */
+/* ===== CTA BUTTON ===== */
 .hero-cta {
   display: flex;
   flex-direction: column;
@@ -637,14 +611,6 @@ body {
     min-height: 65svh;
   }
   
-  .hero-background {
-    width: 100%;
-  }
-  
-  .hero-bg-image {
-    display: none;
-  }
-  
   .hero-content {
     grid-template-columns: 1fr;
     gap: var(--space-10);
@@ -721,7 +687,7 @@ body {
   }
   
   .cta-note {
-    font-size: 10px;
+    font-size: 11px;
     line-height: var(--leading-normal);
   }
 }
@@ -828,7 +794,7 @@ body {
     gap: var(--space-2);
   }
   
-  .hero-bg-image {
+  .hero-pattern {
     display: none;
   }
 }
@@ -840,7 +806,6 @@ body {
 }
 
 .hero-background,
-.hero-bg-image,
 .hero-image-card,
 .hero-images-container {
   transform: translateZ(0);
@@ -854,9 +819,5 @@ body {
   
   .hero-image-card {
     animation: none;
-  }
-  
-  .hero-bg-image {
-    display: none;
   }
 }

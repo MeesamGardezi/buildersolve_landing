@@ -1,8 +1,8 @@
 /**
- * BuilderSolve Hero Section - FIXED VERSION
+ * BuilderSolve Hero Section - UPDATED VERSION
  * Production ready for cPanel shared hosting
  * 
- * @version 6.1.0 - FIXED DISPLAY
+ * @version 6.2.0 - BACKGROUND IMAGE REMOVED
  */
 
 class BuilderSolveHero {
@@ -11,8 +11,7 @@ class BuilderSolveHero {
         this.config = {
             scrollThrottle: 16,
             imageTimeout: 2000,
-            parallaxSpeed: 0.05,
-            backgroundParallaxSpeed: 0.03
+            parallaxSpeed: 0.05
         };
 
         // State management
@@ -45,7 +44,6 @@ class BuilderSolveHero {
             this.cacheElements();
             this.bindEvents();
             this.setupImageHandling();
-            this.setupBackgroundImage();
             this.setupAccessibility();
             
             this.state.isInitialized = true;
@@ -54,7 +52,7 @@ class BuilderSolveHero {
             // Track initialization
             this.trackEvent('hero_initialized', {
                 timestamp: Date.now(),
-                hasBackgroundImage: !!this.elements.backgroundImage
+                hasImages: this.elements.heroImages ? this.elements.heroImages.length : 0
             });
 
         } catch (error) {
@@ -73,7 +71,6 @@ class BuilderSolveHero {
             heroImages: document.querySelectorAll('.hero-image'),
             imageCards: document.querySelectorAll('.hero-image-card'),
             imagesContainer: document.querySelector('.hero-images-container'),
-            backgroundImage: document.querySelector('.hero-bg-image'),
             heroPattern: document.querySelector('.hero-pattern')
         };
 
@@ -81,7 +78,7 @@ class BuilderSolveHero {
             heroSection: !!this.elements.heroSection,
             ctaButton: !!this.elements.ctaButton,
             heroImages: this.elements.heroImages ? this.elements.heroImages.length : 0,
-            backgroundImage: !!this.elements.backgroundImage
+            imagesContainer: !!this.elements.imagesContainer
         });
     }
 
@@ -129,32 +126,6 @@ class BuilderSolveHero {
     }
 
     /**
-     * Setup background image
-     */
-    setupBackgroundImage() {
-        if (!this.elements.backgroundImage) return;
-
-        // The background image is loaded via CSS, so we just need to ensure it's ready
-        const bgImageUrl = 'assets/images/house_image.webp';
-        const img = new Image();
-        
-        img.onload = () => {
-            console.log('✅ Background image loaded');
-            this.trackEvent('background_image_loaded', {
-                url: bgImageUrl,
-                timestamp: Date.now()
-            });
-        };
-
-        img.onerror = () => {
-            console.warn('⚠️ Background image failed to load');
-            // Fallback is handled in CSS
-        };
-
-        img.src = bgImageUrl;
-    }
-
-    /**
      * Handle CTA button click
      */
     handleCTAClick(event) {
@@ -197,12 +168,6 @@ class BuilderSolveHero {
         if (scrolled <= heroHeight && this.elements.imagesContainer) {
             const parallaxOffset = scrolled * this.config.parallaxSpeed;
             this.elements.imagesContainer.style.transform = `translateY(${parallaxOffset}px)`;
-        }
-
-        // Parallax for background
-        if (scrolled <= heroHeight && this.elements.backgroundImage) {
-            const bgParallaxOffset = scrolled * this.config.backgroundParallaxSpeed;
-            this.elements.backgroundImage.style.transform = `translateY(${bgParallaxOffset}px) scale(1.05)`;
         }
 
         // Hide/show scroll indicator
@@ -309,10 +274,6 @@ class BuilderSolveHero {
         if (this.elements.imagesContainer) {
             this.elements.imagesContainer.setAttribute('aria-label', 
                 'BuilderSolve construction management platform showcase images');
-        }
-
-        if (this.elements.backgroundImage) {
-            this.elements.backgroundImage.setAttribute('aria-hidden', 'true');
         }
 
         // Keyboard navigation for CTA
