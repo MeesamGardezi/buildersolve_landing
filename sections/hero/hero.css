@@ -480,67 +480,6 @@ body {
   }
 }
 
-/* ===== SCROLL INDICATOR ===== */
-.scroll-indicator {
-  position: absolute;
-  bottom: var(--space-8);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-xl);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  animation: scrollBounce 2s ease-in-out infinite;
-  z-index: 20;
-}
-
-.scroll-indicator:hover {
-  background: white;
-  transform: translateX(-50%) translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.scroll-text {
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
-  color: var(--primary-700);
-  text-align: center;
-}
-
-.scroll-arrow {
-  color: var(--primary-500);
-  transition: all var(--transition-base);
-}
-
-.scroll-indicator:hover .scroll-arrow {
-  color: var(--accent-blue);
-  transform: translateY(2px);
-}
-
-.scroll-arrow svg {
-  width: 20px;
-  height: 20px;
-}
-
-@keyframes scrollBounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateX(-50%) translateY(0);
-  }
-  40% {
-    transform: translateX(-50%) translateY(-8px);
-  }
-  60% {
-    transform: translateX(-50%) translateY(-4px);
-  }
-}
-
 /* ===== CTA SECONDARY STYLING ===== */
 .cta-secondary {
   margin-top: var(--space-2);

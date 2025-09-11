@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Feature - Professional Construction Software</title>
+    
+    <link rel="stylesheet" href="feature-page-template.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="feature-page" id="feature-page">
+        
+        <!-- Video Hero Section -->
+        <section class="video-section" id="video-section">
+            <div class="video-container">
+                <div class="video-wrapper" id="video-wrapper">
+                    <!-- Video will be inserted here by JavaScript -->
+                </div>
+                <div class="video-content">
+                    <h1 class="video-title" id="video-title">Feature Title</h1>
+                    <p class="video-subtitle" id="video-subtitle">Feature description will be loaded here.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Sections Container -->
+        <div class="content-sections" id="content-sections">
+            <!-- Sections will be dynamically generated here -->
+        </div>
+
+        <!-- CTA Section -->
+        <section class="cta-section" id="cta-section">
+            <div class="cta-container">
+                <h2 class="cta-title" id="cta-title">Ready to Get Started?</h2>
+                <p class="cta-description" id="cta-description">Start your free trial today and see the difference.</p>
+                <div class="cta-buttons">
+                    <button class="btn-primary" id="btn-primary">Start Free Trial</button>
+                    <button class="btn-secondary" id="btn-secondary">Schedule Demo</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Template for sections -->
+    <template id="section-template">
+        <section class="content-section" data-layout="left">
+            <div class="section-container">
+                <div class="section-image">
+                    <img src="" alt="" loading="lazy" />
+                </div>
+                <div class="section-content">
+                    <h2 class="section-title"></h2>
+                    <p class="section-description"></p>
+                    <ul class="section-features"></ul>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <script src="feature-page-template.js"></script>
+    
+    <!-- Page Configuration Script -->
+    <script>
+        // Page configuration - customize this for each feature page
+        const pageConfig = {
+            // Page metadata
+            pageTitle: "Estimating - Professional Construction Software",
+            featureName: "estimating",
+            
+            // Video section
+            video: {
+                type: "youtube", // "youtube", "vimeo", or "direct"
+                url: "https://www.youtube.com/embed/dQw4w9WgXcQ?controls=1&modestbranding=1&rel=0",
+                title: "Professional Estimating Made Simple",
+                subtitle: "Watch how our estimating tools help contractors create accurate bids faster and win more projects."
+            },
+            
+            // Content sections
+            sections: [
+                {
+                    title: "Comprehensive Cost Database",
+                    description: "Access thousands of current material prices, labor rates, and equipment costs. Our database is updated regularly to ensure your estimates reflect real market conditions, helping you stay competitive while maintaining profitability.",
+                    imageSrc: "/assets/images/key_features_images/estimate.png",
+                    imageAlt: "Cost database interface showing material prices and labor rates",
+                    layout: "left",
+                    features: [
+                        "Real-time pricing data",
+                        "Regional cost adjustments", 
+                        "Historical cost tracking",
+                        "Custom rate libraries"
+                    ]
+                },
+                {
+                    title: "Digital Takeoff Tools",
+                    description: "Measure directly from digital plans with precision tools that calculate quantities automatically. Import PDFs, CAD files, or images and start measuring immediately with our intuitive interface.",
+                    imageSrc: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop&q=80",
+                    imageAlt: "Digital takeoff tools showing blueprint measurements and calculations",
+                    layout: "right",
+                    features: [
+                        "PDF and CAD file support",
+                        "Automatic area calculations",
+                        "Layer management", 
+                        "Measurement scaling"
+                    ]
+                },
+                {
+                    title: "Professional Proposals",
+                    description: "Generate polished proposals that win more jobs. Customize templates with your branding, include detailed breakdowns, and present professional estimates that build client confidence.",
+                    imageSrc: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&q=80",
+                    imageAlt: "Professional proposal template with company branding and detailed breakdown",
+                    layout: "left",
+                    features: [
+                        "Customizable templates",
+                        "Company branding options",
+                        "Detailed cost breakdowns",
+                        "Digital signatures"
+                    ]
+                },
+                {
+                    title: "Bid Analytics & Tracking",
+                    description: "Track your estimating performance with detailed analytics. Monitor win rates, identify pricing patterns, and refine your bidding strategy with data-driven insights.",
+                    imageSrc: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&q=80",
+                    imageAlt: "Analytics dashboard showing bid performance and win rates",
+                    layout: "right",
+                    features: [
+                        "Win/loss ratio tracking",
+                        "Profit margin analysis",
+                        "Competitor comparison",
+                        "Performance reports"
+                    ]
+                }
+            ],
+            
+            // CTA section
+            cta: {
+                title: "Ready to Transform Your Estimating?",
+                description: "Start your free trial today and see how our estimating tools can help you win more profitable projects.",
+                primaryButton: "Start Free Trial",
+                secondaryButton: "Schedule Demo"
+            }
+        };
+        
+        // Initialize the page when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.FeaturePageTemplate) {
+                window.FeaturePageTemplate.init(pageConfig);
+            }
+        });
+    </script>
+</body>
+</html>

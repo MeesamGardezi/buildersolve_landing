@@ -1,128 +1,272 @@
 /**
- * Image-Based 5-Card Features Layout
- * Enhanced with image overlays and clean design
+ * Mobile-Optimized Scrollable Features Layout
+ * Focused on touch interactions and essential functionality
  */
 
-class FeaturesLayout {
+class MobileScrollableFeatures {
     constructor() {
         this.container = null;
-        this.featureItems = [];
-        this.cards = [];
+        this.wrapper = null;
+        this.items = [];
+        this.leftBtn = null;
+        this.rightBtn = null;
+        
+        this.isScrolling = false;
+        this.scrollTimer = null;
+        this.resizeTimer = null;
+        
+        // Touch handling
+        this.touchStart = 0;
+        this.touchEnd = 0;
+        this.isDragging = false;
         
         this.init();
     }
     
     init() {
         this.setupElements();
+        this.createIndicators();
         this.bindEvents();
-        this.setupScrollIndicators();
+        this.updateState();
+        
+        setTimeout(() => this.updateState(), 100);
     }
     
     setupElements() {
         this.container = document.getElementById('features-container');
+        this.wrapper = this.container?.closest('.features-wrapper');
         
-        if (!this.container) {
-            console.log('Features container not found');
-            return;
-        }
+        if (!this.container) return;
         
-        // Get all feature items (containers) and cards (image elements)
-        this.featureItems = Array.from(this.container.querySelectorAll('.feature-item'));
-        this.cards = Array.from(this.container.querySelectorAll('.feature-card'));
+        this.items = Array.from(this.container.querySelectorAll('.feature-item'));
         
-        // Setup learn more buttons
-        this.featureItems.forEach((item, index) => {
-            const learnBtn = item.querySelector('.card-learn-more');
+        // Setup card interactions
+        this.items.forEach((item, i) => {
+            const btn = item.querySelector('.card-learn-more');
             const card = item.querySelector('.feature-card');
             
-            if (learnBtn) {
-                learnBtn.addEventListener('click', (e) => {
-                    this.handleLearnMore(item, index, e);
-                });
+            if (btn) {
+                btn.addEventListener('click', (e) => this.handleLearnMore(item, i, e));
             }
             
-            // Optional: Make entire card clickable (excluding button)
             if (card) {
                 card.addEventListener('click', (e) => {
-                    // Don't trigger if button was clicked
-                    if (e.target.classList.contains('card-learn-more')) return;
-                    this.handleCardClick(item, index, e);
+                    if (!e.target.closest('.card-learn-more')) {
+                        this.handleCardClick(item, i, e);
+                    }
+                });
+                
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.handleCardClick(item, i, e);
+                    }
                 });
             }
         });
+    }
+    
+    createIndicators() {
+        if (!this.wrapper) return;
         
-        console.log(`Features layout initialized with ${this.featureItems.length} feature items`);
+        this.leftBtn = document.createElement('button');
+        this.leftBtn.className = 'scroll-indicator left';
+        this.leftBtn.innerHTML = '‹';
+        this.leftBtn.setAttribute('aria-label', 'Scroll left');
+        this.leftBtn.addEventListener('click', () => this.scrollLeft());
+        
+        this.rightBtn = document.createElement('button');
+        this.rightBtn.className = 'scroll-indicator right';
+        this.rightBtn.innerHTML = '›';
+        this.rightBtn.setAttribute('aria-label', 'Scroll right');
+        this.rightBtn.addEventListener('click', () => this.scrollRight());
+        
+        this.wrapper.appendChild(this.leftBtn);
+        this.wrapper.appendChild(this.rightBtn);
     }
     
     bindEvents() {
-        // Track scroll events for mobile indicators
-        if (this.container) {
-            this.container.addEventListener('scroll', this.handleScroll.bind(this));
-        }
+        if (!this.container) return;
         
-        // Handle window resize for scroll indicators
+        // Core events
+        this.container.addEventListener('scroll', this.handleScroll.bind(this));
+        this.container.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });
+        this.container.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+        this.container.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });
+        this.container.addEventListener('keydown', this.handleKeyDown.bind(this));
+        
         window.addEventListener('resize', this.handleResize.bind(this));
         
-        // Optional: Handle keyboard navigation
-        this.container.addEventListener('keydown', this.handleKeyDown.bind(this));
-    }
-    
-    setupScrollIndicators() {
-        // Only relevant for mobile
-        if (window.innerWidth > 767) return;
-        
-        this.updateScrollIndicators();
+        // Prevent image drag
+        this.items.forEach(item => {
+            const img = item.querySelector('.card-image');
+            if (img) img.addEventListener('dragstart', e => e.preventDefault());
+        });
     }
     
     handleScroll() {
-        if (window.innerWidth > 767) return;
+        this.isScrolling = true;
+        this.updateState();
         
-        this.updateScrollIndicators();
-    }
-    
-    updateScrollIndicators() {
-        if (!this.container || window.innerWidth > 767) return;
+        if (this.scrollTimer) clearTimeout(this.scrollTimer);
         
-        const scrollLeft = this.container.scrollLeft;
-        const scrollWidth = this.container.scrollWidth;
-        const clientWidth = this.container.clientWidth;
-        
-        // Check if scrolled to end
-        const isScrolledToEnd = scrollLeft + clientWidth >= scrollWidth - 10;
-        
-        this.container.classList.toggle('scrolled-to-end', isScrolledToEnd);
-    }
-    
-    handleResize() {
-        // Update scroll indicators on resize
-        clearTimeout(this.resizeTimeout);
-        this.resizeTimeout = setTimeout(() => {
-            this.setupScrollIndicators();
+        this.scrollTimer = setTimeout(() => {
+            this.isScrolling = false;
+            this.onScrollEnd();
         }, 150);
     }
     
-    handleKeyDown(e) {
-        // Add keyboard navigation for accessibility
-        if (window.innerWidth > 767) return; // Only on mobile
+    updateState() {
+        if (!this.container || !this.wrapper) return;
         
-        const isArrowKey = ['ArrowLeft', 'ArrowRight'].includes(e.key);
-        if (!isArrowKey) return;
+        const scrollLeft = this.container.scrollLeft;
+        const maxScroll = this.container.scrollWidth - this.container.clientWidth;
+        
+        // Update indicators
+        if (this.leftBtn) this.leftBtn.disabled = scrollLeft <= 5;
+        if (this.rightBtn) this.rightBtn.disabled = scrollLeft >= maxScroll - 5;
+        
+        // Update fade effects
+        this.wrapper.classList.toggle('hide-left-fade', scrollLeft <= 5);
+        this.wrapper.classList.toggle('hide-right-fade', scrollLeft >= maxScroll - 5);
+        
+        // Dispatch event
+        this.container.dispatchEvent(new CustomEvent('scrollUpdate', {
+            detail: { scrollLeft, maxScroll, progress: maxScroll > 0 ? scrollLeft / maxScroll : 0 }
+        }));
+    }
+    
+    onScrollEnd() {
+        // Snap to nearest item on mobile
+        if (window.innerWidth < 768) this.snapToNearest();
+        
+        this.container.dispatchEvent(new CustomEvent('scrollEnd', {
+            detail: { currentIndex: this.getCurrentIndex() }
+        }));
+    }
+    
+    snapToNearest() {
+        if (!this.items.length) return;
+        
+        const containerRect = this.container.getBoundingClientRect();
+        const center = containerRect.left + containerRect.width / 2;
+        
+        let closest = null;
+        let minDistance = Infinity;
+        
+        this.items.forEach(item => {
+            const rect = item.getBoundingClientRect();
+            const itemCenter = rect.left + rect.width / 2;
+            const distance = Math.abs(center - itemCenter);
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                closest = item;
+            }
+        });
+        
+        if (closest) {
+            closest.scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest'
+            });
+        }
+    }
+    
+    scrollLeft() {
+        const amount = this.getScrollAmount();
+        this.container.scrollBy({ left: -amount, behavior: 'smooth' });
+        this.track('scroll_left');
+    }
+    
+    scrollRight() {
+        const amount = this.getScrollAmount();
+        this.container.scrollBy({ left: amount, behavior: 'smooth' });
+        this.track('scroll_right');
+    }
+    
+    getScrollAmount() {
+        const cardWidth = this.items[0]?.offsetWidth || 280;
+        const gap = parseFloat(getComputedStyle(this.container).gap) || 16;
+        return cardWidth + gap;
+    }
+    
+    getCurrentIndex() {
+        if (!this.items.length) return 0;
+        
+        const containerRect = this.container.getBoundingClientRect();
+        const center = containerRect.left + containerRect.width / 2;
+        
+        for (let i = 0; i < this.items.length; i++) {
+            const rect = this.items[i].getBoundingClientRect();
+            if (rect.left <= center && rect.right >= center) return i;
+        }
+        
+        return 0;
+    }
+    
+    // Touch handling
+    handleTouchStart(e) {
+        this.touchStart = e.touches[0].clientX;
+        this.isDragging = true;
+    }
+    
+    handleTouchMove(e) {
+        if (!this.isDragging) return;
+        
+        this.touchEnd = e.touches[0].clientX;
+        const deltaX = Math.abs(this.touchEnd - this.touchStart);
+        const deltaY = Math.abs(e.touches[0].clientY - (e.touches[0].clientY || 0));
+        
+        if (deltaX > deltaY && deltaX > 10) e.preventDefault();
+    }
+    
+    handleTouchEnd(e) {
+        if (!this.isDragging) return;
+        
+        this.isDragging = false;
+        const delta = this.touchStart - this.touchEnd;
+        
+        if (Math.abs(delta) > 50) {
+            if (delta > 0) {
+                this.scrollRight();
+                this.track('swipe_right');
+            } else {
+                this.scrollLeft();
+                this.track('swipe_left');
+            }
+        }
+    }
+    
+    handleKeyDown(e) {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
         
         e.preventDefault();
         
-        const currentScroll = this.container.scrollLeft;
-        const itemWidth = this.featureItems[0]?.offsetWidth || 240;
-        const gap = 16; // 1rem gap
-        
-        if (e.key === 'ArrowRight') {
-            this.container.scrollTo({
-                left: currentScroll + itemWidth + gap,
-                behavior: 'smooth'
-            });
-        } else if (e.key === 'ArrowLeft') {
-            this.container.scrollTo({
-                left: currentScroll - itemWidth - gap,
-                behavior: 'smooth'
+        switch (e.key) {
+            case 'ArrowLeft': this.scrollLeft(); this.track('key_left'); break;
+            case 'ArrowRight': this.scrollRight(); this.track('key_right'); break;
+            case 'Home': this.scrollTo(0); this.track('key_home'); break;
+            case 'End': this.scrollTo(this.container.scrollWidth); this.track('key_end'); break;
+        }
+    }
+    
+    handleResize() {
+        clearTimeout(this.resizeTimer);
+        this.resizeTimer = setTimeout(() => this.updateState(), 150);
+    }
+    
+    scrollTo(position) {
+        this.container.scrollTo({ left: position, behavior: 'smooth' });
+    }
+    
+    scrollToItem(index) {
+        if (index >= 0 && index < this.items.length) {
+            this.items[index].scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest'
             });
         }
     }
@@ -130,214 +274,107 @@ class FeaturesLayout {
     handleLearnMore(item, index, e) {
         e.stopPropagation();
         
-        const title = item.querySelector('.card-title')?.textContent || 'Feature';
-        const image = item.querySelector('.card-image');
-        const imageAlt = image?.alt || '';
-        const imageSrc = image?.src || '';
+        const title = item.querySelector('.card-title')?.textContent || '';
+        const img = item.querySelector('.card-image');
         
-        // Dispatch custom event for integration
-        if (this.container) {
-            this.container.dispatchEvent(new CustomEvent('featureLearnMore', {
-                detail: { 
-                    title, 
-                    imageAlt,
-                    imageSrc,
-                    index, 
-                    item,
-                    card: item.querySelector('.feature-card')
-                }
-            }));
-        }
+        this.container.dispatchEvent(new CustomEvent('featureLearnMore', {
+            detail: { title, index, item, imageSrc: img?.src, imageAlt: img?.alt }
+        }));
         
-        // Track event
-        this.trackEvent('learn_more_click', { 
-            feature: title, 
-            index: index + 1,
-            image_alt: imageAlt
-        });
-        
-        // Default action - can be overridden by parent
-        console.log(`Learn more clicked: ${title}`);
-        
-        // Example: You could open a modal, navigate to a page, etc.
-        // this.openFeatureModal(title, imageSrc, imageAlt);
+        this.track('learn_more', { feature: title, index });
     }
     
     handleCardClick(item, index, e) {
-        // Optional: Handle clicking on the card itself (not the button)
-        const title = item.querySelector('.card-title')?.textContent || 'Feature';
+        const title = item.querySelector('.card-title')?.textContent || '';
         
-        this.trackEvent('card_click', { 
-            feature: title, 
-            index: index + 1 
-        });
+        this.container.dispatchEvent(new CustomEvent('featureCardClick', {
+            detail: { title, index, item }
+        }));
         
-        console.log(`Card clicked: ${title}`);
-        
-        // Could trigger the same action as learn more, or something different
-        // this.handleLearnMore(item, index, e);
+        this.track('card_click', { feature: title, index });
     }
     
-    trackEvent(event, data = {}) {
+    track(event, data = {}) {
         // Google Analytics
         if (typeof gtag !== 'undefined') {
             gtag('event', event, {
-                event_category: 'features_section',
+                event_category: 'mobile_features',
                 event_label: data.feature || '',
-                value: data.index || 0,
-                custom_parameters: {
-                    feature_type: 'image_card',
-                    image_alt: data.image_alt || ''
-                }
+                value: data.index || 0
             });
         }
         
         // Custom analytics
-        if (window.analytics && typeof window.analytics.track === 'function') {
-            window.analytics.track(event, {
-                section: 'features',
-                card_type: 'image_based',
-                ...data
-            });
+        if (window.analytics?.track) {
+            window.analytics.track(event, { section: 'mobile_features', ...data });
         }
-        
-        console.log(`[Features] ${event}:`, data);
     }
     
-    // Public API - Updated for new structure
+    // Public API - Essential methods only
     getAPI() {
         return {
-            scrollToItem: (index) => {
-                if (index >= 0 && index < this.featureItems.length && window.innerWidth <= 767) {
-                    const item = this.featureItems[index];
-                    if (item && this.container) {
-                        item.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            inline: 'start',
-                            block: 'nearest'
-                        });
-                    }
-                }
-            },
-            scrollToCard: (index) => {
-                // Alias for backward compatibility
-                return this.getAPI().scrollToItem(index);
-            },
-            getFeatureItems: () => this.featureItems,
-            getCards: () => this.cards,
-            getTotalItems: () => this.featureItems.length,
-            getTotalCards: () => this.cards.length,
-            getCurrentVisibleIndex: () => {
-                if (window.innerWidth > 767) return 0; // All visible on desktop
-                
-                const scrollLeft = this.container.scrollLeft;
-                const itemWidth = this.featureItems[0]?.offsetWidth || 240;
-                const gap = 16;
-                
-                return Math.round(scrollLeft / (itemWidth + gap));
-            },
-            trackCustomEvent: (event, data) => this.trackEvent(event, data),
-            // New methods for image-based cards
-            getFeatureData: (index) => {
-                const item = this.featureItems[index];
-                if (!item) return null;
-                
-                const title = item.querySelector('.card-title')?.textContent || '';
-                const image = item.querySelector('.card-image');
-                
-                return {
-                    title,
-                    imageSrc: image?.src || '',
-                    imageAlt: image?.alt || '',
-                    index
-                };
-            },
-            getAllFeaturesData: () => {
-                return this.featureItems.map((_, index) => this.getAPI().getFeatureData(index));
-            }
+            scrollLeft: () => this.scrollLeft(),
+            scrollRight: () => this.scrollRight(),
+            scrollToItem: (i) => this.scrollToItem(i),
+            getCurrentIndex: () => this.getCurrentIndex(),
+            getTotalItems: () => this.items.length,
+            updateState: () => this.updateState(),
+            getContainer: () => this.container
         };
     }
     
-    // Enhanced modal helper (optional implementation)
-    openFeatureModal(title, imageSrc, imageAlt) {
-        // Example modal implementation
-        const modal = document.createElement('div');
-        modal.className = 'feature-modal';
-        modal.innerHTML = `
-            <div class="modal-backdrop" onclick="this.parentElement.remove()">
-                <div class="modal-content" onclick="event.stopPropagation()">
-                    <button class="modal-close" onclick="this.closest('.feature-modal').remove()">&times;</button>
-                    <img src="${imageSrc}" alt="${imageAlt}" class="modal-image">
-                    <h3 class="modal-title">${title}</h3>
-                    <p class="modal-description">Learn more about ${title.toLowerCase()} and how it can benefit your workflow.</p>
-                    <button class="modal-cta" onclick="alert('Contact us for more info')">Get Started</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        
-        // Track modal open
-        this.trackEvent('modal_opened', { feature: title });
-    }
-    
-    // Cleanup
     destroy() {
         if (this.container) {
             this.container.removeEventListener('scroll', this.handleScroll);
+            this.container.removeEventListener('touchstart', this.handleTouchStart);
+            this.container.removeEventListener('touchmove', this.handleTouchMove);
+            this.container.removeEventListener('touchend', this.handleTouchEnd);
             this.container.removeEventListener('keydown', this.handleKeyDown);
         }
         
         window.removeEventListener('resize', this.handleResize);
         
-        // Clean up event listeners on feature items
-        this.featureItems.forEach(item => {
-            const learnBtn = item.querySelector('.card-learn-more');
-            const card = item.querySelector('.feature-card');
-            
-            if (learnBtn) {
-                learnBtn.removeEventListener('click', this.handleLearnMore);
-            }
-            if (card) {
-                card.removeEventListener('click', this.handleCardClick);
-            }
-        });
+        if (this.leftBtn?.parentNode) this.leftBtn.parentNode.removeChild(this.leftBtn);
+        if (this.rightBtn?.parentNode) this.rightBtn.parentNode.removeChild(this.rightBtn);
         
-        console.log('Features layout destroyed');
+        if (this.scrollTimer) clearTimeout(this.scrollTimer);
+        if (this.resizeTimer) clearTimeout(this.resizeTimer);
     }
 }
 
 // Initialize
 let featuresLayout = null;
 
-function initFeaturesLayout() {
+function initMobileFeatures() {
     if (document.getElementById('features-container')) {
-        featuresLayout = new FeaturesLayout();
+        featuresLayout = new MobileScrollableFeatures();
+        window.ScrollableFeaturesLayout = featuresLayout.getAPI();
         
-        // Export API for external control
-        window.FeaturesLayout = featuresLayout.getAPI();
+        // Event listeners
+        const container = document.getElementById('features-container');
         
-        // Example: Listen for custom events
-        document.getElementById('features-container').addEventListener('featureLearnMore', (e) => {
-            console.log('Feature learn more event:', e.detail);
-            
-            // Example: You could handle this event to open a modal, navigate, etc.
-            // featuresLayout.openFeatureModal(e.detail.title, e.detail.imageSrc, e.detail.imageAlt);
+        container.addEventListener('featureLearnMore', (e) => {
+            // Handle learn more - customize as needed
+            const { title, index } = e.detail;
+            console.log(`Learn more: ${title} (${index + 1})`);
         });
         
-        console.log('✅ Image-based features layout ready');
-        console.log('Available API methods:', Object.keys(window.FeaturesLayout));
+        container.addEventListener('featureCardClick', (e) => {
+            // Handle card click - customize as needed  
+            const { title, index } = e.detail;
+            console.log(`Card click: ${title} (${index + 1})`);
+        });
     }
 }
 
 // Auto-initialize
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFeaturesLayout);
+    document.addEventListener('DOMContentLoaded', initMobileFeatures);
 } else {
-    initFeaturesLayout();
+    initMobileFeatures();
 }
 
 // Export for modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = FeaturesLayout;
+    module.exports = MobileScrollableFeatures;
 }
