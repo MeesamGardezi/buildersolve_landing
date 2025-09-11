@@ -1,0 +1,30 @@
+{
+  "title": "Estimating",
+  "description": "Create accurate project estimates with intelligent cost calculations, material tracking, and automated pricing that eliminates guesswork and reduces bid errors.",
+  "sections": [
+    {
+      "header": "Intelligent Cost Calculation",
+      "image": "cost-calculation.png",
+      "imageAlt": "BuilderSolve cost calculation interface showing automated pricing algorithms and cost breakdowns",
+      "text": "Our advanced algorithms automatically calculate material costs, labor rates, and overhead expenses based on your project specifications. The system learns from your historical data to provide increasingly accurate estimates over time.\n\nEliminate manual calculations and reduce estimation errors by up to 85%. Real-time pricing updates ensure your bids reflect current market conditions."
+    },
+    {
+      "header": "Material Tracking & Pricing",
+      "image": "material-tracking.gif",
+      "imageAlt": "Dynamic material tracking system showing real-time inventory and pricing updates",
+      "text": "Track material quantities, costs, and availability in real-time. Our system integrates with major suppliers to provide current pricing and delivery schedules.\n\nAutomatically calculate waste factors, bulk discounts, and seasonal price variations. Never over-order materials again with precise quantity calculations based on your project drawings."
+    },
+    {
+      "header": "Labor Cost Analysis",
+      "image": "labor-analysis.png",
+      "imageAlt": "Labor cost analysis dashboard displaying crew productivity rates and time estimates",
+      "text": "Accurately estimate labor costs using productivity rates specific to your crews and project types. The system factors in skill levels, working conditions, and project complexity.\n\nHistorical performance data helps refine future estimates. Track actual vs. estimated labor hours to continuously improve accuracy and profitability."
+    },
+    {
+      "header": "Competitive Bid Analysis",
+      "image": "bid-comparison.png",
+      "imageAlt": "Competitive bidding interface showing market analysis and pricing strategies",
+      "text": "Analyze competitor pricing patterns and market trends to position your bids strategically. Our database helps you understand local market conditions and pricing standards.\n\nWin more profitable projects by bidding competitively while maintaining healthy margins. Real-time market intelligence gives you the edge in competitive bidding situations."
+    }
+  ]
+}

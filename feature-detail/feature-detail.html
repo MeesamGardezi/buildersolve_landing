@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Details - BuilderSolve</title>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts - Inter for consistency -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/global.css">
+    
+    <!-- Component CSS -->
+    <link rel="stylesheet" href="components/navigation/nav.css">
+    <link rel="stylesheet" href="components/footer/footer.css">
+    
+    <!-- Feature Detail CSS -->
+    <link rel="stylesheet" href="feature-detail.css">
+    
+    <!-- SEO Meta -->
+    <meta name="description" content="Detailed information about BuilderSolve features and capabilities">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+</head>
+<body class="loading">
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading feature details...</div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav id="navigation" class="nav-container"></nav>
+    
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Feature Detail Container -->
+        <div class="feature-detail-wrapper">
+            <div class="container">
+                <!-- Navigation Breadcrumb -->
+                <nav class="feature-nav" aria-label="Feature navigation">
+                    <button id="back-button" class="back-button" aria-label="Back to features">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="back-icon">
+                            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Back to Features</span>
+                    </button>
+                </nav>
+                
+                <!-- Feature Header -->
+                <header class="feature-header">
+                    <h1 id="feature-title" class="feature-title">Loading...</h1>
+                    <p id="feature-description" class="feature-description">Please wait while we load the feature details...</p>
+                </header>
+                
+                <!-- Feature Sections Container -->
+                <div id="feature-sections" class="feature-sections">
+                    <!-- Sections will be dynamically loaded here -->
+                </div>
+                
+                <!-- Call to Action -->
+                <section class="feature-cta">
+                    <div class="cta-content">
+                        <h2 class="cta-title">Ready to Experience This Feature?</h2>
+                        <p class="cta-description">See how this feature can transform your construction management workflow</p>
+                        <div class="cta-buttons">
+                            <button class="btn-primary" data-contact>
+                                <span>Get Demo</span>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <a href="index.html#key-features-section" class="btn-secondary">
+                                <span>View All Features</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <!-- Error State -->
+        <div id="error-state" class="error-state hidden">
+            <div class="container">
+                <div class="error-content">
+                    <div class="error-icon">⚠️</div>
+                    <h2 class="error-title">Feature Not Found</h2>
+                    <p class="error-message">Sorry, we couldn't find the requested feature details.</p>
+                    <div class="error-actions">
+                        <a href="index.html#key-features-section" class="btn-primary">
+                            <span>Back to Features</span>
+                        </a>
+                        <a href="index.html" class="btn-secondary">
+                            <span>Go Home</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer id="footer" class="footer-container"></footer>
+    
+    <!-- Contact Modal (if user clicks CTA) -->
+    <div id="contact-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+            <div id="contact-form-container"></div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="components/navigation/nav.js"></script>
+    <script src="components/footer/footer.js"></script>
+    <script src="feature-detail.js"></script>
+    
+    <!-- Analytics placeholder -->
+    <script>
+        // Track feature detail page views
+        if (typeof gtag !== 'undefined') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const feature = urlParams.get('feature');
+            if (feature) {
+                gtag('event', 'page_view', {
+                    page_title: `Feature: ${feature}`,
+                    page_location: window.location.href
+                });
+            }
+        }
+    </script>
+</body>
+</html>
