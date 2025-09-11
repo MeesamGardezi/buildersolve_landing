@@ -1,281 +1,146 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scrollable 16:9 Features Layout</title>
-    
-    <!-- Include the CSS file -->
-    <link rel="stylesheet" href="features-scrollable.css">
-    
-    <!-- Optional: Include any fonts you want to use -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Optional: Set font family for the demo */
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9fafb;
-        }
-        
-        /* Demo container styling */
-        .demo-container {
-            max-width: 100%;
-            margin: 0 auto;
-            background: white;
-        }
-        
-        /* Header for demo */
-        .demo-header {
-            text-align: center;
-            padding: 2rem 0;
-            background: linear-gradient(135deg, #0066CC 0%, #004499 100%);
-            color: white;
-        }
-        
-        .demo-header h1 {
-            margin: 0;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-        
-        .demo-header p {
-            margin: 0.5rem 0 0 0;
-            opacity: 0.9;
-        }
-    </style>
-</head>
-<body>
-    <div class="demo-container">
-        <!-- Scrollable Features Section -->
-        <section class="features-section" role="region" aria-labelledby="features-title">
-            <div class="features-wrapper">
-                <!-- Section Header -->
-                <header class="features-header">
-                    <h2 id="features-title" class="features-title">
-                        Key Features That Drive Results
-                    </h2>
-                    <p class="features-subtitle">
-                        Professional tools designed to streamline your workflow and boost productivity. 
-                        Scroll horizontally to explore all features.
-                    </p>
-                </header>
+<!-- Key Features Section - BuilderSolve Landing Page -->
+<!-- Note: CSS is loaded in main index.html, not here -->
 
-                <!-- Scrollable Features Container -->
-                <div 
-                    class="features-container" 
-                    id="features-container"
-                    role="list"
-                    aria-label="Feature cards"
-                    tabindex="0"
-                >
-                    
-                    <!-- Feature 1: Estimating -->
-                    <div class="feature-item" role="listitem">
-                        <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-1-title">
-                            <img 
-                                src="/assets/images/key_features_images/estimate.png" 
-                                alt="Estimating feature showing cost calculation interface with charts and data visualization" 
-                                class="card-image"
-                                loading="lazy"
-                            />
-                            <button class="card-learn-more" aria-label="Learn more about Estimating">
-                                Learn More
-                            </button>
-                        </article>
-                        <h3 id="feature-1-title" class="card-title">Estimating</h3>
-                    </div>
+<div class="features-section" role="region" aria-labelledby="features-title">
+    <div class="features-wrapper">
+        <!-- Section Header -->
+        <header class="features-header">
+            <h2 id="features-title" class="features-title">
+                Key Features That Drive Results
+            </h2>
+            <p class="features-subtitle">
+                Professional tools designed to streamline your workflow and boost productivity. 
+                Scroll horizontally to explore all features.
+            </p>
+        </header>
 
-                    <!-- Feature 2: Scheduling -->
-                    <div class="feature-item" role="listitem">
-                        <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-2-title">
-                            <img 
-                                src="/assets/images/key_features_images/schedule.png" 
-                                alt="Scheduling feature displaying calendar interface with project timelines and task management" 
-                                class="card-image"
-                                loading="lazy"
-                            />
-                            <button class="card-learn-more" aria-label="Learn more about Scheduling">
-                                Learn More
-                            </button>
-                        </article>
-                        <h3 id="feature-2-title" class="card-title">Scheduling</h3>
-                    </div>
-
-                    <!-- Feature 3: Change Orders -->
-                    <div class="feature-item" role="listitem">
-                        <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-3-title">
-                            <img 
-                                src="/assets/images/key_features_images/changeorders.png" 
-                                alt="Change orders feature showing document management and approval workflow interface" 
-                                class="card-image"
-                                loading="lazy"
-                            />
-                            <button class="card-learn-more" aria-label="Learn more about Change Orders">
-                                Learn More
-                            </button>
-                        </article>
-                        <h3 id="feature-3-title" class="card-title">Change Orders</h3>
-                    </div>
-
-                    <!-- Feature 4: Comparison -->
-                    <div class="feature-item" role="listitem">
-                        <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-4-title">
-                            <img 
-                                src="/assets/images/key_features_images/comparison.png" 
-                                alt="Comparison feature displaying side-by-side analysis tools with metrics and performance indicators" 
-                                class="card-image"
-                                loading="lazy"
-                            />
-                            <button class="card-learn-more" aria-label="Learn more about Comparison">
-                                Learn More
-                            </button>
-                        </article>
-                        <h3 id="feature-4-title" class="card-title">Comparison</h3>
-                    </div>
-
-                    <!-- Feature 5: Performance -->
-                    <div class="feature-item" role="listitem">
-                        <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-5-title">
-                            <img 
-                                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop&q=80" 
-                                alt="Performance analytics dashboard showing graphs, charts and key performance indicators" 
-                                class="card-image"
-                                loading="lazy"
-                            />
-                            <button class="card-learn-more" aria-label="Learn more about Performance">
-                                Learn More
-                            </button>
-                        </article>
-                        <h3 id="feature-5-title" class="card-title">Performance</h3>
-                    </div>
-
-                    <!-- Feature 6: Reporting (Additional example) -->
-                    <div class="feature-item" role="listitem">
-                        <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-6-title">
-                            <img 
-                                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop&q=80" 
-                                alt="Reporting feature showing comprehensive business reports and data analytics interface" 
-                                class="card-image"
-                                loading="lazy"
-                            />
-                            <button class="card-learn-more" aria-label="Learn more about Reporting">
-                                Learn More
-                            </button>
-                        </article>
-                        <h3 id="feature-6-title" class="card-title">Reporting</h3>
-                    </div>
-
-                    <!-- Feature 7: Integration (Additional example) -->
-                    <div class="feature-item" role="listitem">
-                        <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-7-title">
-                            <img 
-                                src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=450&fit=crop&q=80" 
-                                alt="Integration feature displaying connected systems and API management interface" 
-                                class="card-image"
-                                loading="lazy"
-                            />
-                            <button class="card-learn-more" aria-label="Learn more about Integration">
-                                Learn More
-                            </button>
-                        </article>
-                        <h3 id="feature-7-title" class="card-title">Integration</h3>
-                    </div>
-
-                </div>
-                
-                <!-- Optional: Scroll instruction for users -->
-                <div class="scroll-hint" style="text-align: center; margin-top: 1rem; color: #6B7280; font-size: 0.875rem;">
-                    <p>← Scroll horizontally to view all features →</p>
-                </div>
-                
+        <!-- Scrollable Features Container -->
+        <div 
+            class="features-container" 
+            id="features-container"
+            role="list"
+            aria-label="Feature cards"
+            tabindex="0"
+        >
+            
+            <!-- Feature 1: Estimating -->
+            <div class="feature-item" role="listitem">
+                <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-1-title">
+                    <img 
+                        src="assets/images/key_features_images/estimate.png" 
+                        alt="Estimating feature showing cost calculation interface with charts and data visualization" 
+                        class="card-image"
+                        loading="lazy"
+                    />
+                    <button class="card-learn-more" aria-label="Learn more about Estimating">
+                        Learn More
+                    </button>
+                </article>
+                <h3 id="feature-1-title" class="card-title">Estimating</h3>
             </div>
-        </section>
-    </div>
 
-    <!-- Include the JavaScript file -->
-    <script src="features-scrollable.js"></script>
-    
-    <!-- Demo script for additional functionality -->
-    <script>
-        // Wait for the layout to initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Example of how to use the API
-            setTimeout(function() {
-                if (window.ScrollableFeaturesLayout) {
-                    console.log('Features Layout API is ready!');
-                    console.log('Total features:', window.ScrollableFeaturesLayout.getTotalItems());
-                    console.log('All features data:', window.ScrollableFeaturesLayout.getAllFeaturesData());
-                    
-                    // Example: Auto-scroll demo (uncomment to test)
-                    // setTimeout(() => {
-                    //     console.log('Auto-scrolling to feature 3...');
-                    //     window.ScrollableFeaturesLayout.scrollToItem(2);
-                    // }, 3000);
-                }
-            }, 500);
-            
-            // Listen to custom events
-            const container = document.getElementById('features-container');
-            
-            if (container) {
-                container.addEventListener('featureLearnMore', function(e) {
-                    const { title, imageSrc, imageAlt, index } = e.detail;
-                    
-                    // Example: Show alert (replace with modal, navigation, etc.)
-                    alert(`Learn more about: ${title}\n\nIndex: ${index + 1}\nImage: ${imageAlt}`);
-                    
-                    // Example: You could also navigate to a detailed page
-                    // window.location.href = `/features/${title.toLowerCase().replace(/\s+/g, '-')}`;
-                });
-                
-                container.addEventListener('featureCardClick', function(e) {
-                    const { title, index } = e.detail;
-                    console.log(`Card clicked: ${title} (index: ${index})`);
-                    
-                    // Example: Same action as learn more, or different behavior
-                    // Could show a quick preview, expand the card, etc.
-                });
-                
-                container.addEventListener('scrollEnd', function(e) {
-                    console.log(`Scrolling ended. Current visible feature index: ${e.detail.currentIndex}`);
-                });
-            }
-        });
+            <!-- Feature 2: Scheduling -->
+            <div class="feature-item" role="listitem">
+                <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-2-title">
+                    <img 
+                        src="assets/images/key_features_images/schedule.png" 
+                        alt="Scheduling feature displaying calendar interface with project timelines and task management" 
+                        class="card-image"
+                        loading="lazy"
+                    />
+                    <button class="card-learn-more" aria-label="Learn more about Scheduling">
+                        Learn More
+                    </button>
+                </article>
+                <h3 id="feature-2-title" class="card-title">Scheduling</h3>
+            </div>
+
+            <!-- Feature 3: Change Orders -->
+            <div class="feature-item" role="listitem">
+                <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-3-title">
+                    <img 
+                        src="assets/images/key_features_images/changeorders.png" 
+                        alt="Change orders feature showing document management and approval workflow interface" 
+                        class="card-image"
+                        loading="lazy"
+                    />
+                    <button class="card-learn-more" aria-label="Learn more about Change Orders">
+                        Learn More
+                    </button>
+                </article>
+                <h3 id="feature-3-title" class="card-title">Change Orders</h3>
+            </div>
+
+            <!-- Feature 4: Comparison -->
+            <div class="feature-item" role="listitem">
+                <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-4-title">
+                    <img 
+                        src="assets/images/key_features_images/comparison.png" 
+                        alt="Comparison feature displaying side-by-side analysis tools with metrics and performance indicators" 
+                        class="card-image"
+                        loading="lazy"
+                    />
+                    <button class="card-learn-more" aria-label="Learn more about Comparison">
+                        Learn More
+                    </button>
+                </article>
+                <h3 id="feature-4-title" class="card-title">Comparison</h3>
+            </div>
+
+            <!-- Feature 5: Performance -->
+            <div class="feature-item" role="listitem">
+                <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-5-title">
+                    <img 
+                        src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop&q=80" 
+                        alt="Performance analytics dashboard showing graphs, charts and key performance indicators" 
+                        class="card-image"
+                        loading="lazy"
+                    />
+                    <button class="card-learn-more" aria-label="Learn more about Performance">
+                        Learn More
+                    </button>
+                </article>
+                <h3 id="feature-5-title" class="card-title">Performance</h3>
+            </div>
+
+            <!-- Feature 6: Reporting -->
+            <div class="feature-item" role="listitem">
+                <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-6-title">
+                    <img 
+                        src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop&q=80" 
+                        alt="Reporting feature showing comprehensive business reports and data analytics interface" 
+                        class="card-image"
+                        loading="lazy"
+                    />
+                    <button class="card-learn-more" aria-label="Learn more about Reporting">
+                        Learn More
+                    </button>
+                </article>
+                <h3 id="feature-6-title" class="card-title">Reporting</h3>
+            </div>
+
+            <!-- Feature 7: Integration -->
+            <div class="feature-item" role="listitem">
+                <article class="feature-card" role="button" tabindex="0" aria-describedby="feature-7-title">
+                    <img 
+                        src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=450&fit=crop&q=80" 
+                        alt="Integration feature displaying connected systems and API management interface" 
+                        class="card-image"
+                        loading="lazy"
+                    />
+                    <button class="card-learn-more" aria-label="Learn more about Integration">
+                        Learn More
+                    </button>
+                </article>
+                <h3 id="feature-7-title" class="card-title">Integration</h3>
+            </div>
+
+        </div>
         
-        // Example: Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey || e.metaKey) {
-                switch(e.key) {
-                    case 'Home':
-                        e.preventDefault();
-                        if (window.ScrollableFeaturesLayout) {
-                            window.ScrollableFeaturesLayout.scrollToStart();
-                        }
-                        break;
-                    case 'End':
-                        e.preventDefault();
-                        if (window.ScrollableFeaturesLayout) {
-                            window.ScrollableFeaturesLayout.scrollToEnd();
-                        }
-                        break;
-                }
-            }
-        });
+        <!-- Optional: Scroll instruction for users -->
+        <div class="scroll-hint" style="text-align: center; margin-top: 1rem; color: #6B7280; font-size: 0.875rem;">
+            <p>← Scroll horizontally to view all features →</p>
+        </div>
         
-        // Example: Responsive behavior
-        window.addEventListener('resize', function() {
-            // The layout handles this automatically, but you can add custom logic here
-            setTimeout(function() {
-                if (window.ScrollableFeaturesLayout) {
-                    window.ScrollableFeaturesLayout.updateScrollState();
-                }
-            }, 300);
-        });
-    </script>
-</body>
-</html>
+    </div>
+</div>

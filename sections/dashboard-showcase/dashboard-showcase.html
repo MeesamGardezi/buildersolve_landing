@@ -1,116 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BuilderSolve Video Showcase</title>
-    <link rel="stylesheet" href="video-showcase.css">
-</head>
-<body>
-    <!-- Video Showcase Section -->
-    <section id="video-showcase-section" class="video-showcase-wrapper" role="region" aria-label="BuilderSolve Video Showcase">
-        <!-- Background Elements -->
-        <div class="video-background" aria-hidden="true">
-            <div class="video-gradient"></div>
-            <div class="video-pattern"></div>
-        </div>
+<!-- Video Showcase Section - BuilderSolve Landing Page -->
+<!-- Note: CSS is loaded in main index.html, not here -->
 
-        <div class="container">
-            <div class="video-showcase-content">
-                <!-- Section Header -->
-                <header class="video-header" data-fade="up">
-                    <h2 class="video-title">See BuilderSolve in Action</h2>
-                    <p class="video-subtitle">
-                        Experience the power of unified construction management through interactive demonstrations
-                    </p>
-                </header>
+<div id="video-showcase-section" class="video-showcase-wrapper" role="region" aria-label="BuilderSolve Video Showcase">
+    <!-- Background Elements -->
+    <div class="video-background" aria-hidden="true">
+        <div class="video-gradient"></div>
+        <div class="video-pattern"></div>
+    </div>
 
-                <!-- Video Player Container -->
-                <div class="video-player-container" data-fade="up" data-delay="200">
-                    <!-- Floating Tab Navigation -->
-                    <div class="video-tabs-container">
-                        <div class="video-tabs" role="tablist" aria-label="Video categories">
-                            <button 
-                                class="video-tab active" 
-                                data-video-index="0" 
-                                role="tab" 
-                                aria-selected="true" 
-                                aria-controls="video-content" 
-                                id="tab-estimate"
-                                type="button">
-                                <span class="tab-icon">📊</span>
-                                <span class="tab-text">Estimate</span>
-                            </button>
-                            <button 
-                                class="video-tab" 
-                                data-video-index="1" 
-                                role="tab" 
-                                aria-selected="false" 
-                                aria-controls="video-content" 
-                                id="tab-schedule"
-                                type="button">
-                                <span class="tab-icon">📅</span>
-                                <span class="tab-text">Schedule</span>
-                            </button>
-                        </div>
-                    </div>
+    <div class="container">
+        <div class="video-showcase-content">
+            <!-- Section Header -->
+            <header class="video-header" data-fade="up">
+                <h2 class="video-title">See BuilderSolve in Action</h2>
+                <p class="video-subtitle">
+                    Experience the power of unified construction management through interactive demonstrations
+                </p>
+            </header>
 
-                    <!-- Video Player -->
-                    <div class="video-player-wrapper">
-                        <div class="video-player" role="region" aria-label="Video player" aria-live="polite" id="video-content">
-                            
-                            <!-- YouTube Player Container -->
-                            <div class="video-container" id="video-container">
-                                <!-- YouTube Player will be inserted here -->
-                                <div id="youtube-player" class="youtube-player-div"></div>
-                                
-                                <!-- Video Loading Overlay -->
-                                <div class="video-loading-overlay" id="loading-overlay" role="status" aria-label="Loading video">
-                                    <div class="video-loading-spinner" aria-hidden="true">
-                                        <div class="spinner-ring"></div>
-                                    </div>
-                                    <p class="loading-text">Loading video...</p>
-                                </div>
-                                
-                                <!-- Video Error Overlay -->
-                                <div class="video-error-overlay" id="error-overlay" role="alert" aria-live="assertive">
-                                    <div class="video-error-content">
-                                        <div class="error-icon" aria-hidden="true">⚠️</div>
-                                        <h3 class="error-title">Video Unavailable</h3>
-                                        <p class="error-message">We're having trouble loading this video. Please check your connection and try again.</p>
-                                        <button class="retry-button" id="retry-btn" type="button">
-                                            <span class="retry-icon" aria-hidden="true">🔄</span>
-                                            <span>Try Again</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Video Info -->
-                            <div class="video-info" id="video-info">
-                                <h3 class="video-current-title" id="video-title">Smart Estimation Tools</h3>
-                                <p class="video-current-description" id="video-description">
-                                    See how BuilderSolve's intelligent estimation system helps you create accurate project quotes with automated calculations and material tracking.
-                                </p>
-                            </div>
-                        </div>
+            <!-- Video Player Container -->
+            <div class="video-player-container" data-fade="up" data-delay="200">
+                <!-- Floating Tab Navigation -->
+                <div class="video-tabs-container">
+                    <div class="video-tabs" role="tablist" aria-label="Video categories">
+                        <button 
+                            class="video-tab active" 
+                            data-video-index="0" 
+                            role="tab" 
+                            aria-selected="true" 
+                            aria-controls="video-content" 
+                            id="tab-estimate"
+                            type="button">
+                            <span class="tab-icon">📊</span>
+                            <span class="tab-text">Estimate</span>
+                        </button>
+                        <button 
+                            class="video-tab" 
+                            data-video-index="1" 
+                            role="tab" 
+                            aria-selected="false" 
+                            aria-controls="video-content" 
+                            id="tab-schedule"
+                            type="button">
+                            <span class="tab-icon">📅</span>
+                            <span class="tab-text">Schedule</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Video Controls Info -->
-                <div class="video-controls-info" data-fade="up" data-delay="400">
-                    <p class="controls-text">
-                        Use the tabs above to switch between different features, or navigate with keyboard using Tab and Enter keys
-                    </p>
+                <!-- Video Player -->
+                <div class="video-player-wrapper">
+                    <div class="video-player" role="region" aria-label="Video player" aria-live="polite" id="video-content">
+                        
+                        <!-- YouTube Player Container -->
+                        <div class="video-container" id="video-container">
+                            <!-- YouTube Player will be inserted here -->
+                            <div id="youtube-player" class="youtube-player-div"></div>
+                            
+                            <!-- Video Loading Overlay -->
+                            <div class="video-loading-overlay" id="loading-overlay" role="status" aria-label="Loading video">
+                                <div class="video-loading-spinner" aria-hidden="true">
+                                    <div class="spinner-ring"></div>
+                                </div>
+                                <p class="loading-text">Loading video...</p>
+                            </div>
+                            
+                            <!-- Video Error Overlay -->
+                            <div class="video-error-overlay" id="error-overlay" role="alert" aria-live="assertive">
+                                <div class="video-error-content">
+                                    <div class="error-icon" aria-hidden="true">⚠️</div>
+                                    <h3 class="error-title">Video Unavailable</h3>
+                                    <p class="error-message">We're having trouble loading this video. Please check your connection and try again.</p>
+                                    <button class="retry-button" id="retry-btn" type="button">
+                                        <span class="retry-icon" aria-hidden="true">🔄</span>
+                                        <span>Try Again</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Info -->
+                        <div class="video-info" id="video-info">
+                            <h3 class="video-current-title" id="video-title">Smart Estimation Tools</h3>
+                            <p class="video-current-description" id="video-description">
+                                See how BuilderSolve's intelligent estimation system helps you create accurate project quotes with automated calculations and material tracking.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Video Controls Info -->
+            <div class="video-controls-info" data-fade="up" data-delay="400">
+                <p class="controls-text">
+                    Use the tabs above to switch between different features, or navigate with keyboard using Tab and Enter keys
+                </p>
+            </div>
         </div>
+    </div>
 
-        <!-- Screen Reader Announcements -->
-        <div id="video-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
-    </section>
-
-    <!-- Scripts -->
-    <script src="video-showcase.js"></script>
-</body>
-</html>
+    <!-- Screen Reader Announcements -->
+    <div id="video-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+</div>

@@ -1,7 +1,7 @@
 /**
- * Mobile-Optimized Scrollable Features Layout - Updated with Feature Detail Navigation
- * Focused on touch interactions and essential functionality
- * @version 2.0.0 - Added feature detail page integration
+ * Mobile-Optimized Scrollable Features Layout - FIXED VERSION
+ * Updated with correct feature detail navigation paths
+ * @version 2.1.0 - Fixed navigation paths and feature mapping
  */
 
 class MobileScrollableFeatures {
@@ -21,9 +21,9 @@ class MobileScrollableFeatures {
         this.touchEnd = 0;
         this.isDragging = false;
         
-        // Feature mapping for navigation
+        // Feature mapping for navigation - CORRECTED PATHS
         this.featureMapping = {
-            'Estimating': 'estimating',
+            'Estimating': 'estimate',  // This matches estimate.json
             'Scheduling': 'scheduling', 
             'Change Orders': 'changeorders',
             'Comparison': 'comparison',
@@ -36,29 +36,39 @@ class MobileScrollableFeatures {
     }
     
     init() {
+        console.log('🚀 Initializing Mobile Scrollable Features...');
         this.setupElements();
         this.createIndicators();
         this.bindEvents();
         this.updateState();
         
         setTimeout(() => this.updateState(), 100);
+        console.log('✅ Features initialized with mapping:', this.featureMapping);
     }
     
     setupElements() {
         this.container = document.getElementById('features-container');
         this.wrapper = this.container?.closest('.features-wrapper');
         
-        if (!this.container) return;
+        if (!this.container) {
+            console.error('❌ Features container not found');
+            return;
+        }
         
         this.items = Array.from(this.container.querySelectorAll('.feature-item'));
+        console.log(`📦 Found ${this.items.length} feature items`);
         
         // Setup card interactions
         this.items.forEach((item, i) => {
             const btn = item.querySelector('.card-learn-more');
             const card = item.querySelector('.feature-card');
+            const title = item.querySelector('.card-title')?.textContent?.trim() || '';
+            
+            console.log(`🔗 Setting up feature ${i + 1}: "${title}"`);
             
             if (btn) {
                 btn.addEventListener('click', (e) => this.handleLearnMore(item, i, e));
+                console.log(`  ✅ Learn More button bound for: ${title}`);
             }
             
             if (card) {
@@ -284,28 +294,41 @@ class MobileScrollableFeatures {
     }
     
     /**
-     * Get feature URL parameter from title
+     * Get feature URL parameter from title - FIXED VERSION
      */
     getFeatureUrlParam(title) {
-        // Clean up the title and map to URL parameter
         const cleanTitle = title.trim();
+        
+        console.log(`🔍 Looking up feature mapping for: "${cleanTitle}"`);
         
         // Check direct mapping first
         if (this.featureMapping[cleanTitle]) {
-            return this.featureMapping[cleanTitle];
+            const param = this.featureMapping[cleanTitle];
+            console.log(`✅ Found mapping: "${cleanTitle}" -> "${param}"`);
+            return param;
         }
         
+        console.log(`⚠️ No direct mapping found for: "${cleanTitle}"`);
+        console.log('Available mappings:', Object.keys(this.featureMapping));
+        
         // Fallback: convert to URL-safe format
-        return cleanTitle.toLowerCase()
+        const fallback = cleanTitle.toLowerCase()
             .replace(/\s+/g, '')  // Remove spaces
             .replace(/[^a-z0-9-]/g, ''); // Remove special characters
+            
+        console.log(`🔄 Using fallback mapping: "${cleanTitle}" -> "${fallback}"`);
+        return fallback;
     }
     
     /**
-     * Navigate to feature detail page
+     * Navigate to feature detail page - FIXED PATHS
      */
     navigateToFeatureDetail(featureParam, title, index) {
         try {
+            console.log(`🚀 Starting navigation for feature: "${title}"`);
+            console.log(`📍 Feature parameter: "${featureParam}"`);
+            console.log(`📍 Index: ${index}`);
+            
             // Track the navigation
             this.track('feature_detail_navigation', { 
                 feature: featureParam, 
@@ -314,16 +337,17 @@ class MobileScrollableFeatures {
                 timestamp: Date.now()
             });
             
-            // Construct the URL
-            const detailUrl = `feature-detail.html?feature=${encodeURIComponent(featureParam)}`;
+            // FIXED: Correct path to feature detail page
+            const detailUrl = `feature-detail/feature-detail.html?feature=${encodeURIComponent(featureParam)}`;
+            
+            console.log(`🔗 Constructed URL: ${detailUrl}`);
             
             // Add smooth transition class for better UX
             document.body.classList.add('page-transitioning');
             
             // Navigate to the detail page
+            console.log(`📍 Navigating to: ${detailUrl}`);
             window.location.href = detailUrl;
-            
-            console.log(`🔗 Navigating to feature detail: ${detailUrl}`);
             
         } catch (error) {
             console.error('❌ Navigation error:', error);
@@ -336,22 +360,30 @@ class MobileScrollableFeatures {
                     error: error.message 
                 }
             }));
+            
+            // User-friendly error message
+            alert(`Sorry, we're having trouble loading details for ${title}. Please try again later.`);
         }
     }
     
     /**
-     * Handle Learn More button clicks - Updated for navigation
+     * Handle Learn More button clicks - ENHANCED DEBUGGING
      */
     handleLearnMore(item, index, e) {
         e.stopPropagation();
         
-        const title = item.querySelector('.card-title')?.textContent || '';
+        const title = item.querySelector('.card-title')?.textContent?.trim() || '';
         const img = item.querySelector('.card-image');
+        
+        console.log(`📖 Learn More clicked!`);
+        console.log(`  Title: "${title}"`);
+        console.log(`  Index: ${index}`);
+        console.log(`  Available mappings:`, this.featureMapping);
         
         // Get the feature URL parameter
         const featureParam = this.getFeatureUrlParam(title);
         
-        console.log(`📖 Learn More clicked: "${title}" -> ${featureParam}`);
+        console.log(`  Resolved parameter: "${featureParam}"`);
         
         // Check if we have a valid feature mapping
         if (!featureParam) {
@@ -366,6 +398,7 @@ class MobileScrollableFeatures {
         }
         
         // Navigate to feature detail page
+        console.log(`🚀 Proceeding with navigation...`);
         this.navigateToFeatureDetail(featureParam, title, index);
     }
     
@@ -373,16 +406,20 @@ class MobileScrollableFeatures {
      * Handle card clicks - Updated for better UX
      */
     handleCardClick(item, index, e) {
-        const title = item.querySelector('.card-title')?.textContent || '';
+        const title = item.querySelector('.card-title')?.textContent?.trim() || '';
+        
+        console.log(`🖱️ Card clicked: "${title}" (index: ${index})`);
         
         // Check if this is a feature with detail page
         const featureParam = this.getFeatureUrlParam(title);
         
         if (featureParam && this.featureMapping[title]) {
             // Navigate to detail page for features with content
+            console.log(`🔗 Card click -> navigating to detail page`);
             this.navigateToFeatureDetail(featureParam, title, index);
         } else {
             // Dispatch event for features without detail pages
+            console.log(`📡 Card click -> dispatching event`);
             this.container.dispatchEvent(new CustomEvent('featureCardClick', {
                 detail: { title, index, item }
             }));
@@ -392,6 +429,13 @@ class MobileScrollableFeatures {
     }
     
     track(event, data = {}) {
+        // Enhanced logging for debugging
+        console.log('📊 Tracking event:', {
+            event,
+            section: 'mobile_features',
+            ...data
+        });
+        
         // Google Analytics
         if (typeof gtag !== 'undefined') {
             gtag('event', event, {
@@ -405,9 +449,6 @@ class MobileScrollableFeatures {
         if (window.analytics?.track) {
             window.analytics.track(event, { section: 'mobile_features', ...data });
         }
-        
-        // Console log for debugging
-        console.log('📊 Feature interaction tracked:', { event, ...data });
     }
     
     // Public API - Essential methods only
@@ -421,14 +462,37 @@ class MobileScrollableFeatures {
             updateState: () => this.updateState(),
             getContainer: () => this.container,
             
-            // New methods for feature detail integration
+            // Enhanced debugging methods
+            getAllFeaturesData: () => {
+                return this.items.map((item, index) => ({
+                    index,
+                    title: item.querySelector('.card-title')?.textContent?.trim() || '',
+                    hasLearnMore: !!item.querySelector('.card-learn-more'),
+                    hasImage: !!item.querySelector('.card-image'),
+                    urlParam: this.getFeatureUrlParam(item.querySelector('.card-title')?.textContent?.trim() || '')
+                }));
+            },
+            
+            // Feature detail integration methods
             getFeatureMapping: () => ({ ...this.featureMapping }),
             addFeatureMapping: (title, param) => {
+                console.log(`🔧 Adding feature mapping: "${title}" -> "${param}"`);
                 this.featureMapping[title] = param;
             },
             navigateToFeature: (featureParam) => {
-                const detailUrl = `feature-detail.html?feature=${encodeURIComponent(featureParam)}`;
+                const detailUrl = `feature-detail/feature-detail.html?feature=${encodeURIComponent(featureParam)}`;
+                console.log(`🚀 Direct navigation to: ${detailUrl}`);
                 window.location.href = detailUrl;
+            },
+            
+            // Debugging methods
+            testFeatureNavigation: (title) => {
+                console.log(`🧪 Testing navigation for: "${title}"`);
+                const param = this.getFeatureUrlParam(title);
+                console.log(`  Parameter: "${param}"`);
+                const url = `feature-detail/feature-detail.html?feature=${encodeURIComponent(param)}`;
+                console.log(`  URL: ${url}`);
+                return { title, param, url };
             }
         };
     }
@@ -454,50 +518,58 @@ class MobileScrollableFeatures {
     }
 }
 
-// Initialize
+// Enhanced initialization with better error handling
 let featuresLayout = null;
 
 function initMobileFeatures() {
-    if (document.getElementById('features-container')) {
+    console.log('🔄 Initializing Mobile Features...');
+    
+    const container = document.getElementById('features-container');
+    if (!container) {
+        console.error('❌ Features container not found. Make sure element with id="features-container" exists.');
+        return;
+    }
+    
+    try {
         featuresLayout = new MobileScrollableFeatures();
         window.ScrollableFeaturesLayout = featuresLayout.getAPI();
         
-        // Event listeners for fallback behavior
-        const container = document.getElementById('features-container');
-        
+        // Enhanced event listeners for fallback behavior
         container.addEventListener('featureLearnMore', (e) => {
-            // Fallback handling for features without detail pages
             const { title, index } = e.detail;
-            console.log(`⚠️ Fallback learn more: ${title} (${index + 1})`);
-            
-            // Could show a modal, alert, or navigate to a general info page
-            alert(`More information about ${title} coming soon!`);
+            console.log(`⚠️ Fallback learn more triggered for: ${title} (${index + 1})`);
+            alert(`More information about ${title} is coming soon! We're working on detailed feature pages.`);
         });
         
         container.addEventListener('featureCardClick', (e) => {
-            // Handle card clicks for features without detail pages
             const { title, index } = e.detail;
-            console.log(`🔄 Card click fallback: ${title} (${index + 1})`);
+            console.log(`🔄 Card click fallback for: ${title} (${index + 1})`);
         });
         
         container.addEventListener('featureNavigationError', (e) => {
-            // Handle navigation errors gracefully
             const { feature, title, error } = e.detail;
             console.error(`❌ Navigation error for ${title}:`, error);
-            
-            // Show user-friendly error message
             alert(`Sorry, we're having trouble loading details for ${title}. Please try again later.`);
         });
         
-        console.log('✅ Mobile Features Layout initialized with feature detail navigation');
+        console.log('✅ Mobile Features Layout initialized successfully');
+        console.log('🔧 Available API methods:', Object.keys(window.ScrollableFeaturesLayout));
+        
+        // Debug: Log all features found
+        const featuresData = window.ScrollableFeaturesLayout.getAllFeaturesData();
+        console.log('📋 Features detected:', featuresData);
+        
+    } catch (error) {
+        console.error('❌ Failed to initialize Mobile Features Layout:', error);
     }
 }
 
-// Auto-initialize
+// Auto-initialize with enhanced timing
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMobileFeatures);
 } else {
-    initMobileFeatures();
+    // DOM already loaded, but give it a moment to ensure all content is rendered
+    setTimeout(initMobileFeatures, 100);
 }
 
 // Export for modules

@@ -1,143 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- Hero Section - BuilderSolve Landing Page -->
+<!-- Note: CSS is loaded in main index.html, not here -->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BuilderSolve - Construction Management Platform</title>
+<div class="hero-wrapper" role="banner" aria-label="BuilderSolve Hero">
+    <!-- Background Elements -->
+    <div class="hero-background" aria-hidden="true">
+        <div class="hero-gradient"></div>
+        <div class="hero-pattern"></div>
+    </div>
 
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <div class="container">
+        <div class="hero-content">
+            <!-- Hero Text Content -->
+            <div class="hero-text">
+                <!-- Main Headline -->
+                <h1 class="hero-headline">
+                    Stop The Chaos Controlling Your
+                    <span class="headline-highlight">Construction Projects</span>
+                </h1>
 
-    <!-- Google Fonts - Inter for premium typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+                <!-- Value Proposition -->
+                <p class="hero-subheadline">
+                    BuilderSolve gives you complete control over schedules, budgets, and teams.
+                    Transform chaos into profit with the only construction management platform that actually works.
+                </p>
 
-    <!-- Preload hero images for better performance -->
-    <link rel="preload" as="image" href="assets/images/hero_screenshots/hero_image_1.png">
-    <link rel="preload" as="image" href="assets/images/hero_screenshots/hero_image_2.png">
-    <link rel="preload" as="image" href="assets/images/hero_screenshots/hero_image_3.png">
-
-    <!-- SEO and Open Graph -->
-    <meta name="description" content="Stop construction project chaos with BuilderSolve's complete construction management platform. Get control over schedules, budgets, and teams.">
-    <meta name="keywords" content="construction management, project management, building software, construction software, project scheduling">
-    
-    <!-- Open Graph for social sharing -->
-    <meta property="og:title" content="BuilderSolve - Stop Construction Chaos">
-    <meta property="og:description" content="Transform chaos into profit with the only construction management platform that actually works.">
-    <meta property="og:image" content="assets/images/hero_screenshots/hero_image_1.png">
-    <meta property="og:type" content="website">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="BuilderSolve - Stop Construction Chaos">
-    <meta name="twitter:description" content="Transform chaos into profit with the only construction management platform that actually works.">
-    <meta name="twitter:image" content="assets/images/hero_screenshots/hero_image_1.png">
-
-    <!-- Link to the CSS file -->
-    <link rel="stylesheet" type="text/css" href="hero.css">
-</head>
-
-<body>
-    <!-- Hero Section -->
-    <section id="hero-section" class="hero-wrapper" role="banner" aria-label="BuilderSolve Hero">
-        <!-- Background Elements -->
-        <div class="hero-background" aria-hidden="true">
-            <div class="hero-gradient"></div>
-            <div class="hero-pattern"></div>
-        </div>
-
-        <div class="container">
-            <div class="hero-content">
-                <!-- Hero Text Content -->
-                <div class="hero-text">
-                    <!-- Main Headline -->
-                    <h1 class="hero-headline">
-                        Stop The Chaos Controlling Your
-                        <span class="headline-highlight">Construction Projects</span>
-                    </h1>
-
-                    <!-- Value Proposition -->
-                    <p class="hero-subheadline">
-                        BuilderSolve gives you complete control over schedules, budgets, and teams.
-                        Transform chaos into profit with the only construction management platform that actually works.
-                    </p>
-
-                    <!-- Trust Indicators - Simple Tags -->
-                    <div class="hero-stats">
-                        <div class="stat-item">
-                            <div class="stat-label">Projects Managed</div>
-                        </div>
-                        <div class="stat-divider" aria-hidden="true"></div>
-                        <div class="stat-item">
-                            <div class="stat-label">Cost Reduction</div>
-                        </div>
-                        <div class="stat-divider" aria-hidden="true"></div>
-                        <div class="stat-item">
-                            <div class="stat-label">On-Time Delivery</div>
-                        </div>
+                <!-- Trust Indicators - Simple Tags -->
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Projects Managed</div>
                     </div>
-
-                    <!-- Call to Action -->
-                    <div class="hero-cta">
-                        <a href="#contact" class="btn-primary-large" role="button"
-                            aria-label="Contact us to get started with BuilderSolve">
-                            <span class="btn-text">Contact Us</span>
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="btn-icon"
-                                aria-hidden="true">
-                                <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </a>
-
-                        <!-- Secondary CTA -->
-                        <div class="cta-secondary">
-                            <span class="cta-note">
-                                ✓ Professional consultation &nbsp;•&nbsp; ✓ Custom implementation &nbsp;•&nbsp; ✓
-                                Ongoing support
-                            </span>
-                        </div>
+                    <div class="stat-divider" aria-hidden="true"></div>
+                    <div class="stat-item">
+                        <div class="stat-label">Cost Reduction</div>
+                    </div>
+                    <div class="stat-divider" aria-hidden="true"></div>
+                    <div class="stat-item">
+                        <div class="stat-label">On-Time Delivery</div>
                     </div>
                 </div>
 
-                <!-- Hero Visual - Simplified 3-Image Layout -->
-                <div class="hero-visual">
-                    <div class="hero-images-container" role="img"
-                        aria-label="BuilderSolve construction management solutions">
-                        
-                        <!-- Main Image - Center-left, largest -->
-                        <div class="hero-image-card hero-image-main">
-                            <img src="assets/images/hero_screenshots/hero_image_1.png" 
-                                 alt="BuilderSolve project management dashboard showing schedules, budgets, and team coordination"
-                                 class="hero-image" loading="eager" width="320" height="220">
-                            <div class="hero-image-overlay" aria-hidden="true"></div>
-                        </div>
+                <!-- Call to Action -->
+                <div class="hero-cta">
+                    <a href="#contact" class="btn-primary-large" role="button" data-contact
+                        aria-label="Contact us to get started with BuilderSolve">
+                        <span class="btn-text">Contact Us</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="btn-icon"
+                            aria-hidden="true">
+                            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
 
-                        <!-- Secondary Image - Top-right, medium -->
-                        <div class="hero-image-card hero-image-secondary">
-                            <img src="assets/images/hero_screenshots/hero_image_2.png" 
-                                 alt="Construction team using BuilderSolve mobile app on job site for task management"
-                                 class="hero-image" loading="lazy" width="220" height="160">
-                            <div class="hero-image-overlay" aria-hidden="true"></div>
-                        </div>
+                    <!-- Secondary CTA -->
+                    <div class="cta-secondary">
+                        <span class="cta-note">
+                            ✓ Professional consultation &nbsp;•&nbsp; ✓ Custom implementation &nbsp;•&nbsp; ✓
+                            Ongoing support
+                        </span>
+                    </div>
+                </div>
+            </div>
 
-                        <!-- Tertiary Image - Bottom-right, smallest -->
-                        <div class="hero-image-card hero-image-tertiary">
-                            <img src="assets/images/hero_screenshots/hero_image_3.png" 
-                                 alt="BuilderSolve reporting and analytics interface displaying project performance metrics"
-                                 class="hero-image" loading="lazy" width="200" height="140">
-                            <div class="hero-image-overlay" aria-hidden="true"></div>
-                        </div>
+            <!-- Hero Visual - Simplified 3-Image Layout -->
+            <div class="hero-visual">
+                <div class="hero-images-container" role="img"
+                    aria-label="BuilderSolve construction management solutions">
+                    
+                    <!-- Main Image - Center-left, largest -->
+                    <div class="hero-image-card hero-image-main">
+                        <img src="assets/images/hero_screenshots/hero_image_1.png" 
+                             alt="BuilderSolve project management dashboard showing schedules, budgets, and team coordination"
+                             class="hero-image" loading="eager" width="320" height="220">
+                        <div class="hero-image-overlay" aria-hidden="true"></div>
+                    </div>
+
+                    <!-- Secondary Image - Top-right, medium -->
+                    <div class="hero-image-card hero-image-secondary">
+                        <img src="assets/images/hero_screenshots/hero_image_2.png" 
+                             alt="Construction team using BuilderSolve mobile app on job site for task management"
+                             class="hero-image" loading="lazy" width="220" height="160">
+                        <div class="hero-image-overlay" aria-hidden="true"></div>
+                    </div>
+
+                    <!-- Tertiary Image - Bottom-right, smallest -->
+                    <div class="hero-image-card hero-image-tertiary">
+                        <img src="assets/images/hero_screenshots/hero_image_3.png" 
+                             alt="BuilderSolve reporting and analytics interface displaying project performance metrics"
+                             class="hero-image" loading="lazy" width="200" height="140">
+                        <div class="hero-image-overlay" aria-hidden="true"></div>
                     </div>
                 </div>
             </div>
         </div>
-
-    </section>
-
-    <!-- Link to the JavaScript file -->
-    <script src="hero.js"></script>
-</body>
-
-</html>
+    </div>
+</div>

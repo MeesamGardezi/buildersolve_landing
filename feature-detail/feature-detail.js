@@ -1,16 +1,16 @@
 /**
- * BuilderSolve Feature Detail Page
+ * BuilderSolve Feature Detail Page - FIXED VERSION
  * Handles dynamic loading of feature content from JSON files
- * @version 1.0.0
+ * @version 1.1.0 - Fixed paths and enhanced debugging
  */
 
 class FeatureDetailPage {
     constructor() {
-        // Configuration
+        // Configuration - FIXED PATHS
         this.config = {
-            jsonBasePath: 'data/features/',
-            imageBasePath: 'assets/images/features/',
-            fallbackImage: 'assets/images/placeholder-feature.png',
+            jsonBasePath: 'jsons/',  // Changed from 'data/features/' to match actual location
+            imageBasePath: '../assets/images/features/',  // Relative path from feature-detail folder
+            fallbackImage: '../assets/images/placeholder-feature.png',
             animationDelay: 100,
             loadingTimeout: 10000
         };
@@ -43,8 +43,10 @@ class FeatureDetailPage {
             
             // Get feature from URL
             this.state.currentFeature = this.getFeatureFromURL();
+            console.log(`📖 Requested feature: "${this.state.currentFeature}"`);
             
             if (!this.state.currentFeature) {
+                console.error('❌ No feature specified in URL');
                 this.showError('No feature specified in URL');
                 return;
             }
@@ -69,7 +71,7 @@ class FeatureDetailPage {
             
         } catch (error) {
             console.error('❌ Feature Detail Page initialization failed:', error);
-            this.showError('Failed to load feature details');
+            this.showError('Failed to load feature details: ' + error.message);
         }
     }
 
@@ -83,10 +85,11 @@ class FeatureDetailPage {
         if (feature) {
             // Sanitize and validate feature name
             const sanitized = feature.toLowerCase().replace(/[^a-z0-9-]/g, '');
-            console.log(`📖 Loading feature: ${sanitized}`);
+            console.log(`📖 Loading feature: "${feature}" -> sanitized: "${sanitized}"`);
             return sanitized;
         }
         
+        console.log('⚠️ No feature parameter found in URL');
         return null;
     }
 
@@ -94,6 +97,8 @@ class FeatureDetailPage {
      * Cache DOM elements
      */
     cacheElements() {
+        console.log('📦 Caching DOM elements...');
+        
         this.elements = {
             body: document.body,
             loadingScreen: document.getElementById('loading-screen'),
@@ -118,7 +123,9 @@ class FeatureDetailPage {
         console.log('📦 Elements cached:', {
             mainElements: !!(this.elements.featureTitle && this.elements.featureSections),
             navigation: !!this.elements.navigation,
-            backButton: !!this.elements.backButton
+            backButton: !!this.elements.backButton,
+            loadingScreen: !!this.elements.loadingScreen,
+            errorState: !!this.elements.errorState
         });
     }
 
@@ -126,24 +133,30 @@ class FeatureDetailPage {
      * Load navigation and footer components
      */
     async loadComponents() {
+        console.log('🔧 Loading components...');
+        
         const components = [
             { 
                 element: this.elements.navigation, 
-                path: 'components/navigation/nav.html' 
+                path: '../components/navigation/nav.html'  // Relative path from feature-detail folder
             },
             { 
                 element: this.elements.footer, 
-                path: 'components/footer/footer.html' 
+                path: '../components/footer/footer.html'   // Relative path from feature-detail folder
             }
         ];
 
         for (const component of components) {
             if (component.element) {
                 try {
+                    console.log(`📥 Loading component: ${component.path}`);
                     const response = await fetch(component.path);
                     if (response.ok) {
                         const html = await response.text();
                         component.element.innerHTML = html;
+                        console.log(`✅ Component loaded: ${component.path}`);
+                    } else {
+                        console.warn(`⚠️ Component not found: ${component.path} (${response.status})`);
                     }
                 } catch (error) {
                     console.warn(`⚠️ Failed to load component: ${component.path}`, error);
@@ -162,15 +175,36 @@ class FeatureDetailPage {
 
         try {
             const jsonPath = `${this.config.jsonBasePath}${this.state.currentFeature}.json`;
-            console.log(`📥 Fetching feature data: ${jsonPath}`);
+            console.log(`📥 Fetching feature data from: ${jsonPath}`);
             
             const response = await fetch(jsonPath);
             
             if (!response.ok) {
-                throw new Error(`Feature data not found: ${response.status}`);
+                const errorMsg = `Feature data not found: ${response.status} - ${response.statusText}`;
+                console.error(`❌ ${errorMsg}`);
+                console.log(`📍 Attempted path: ${jsonPath}`);
+                console.log(`📍 Current location: ${window.location.href}`);
+                
+                // List available features for debugging
+                try {
+                    console.log('🔍 Checking for available JSON files...');
+                    const testFiles = ['estimate', 'estimating', 'scheduling', 'changeorders'];
+                    for (const testFile of testFiles) {
+                        const testPath = `${this.config.jsonBasePath}${testFile}.json`;
+                        const testResponse = await fetch(testPath);
+                        console.log(`  ${testFile}.json: ${testResponse.ok ? '✅ Found' : '❌ Not found'} (${testResponse.status})`);
+                    }
+                } catch (testError) {
+                    console.log('🔍 Could not test for available files:', testError.message);
+                }
+                
+                throw new Error(errorMsg);
             }
             
-            this.state.featureData = await response.json();
+            const responseText = await response.text();
+            console.log(`📄 Raw JSON response (first 200 chars): ${responseText.substring(0, 200)}`);
+            
+            this.state.featureData = JSON.parse(responseText);
             
             // Validate data structure
             if (!this.validateFeatureData(this.state.featureData)) {
@@ -192,16 +226,40 @@ class FeatureDetailPage {
      * Validate feature data structure
      */
     validateFeatureData(data) {
-        if (!data || typeof data !== 'object') return false;
-        if (!data.title || !data.description) return false;
-        if (!Array.isArray(data.sections)) return false;
+        console.log('🔍 Validating feature data structure...');
         
-        // Validate each section
-        for (const section of data.sections) {
-            if (!section.header || !section.text) return false;
-            if (!section.image) return false;
+        if (!data || typeof data !== 'object') {
+            console.error('❌ Data is not an object:', typeof data);
+            return false;
         }
         
+        if (!data.title || !data.description) {
+            console.error('❌ Missing title or description:', { title: !!data.title, description: !!data.description });
+            return false;
+        }
+        
+        if (!Array.isArray(data.sections)) {
+            console.error('❌ Sections is not an array:', typeof data.sections);
+            return false;
+        }
+        
+        // Validate each section
+        for (let i = 0; i < data.sections.length; i++) {
+            const section = data.sections[i];
+            if (!section.header || !section.text) {
+                console.error(`❌ Section ${i} missing header or text:`, { 
+                    header: !!section.header, 
+                    text: !!section.text 
+                });
+                return false;
+            }
+            if (!section.image) {
+                console.error(`❌ Section ${i} missing image:`, section);
+                return false;
+            }
+        }
+        
+        console.log(`✅ Data structure valid. Found ${data.sections.length} sections.`);
         return true;
     }
 
@@ -211,16 +269,20 @@ class FeatureDetailPage {
     renderFeatureContent() {
         const { featureData } = this.state;
         
+        console.log('🎨 Rendering feature content...');
+        
         // Update page title
         document.title = `${featureData.title} - BuilderSolve Feature Details`;
         
         // Update header content
         if (this.elements.featureTitle) {
             this.elements.featureTitle.textContent = featureData.title;
+            console.log(`📝 Set title: "${featureData.title}"`);
         }
         
         if (this.elements.featureDescription) {
             this.elements.featureDescription.textContent = featureData.description;
+            console.log(`📝 Set description (${featureData.description.length} chars)`);
         }
         
         // Render sections
@@ -228,18 +290,26 @@ class FeatureDetailPage {
         
         // Update meta tags for SEO
         this.updateMetaTags(featureData);
+        
+        console.log('✅ Feature content rendered successfully');
     }
 
     /**
      * Render feature sections with alternating layout
      */
     renderSections(sections) {
-        if (!this.elements.featureSections) return;
+        if (!this.elements.featureSections) {
+            console.error('❌ Feature sections container not found');
+            return;
+        }
+        
+        console.log(`🔧 Rendering ${sections.length} sections...`);
         
         // Clear existing content
         this.elements.featureSections.innerHTML = '';
         
         sections.forEach((section, index) => {
+            console.log(`📝 Rendering section ${index + 1}: "${section.header}"`);
             const sectionElement = this.createSectionElement(section, index);
             this.elements.featureSections.appendChild(sectionElement);
         });
@@ -259,6 +329,10 @@ class FeatureDetailPage {
         // Determine image position (alternating)
         const imagePosition = index % 2 === 0 ? 'left' : 'right';
         
+        // Get full image path
+        const imagePath = this.getImagePath(section.image);
+        console.log(`🖼️ Section ${index + 1} image path: ${imagePath}`);
+        
         // Build section HTML
         sectionDiv.innerHTML = `
             <header class="section-header">
@@ -267,11 +341,12 @@ class FeatureDetailPage {
             <div class="section-content image-${imagePosition}">
                 <div class="section-image-container">
                     <img 
-                        src="${this.getImagePath(section.image)}" 
+                        src="${imagePath}" 
                         alt="${this.escapeHtml(section.imageAlt || section.header + ' illustration')}"
                         class="section-image"
                         loading="lazy"
-                        onerror="this.src='${this.config.fallbackImage}'"
+                        onerror="this.src='${this.config.fallbackImage}'; console.log('❌ Image failed to load: ${imagePath}');"
+                        onload="console.log('✅ Image loaded: ${imagePath}');"
                     />
                 </div>
                 <div class="section-text-container">
@@ -286,16 +361,25 @@ class FeatureDetailPage {
     }
 
     /**
-     * Get full image path
+     * Get full image path - ENHANCED VERSION
      */
     getImagePath(imagePath) {
         // If already a full URL, return as-is
-        if (imagePath.startsWith('http') || imagePath.startsWith('/')) {
+        if (imagePath.startsWith('http') || imagePath.startsWith('//')) {
+            console.log(`🌐 Using full URL: ${imagePath}`);
+            return imagePath;
+        }
+        
+        // If starts with /, treat as absolute path from domain root
+        if (imagePath.startsWith('/')) {
+            console.log(`📁 Using absolute path: ${imagePath}`);
             return imagePath;
         }
         
         // Build path relative to feature folder
-        return `${this.config.imageBasePath}${this.state.currentFeature}/${imagePath}`;
+        const fullPath = `${this.config.imageBasePath}${this.state.currentFeature}/${imagePath}`;
+        console.log(`📂 Building relative path: ${this.config.imageBasePath} + ${this.state.currentFeature} + ${imagePath} = ${fullPath}`);
+        return fullPath;
     }
 
     /**
@@ -322,6 +406,8 @@ class FeatureDetailPage {
      * Update meta tags for SEO
      */
     updateMetaTags(featureData) {
+        console.log('🏷️ Updating meta tags...');
+        
         // Update description meta tag
         let descMeta = document.querySelector('meta[name="description"]');
         if (descMeta) {
@@ -340,21 +426,27 @@ class FeatureDetailPage {
         if (ogDesc) {
             ogDesc.setAttribute('content', featureData.description);
         }
+        
+        console.log('✅ Meta tags updated');
     }
 
     /**
      * Setup event listeners
      */
     bindEvents() {
+        console.log('🔗 Binding events...');
+        
         // Back button
         if (this.elements.backButton) {
             this.elements.backButton.addEventListener('click', this.handleBackClick.bind(this));
+            console.log('✅ Back button event bound');
         }
         
         // Contact buttons
         this.elements.contactButtons.forEach(button => {
             button.addEventListener('click', this.handleContactClick.bind(this));
         });
+        console.log(`✅ ${this.elements.contactButtons.length} contact button events bound`);
         
         // Keyboard navigation
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
@@ -369,6 +461,8 @@ class FeatureDetailPage {
      * Setup scroll animations
      */
     setupAnimations() {
+        console.log('🎭 Setting up animations...');
+        
         // Create intersection observer for section animations
         this.intersectionObserver = new IntersectionObserver(
             this.handleIntersection.bind(this),
@@ -383,6 +477,8 @@ class FeatureDetailPage {
         sections.forEach(section => {
             this.intersectionObserver.observe(section);
         });
+        
+        console.log(`✅ Animation observer setup for ${sections.length} sections`);
     }
 
     /**
@@ -396,6 +492,7 @@ class FeatureDetailPage {
                 
                 setTimeout(() => {
                     entry.target.classList.add('visible');
+                    console.log(`🎭 Section ${index + 1} animated into view`);
                 }, delay);
                 
                 // Stop observing this element
@@ -410,6 +507,8 @@ class FeatureDetailPage {
     handleBackClick(event) {
         event.preventDefault();
         
+        console.log('🔙 Back button clicked');
+        
         // Track interaction
         this.trackEvent('back_button_click', {
             feature: this.state.currentFeature,
@@ -417,13 +516,15 @@ class FeatureDetailPage {
         });
         
         // Navigate back to features section
-        const featuresURL = 'index.html#key-features-section';
+        const featuresURL = '../index.html#key-features-section';  // Relative path from feature-detail folder
         
-        if (document.referrer.includes(window.location.hostname)) {
+        if (document.referrer && document.referrer.includes(window.location.hostname)) {
             // If came from same site, go back
+            console.log('🔙 Using browser back');
             window.history.back();
         } else {
             // Otherwise, go to features section
+            console.log(`🔙 Navigating to: ${featuresURL}`);
             window.location.href = featuresURL;
         }
     }
@@ -434,15 +535,14 @@ class FeatureDetailPage {
     handleContactClick(event) {
         event.preventDefault();
         
+        console.log('📞 Contact button clicked');
+        
         // Track conversion
         this.trackEvent('contact_click', {
             source: 'feature_detail',
             feature: this.state.currentFeature,
             timestamp: Date.now()
         });
-        
-        // Trigger contact modal (will be handled by main.js)
-        console.log('📞 Contact clicked from feature detail page');
         
         // Dispatch custom event for main.js to handle
         document.dispatchEvent(new CustomEvent('openContactModal', {
@@ -481,6 +581,7 @@ class FeatureDetailPage {
         // Reload page if feature parameter changes
         const newFeature = this.getFeatureFromURL();
         if (newFeature !== this.state.currentFeature) {
+            console.log(`🔄 Feature changed from ${this.state.currentFeature} to ${newFeature}, reloading...`);
             window.location.reload();
         }
     }
@@ -554,6 +655,8 @@ class FeatureDetailPage {
         if (this.elements.body) {
             this.elements.body.classList.remove('loading');
         }
+        
+        console.log('✅ Loading screen hidden');
     }
 
     /**
@@ -594,7 +697,27 @@ class FeatureDetailPage {
             isLoading: () => this.state.isLoading,
             hasError: () => this.state.hasError,
             reload: () => window.location.reload(),
-            trackEvent: (name, data) => this.trackEvent(name, data)
+            trackEvent: (name, data) => this.trackEvent(name, data),
+            
+            // Debugging methods
+            debugInfo: () => ({
+                config: this.config,
+                state: this.state,
+                elements: Object.keys(this.elements).reduce((acc, key) => {
+                    acc[key] = !!this.elements[key];
+                    return acc;
+                }, {}),
+                currentURL: window.location.href,
+                referrer: document.referrer
+            }),
+            
+            testImagePath: (imageName) => {
+                return this.getImagePath(imageName);
+            },
+            
+            testJSONPath: (featureName) => {
+                return `${this.config.jsonBasePath}${featureName}.json`;
+            }
         };
     }
 
@@ -620,12 +743,21 @@ let featureDetailInstance;
 
 const initializeFeatureDetail = () => {
     try {
+        console.log('🔄 Initializing Feature Detail Page...');
+        
         featureDetailInstance = new FeatureDetailPage();
         
         // Export API to global scope
         window.FeatureDetail = featureDetailInstance.getAPI();
         
         console.log('🎯 Feature Detail API exported to window.FeatureDetail');
+        console.log('🔧 Available debug methods:', ['debugInfo', 'testImagePath', 'testJSONPath']);
+        
+        // Add global debugging function
+        window.debugFeatureDetail = () => {
+            console.log('🐛 Feature Detail Debug Info:');
+            console.log(window.FeatureDetail.debugInfo());
+        };
         
     } catch (error) {
         console.error('❌ Failed to initialize Feature Detail Page:', error);
