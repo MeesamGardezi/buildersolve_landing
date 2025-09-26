@@ -1,0 +1,30 @@
+{
+  "title": "Scheduling",
+  "description": "Master project timelines with intelligent scheduling that coordinates teams, tracks dependencies, and keeps every project on track with real-time updates and resource optimization.",
+  "sections": [
+    {
+      "header": "Dynamic Project Timelines",
+      "image": "timeline-gantt-view.png",
+      "imageAlt": "BuilderSolve scheduling interface showing interactive Gantt charts with project timelines and milestone tracking",
+      "text": "Visualize your entire project timeline with interactive Gantt charts that automatically adjust as conditions change. Our smart scheduling engine identifies critical path activities and potential bottlenecks before they impact your deadlines.\n\nDrag-and-drop scheduling makes it easy to adjust timelines, while automated notifications keep everyone informed of changes. Never miss another deadline with predictive scheduling that accounts for weather, material delays, and crew availability."
+    },
+    {
+      "header": "Resource & Crew Optimization",
+      "image": "crew-allocation-dashboard.png", 
+      "imageAlt": "Resource scheduling dashboard displaying crew assignments, equipment allocation, and workload balancing across multiple projects",
+      "text": "Optimize your workforce allocation with intelligent crew scheduling that balances workloads across multiple projects. Track crew skills, certifications, and availability to ensure the right people are on the right jobs.\n\nReal-time resource tracking prevents double-booking and identifies opportunities to maximize efficiency. Our system automatically suggests optimal crew assignments based on project requirements, location proximity, and team performance history."
+    },
+    {
+      "header": "Task Dependencies & Critical Path",
+      "image": "dependency-mapping.png",
+      "imageAlt": "Task dependency visualization showing interconnected project activities with critical path highlighting and risk assessment",
+      "text": "Map complex task dependencies with visual workflow diagrams that clearly show how delays in one area affect the entire project. Our critical path analysis automatically identifies which tasks have zero slack time and require immediate attention.\n\nWhen changes occur, the system instantly recalculates downstream impacts and suggests alternative approaches. Smart dependency tracking ensures that prerequisite work is completed before dependent tasks begin, eliminating costly rework and delays."
+    },
+    {
+      "header": "Real-Time Progress Monitoring",
+      "image": "progress-tracking-mobile.png",
+      "imageAlt": "Mobile progress tracking interface showing real-time task completion, team check-ins, and schedule adherence metrics", 
+      "text": "Monitor project progress in real-time with mobile check-ins, photo updates, and automated milestone tracking. Field teams can update task status instantly, providing managers with up-to-the-minute visibility into project health.\n\nAutomatic schedule variance alerts notify you when tasks are running behind or ahead of schedule. Historical performance data helps improve future scheduling accuracy and identify patterns that impact project delivery times."
+    }
+  ]
+}
