@@ -3,10 +3,10 @@
   "description": "Create accurate project estimates with intelligent cost calculations, material tracking, and automated pricing that eliminates guesswork and reduces bid errors.",
   "sections": [
     {
-      "header": "Intelligent Cost Calculation",
-      "image": "cost-calculation.png",
-      "imageAlt": "BuilderSolve cost calculation interface showing automated pricing algorithms and cost breakdowns",
-      "text": "Our advanced algorithms automatically calculate material costs, labor rates, and overhead expenses based on your project specifications. The system learns from your historical data to provide increasingly accurate estimates over time.\n\nEliminate manual calculations and reduce estimation errors by up to 85%. Real-time pricing updates ensure your bids reflect current market conditions."
+      "header": "Spreadshee-Like Estimation Interface",
+      "image": "costcode_gif.gif",
+      "imageAlt": "BuilderSolve selecting cost codes in a spreadsheet-like interface",
+      "text": "Easily create detailed estimates using a familiar spreadsheet-like interface. Quickly add cost codes, quantities, and unit prices to build comprehensive project estimates and budgets.\n"
     },
     {
       "header": "Material Tracking & Pricing",
