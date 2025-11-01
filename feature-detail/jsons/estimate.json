@@ -9,22 +9,16 @@
       "text": "Easily create detailed estimates using a familiar spreadsheet-like interface. Quickly add cost codes, quantities, and unit prices to build comprehensive project estimates and budgets.\n"
     },
     {
-      "header": "Material Tracking & Pricing",
+      "header": "Instant Budget and Estimate Calculation",
       "image": "material-tracking.gif",
-      "imageAlt": "Dynamic material tracking system showing real-time inventory and pricing updates",
-      "text": "Track material quantities, costs, and availability in real-time. Our system integrates with major suppliers to provide current pricing and delivery schedules.\n\nAutomatically calculate waste factors, bulk discounts, and seasonal price variations. Never over-order materials again with precise quantity calculations based on your project drawings."
+      "imageAlt": "Budget and Estimate",
+      "text": "Automatically calculates budget and estimate costs based on "
     },
     {
       "header": "Labor Cost Analysis",
       "image": "labor-analysis.png",
       "imageAlt": "Labor cost analysis dashboard displaying crew productivity rates and time estimates",
       "text": "Accurately estimate labor costs using productivity rates specific to your crews and project types. The system factors in skill levels, working conditions, and project complexity.\n\nHistorical performance data helps refine future estimates. Track actual vs. estimated labor hours to continuously improve accuracy and profitability."
-    },
-    {
-      "header": "Competitive Bid Analysis",
-      "image": "bid-comparison.png",
-      "imageAlt": "Competitive bidding interface showing market analysis and pricing strategies",
-      "text": "Analyze competitor pricing patterns and market trends to position your bids strategically. Our database helps you understand local market conditions and pricing standards.\n\nWin more profitable projects by bidding competitively while maintaining healthy margins. Real-time market intelligence gives you the edge in competitive bidding situations."
     }
   ]
 }

@@ -1,20 +1,16 @@
 /**
- * BuilderSolve Hero Section - UPDATED VERSION
- * Production ready for cPanel shared hosting
- * 
- * @version 6.2.0 - BACKGROUND IMAGE REMOVED
+ * BuilderSolve Hero Section
+ * @version 6.3.0 - Fixed Contact Button Scroll
  */
 
 class BuilderSolveHero {
     constructor() {
-        // Configuration
         this.config = {
             scrollThrottle: 16,
             imageTimeout: 2000,
             parallaxSpeed: 0.05
         };
 
-        // State management
         this.state = {
             isInitialized: false,
             scrollPosition: 0,
@@ -22,21 +18,15 @@ class BuilderSolveHero {
             viewportHeight: window.innerHeight
         };
 
-        // DOM elements cache
         this.elements = {};
         
-        // Bind methods
         this.handleScroll = this.throttle(this.handleScroll.bind(this), this.config.scrollThrottle);
         this.handleCTAClick = this.handleCTAClick.bind(this);
         this.handleResize = this.throttle(this.handleResize.bind(this), 250);
 
-        // Initialize
         this.init();
     }
 
-    /**
-     * Initialize the hero section
-     */
     init() {
         try {
             console.log('🚀 BuilderSolve Hero initializing...');
@@ -49,7 +39,6 @@ class BuilderSolveHero {
             this.state.isInitialized = true;
             console.log('✅ BuilderSolve Hero initialized successfully');
             
-            // Track initialization
             this.trackEvent('hero_initialized', {
                 timestamp: Date.now(),
                 hasImages: this.elements.heroImages ? this.elements.heroImages.length : 0
@@ -60,9 +49,6 @@ class BuilderSolveHero {
         }
     }
 
-    /**
-     * Cache DOM elements
-     */
     cacheElements() {
         this.elements = {
             heroSection: document.getElementById('hero-section'),
@@ -82,31 +68,23 @@ class BuilderSolveHero {
         });
     }
 
-    /**
-     * Bind event listeners
-     */
     bindEvents() {
-        // CTA button
+        // CTA button - smooth scroll to contact
         if (this.elements.ctaButton) {
             this.elements.ctaButton.addEventListener('click', this.handleCTAClick);
             console.log('✅ CTA button events bound');
         }
 
-        // Scroll indicator
         if (this.elements.scrollIndicator) {
             this.elements.scrollIndicator.addEventListener('click', this.handleScrollIndicatorClick.bind(this));
         }
 
-        // Window events
         window.addEventListener('scroll', this.handleScroll, { passive: true });
         window.addEventListener('resize', this.handleResize);
 
         console.log('✅ All events bound');
     }
 
-    /**
-     * Setup image handling
-     */
     setupImageHandling() {
         if (!this.elements.heroImages || this.elements.heroImages.length === 0) {
             return;
@@ -116,7 +94,6 @@ class BuilderSolveHero {
             image.addEventListener('load', () => this.handleImageLoad(index));
             image.addEventListener('error', () => this.handleImageError(index));
             
-            // Check if already loaded
             if (image.complete && image.naturalHeight !== 0) {
                 this.handleImageLoad(index);
             }
@@ -125,10 +102,9 @@ class BuilderSolveHero {
         console.log(`✅ Image handling setup for ${this.elements.heroImages.length} images`);
     }
 
-    /**
-     * Handle CTA button click
-     */
     handleCTAClick(event) {
+        event.preventDefault();
+        
         const button = event.target.closest('.btn-primary-large');
         if (button) {
             // Visual feedback
@@ -138,6 +114,18 @@ class BuilderSolveHero {
             setTimeout(() => {
                 button.style.transform = '';
             }, 100);
+
+            // Smooth scroll to contact section
+            const contactSection = document.getElementById('contact');
+            if (contactSection) {
+                const navHeight = 60;
+                const targetPosition = contactSection.offsetTop - navHeight;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
 
             // Track conversion
             this.trackConversion('hero_contact_click', {
@@ -150,13 +138,10 @@ class BuilderSolveHero {
                 device: this.getDeviceType()
             });
 
-            console.log('📞 Contact Us clicked');
+            console.log('📞 Contact Us clicked - scrolling to contact section');
         }
     }
 
-    /**
-     * Handle scroll for parallax
-     */
     handleScroll() {
         if (!this.elements.heroSection) return;
 
@@ -164,13 +149,11 @@ class BuilderSolveHero {
         const heroHeight = this.elements.heroSection.offsetHeight;
         this.state.scrollPosition = scrolled;
 
-        // Parallax for images
         if (scrolled <= heroHeight && this.elements.imagesContainer) {
             const parallaxOffset = scrolled * this.config.parallaxSpeed;
             this.elements.imagesContainer.style.transform = `translateY(${parallaxOffset}px)`;
         }
 
-        // Hide/show scroll indicator
         if (this.elements.scrollIndicator) {
             if (scrolled > 100) {
                 this.elements.scrollIndicator.style.opacity = '0';
@@ -182,18 +165,12 @@ class BuilderSolveHero {
         }
     }
 
-    /**
-     * Handle window resize
-     */
     handleResize() {
         this.state.viewportWidth = window.innerWidth;
         this.state.viewportHeight = window.innerHeight;
         this.updateResponsiveState();
     }
 
-    /**
-     * Handle scroll indicator click
-     */
     handleScrollIndicatorClick(event) {
         event.preventDefault();
         
@@ -216,9 +193,6 @@ class BuilderSolveHero {
         }
     }
 
-    /**
-     * Handle image load
-     */
     handleImageLoad(index) {
         console.log(`✅ Hero image ${index + 1} loaded`);
         
@@ -232,9 +206,6 @@ class BuilderSolveHero {
         });
     }
 
-    /**
-     * Handle image error
-     */
     handleImageError(index) {
         console.warn(`⚠️ Hero image ${index + 1} failed to load`);
         
@@ -267,16 +238,12 @@ class BuilderSolveHero {
         });
     }
 
-    /**
-     * Setup accessibility
-     */
     setupAccessibility() {
         if (this.elements.imagesContainer) {
             this.elements.imagesContainer.setAttribute('aria-label', 
                 'BuilderSolve construction management platform showcase images');
         }
 
-        // Keyboard navigation for CTA
         if (this.elements.ctaButton) {
             this.elements.ctaButton.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -287,9 +254,6 @@ class BuilderSolveHero {
         }
     }
 
-    /**
-     * Update responsive state
-     */
     updateResponsiveState() {
         const breakpoints = {
             mobile: window.innerWidth <= 767,
@@ -302,9 +266,6 @@ class BuilderSolveHero {
         console.log('📱 Responsive state updated:', this.state.breakpoint);
     }
 
-    /**
-     * Get device type
-     */
     getDeviceType() {
         const width = window.innerWidth;
         if (width <= 479) return 'mobile-small';
@@ -314,9 +275,6 @@ class BuilderSolveHero {
         return 'desktop-large';
     }
 
-    /**
-     * Track events
-     */
     trackEvent(eventName, data = {}) {
         const eventData = {
             event: eventName,
@@ -327,7 +285,6 @@ class BuilderSolveHero {
 
         console.log('📊 Event tracked:', eventData);
 
-        // Google Analytics 4
         if (typeof gtag !== 'undefined') {
             gtag('event', eventName, {
                 event_category: 'hero_section',
@@ -336,29 +293,22 @@ class BuilderSolveHero {
             });
         }
 
-        // Custom analytics
         if (window.BuilderSolveAnalytics) {
             window.BuilderSolveAnalytics.track(eventData);
         }
 
-        // PostHog
         if (window.posthog) {
             window.posthog.capture(eventName, eventData);
         }
     }
 
-    /**
-     * Track conversions
-     */
     trackConversion(eventName, data = {}) {
         this.trackEvent(eventName, { ...data, conversion: true });
         
-        // Facebook Pixel
         if (window.fbq) {
             window.fbq('track', 'Lead');
         }
 
-        // Google Ads
         if (window.gtag) {
             window.gtag('event', 'conversion', {
                 send_to: 'AW-CONVERSION_ID/CONVERSION_LABEL'
@@ -366,9 +316,6 @@ class BuilderSolveHero {
         }
     }
 
-    /**
-     * Throttle utility
-     */
     throttle(func, limit) {
         let inThrottle;
         return function(...args) {
@@ -380,9 +327,6 @@ class BuilderSolveHero {
         };
     }
 
-    /**
-     * Public API
-     */
     getAPI() {
         return {
             getState: () => ({ ...this.state }),
@@ -394,9 +338,6 @@ class BuilderSolveHero {
         };
     }
 
-    /**
-     * Cleanup
-     */
     destroy() {
         window.removeEventListener('resize', this.handleResize);
         window.removeEventListener('scroll', this.handleScroll);
@@ -419,13 +360,10 @@ let heroInstance;
 const initializeHero = () => {
     try {
         heroInstance = new BuilderSolveHero();
-        
-        // Export API
         window.BuilderSolveHero = heroInstance.getAPI();
         
         console.log('🎯 BuilderSolve Hero API exported to window.BuilderSolveHero');
         
-        // Dispatch event
         window.dispatchEvent(new CustomEvent('buildersolve:hero:ready', {
             detail: { api: window.BuilderSolveHero }
         }));
@@ -435,21 +373,18 @@ const initializeHero = () => {
     }
 };
 
-// Initialize based on document state
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeHero);
 } else {
     initializeHero();
 }
 
-// Cleanup on unload
 window.addEventListener('beforeunload', () => {
     if (heroInstance) {
         heroInstance.destroy();
     }
 });
 
-// Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = BuilderSolveHero;
 } else if (typeof define === 'function' && define.amd) {

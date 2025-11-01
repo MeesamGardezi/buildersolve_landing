@@ -1,24 +1,39 @@
 /**
  * BuilderSolve Feature Detail Page - FIXED VERSION
  * Handles dynamic loading of feature content from JSON files
- * @version 1.1.0 - Fixed paths and enhanced debugging
+ * @version 1.2.0 - Added feature name mapping and blog-style layout support
  */
 
 class FeatureDetailPage {
     constructor() {
         // Configuration - FIXED PATHS
         this.config = {
-            jsonBasePath: 'jsons/',  // Changed from 'data/features/' to match actual location
-            imageBasePath: '../assets/images/features/',  // Relative path from feature-detail folder
+            jsonBasePath: 'jsons/',
+            imageBasePath: '../assets/images/features/',
             fallbackImage: '../assets/images/placeholder-feature.png',
             animationDelay: 100,
-            loadingTimeout: 10000
+            loadingTimeout: 10000,
+            
+            // Feature name mapping - handles URL variations
+            featureMapping: {
+                'estimate': 'estimate',
+                'estimating': 'estimate',
+                'estimates': 'estimate',
+                'schedule': 'schedule',
+                'scheduling': 'schedule',
+                'schedules': 'schedule',
+                'changeorder': 'changeorder',
+                'changeorders': 'changeorder',
+                'change-order': 'changeorder',
+                'change-orders': 'changeorder'
+            }
         };
 
         // State management
         this.state = {
             isLoading: true,
             currentFeature: null,
+            actualFeatureName: null, // The actual JSON filename
             featureData: null,
             hasError: false,
             sectionsLoaded: 0
@@ -50,6 +65,10 @@ class FeatureDetailPage {
                 this.showError('No feature specified in URL');
                 return;
             }
+
+            // Map to actual feature name
+            this.state.actualFeatureName = this.mapFeatureName(this.state.currentFeature);
+            console.log(`📋 Mapped to actual feature: "${this.state.actualFeatureName}"`);
 
             // Cache DOM elements
             this.cacheElements();
@@ -91,6 +110,19 @@ class FeatureDetailPage {
         
         console.log('⚠️ No feature parameter found in URL');
         return null;
+    }
+
+    /**
+     * Map feature name to actual JSON filename
+     */
+    mapFeatureName(featureName) {
+        const mapped = this.config.featureMapping[featureName] || featureName;
+        
+        if (mapped !== featureName) {
+            console.log(`🔄 Feature name mapped: "${featureName}" → "${mapped}"`);
+        }
+        
+        return mapped;
     }
 
     /**
@@ -138,11 +170,11 @@ class FeatureDetailPage {
         const components = [
             { 
                 element: this.elements.navigation, 
-                path: '../components/navigation/nav.html'  // Relative path from feature-detail folder
+                path: '../components/navigation/nav.html'
             },
             { 
                 element: this.elements.footer, 
-                path: '../components/footer/footer.html'   // Relative path from feature-detail folder
+                path: '../components/footer/footer.html'
             }
         ];
 
@@ -169,12 +201,12 @@ class FeatureDetailPage {
      * Load feature data from JSON
      */
     async loadFeatureData() {
-        if (!this.state.currentFeature) {
+        if (!this.state.actualFeatureName) {
             throw new Error('No feature specified');
         }
 
         try {
-            const jsonPath = `${this.config.jsonBasePath}${this.state.currentFeature}.json`;
+            const jsonPath = `${this.config.jsonBasePath}${this.state.actualFeatureName}.json`;
             console.log(`📥 Fetching feature data from: ${jsonPath}`);
             
             const response = await fetch(jsonPath);
@@ -188,7 +220,7 @@ class FeatureDetailPage {
                 // List available features for debugging
                 try {
                     console.log('🔍 Checking for available JSON files...');
-                    const testFiles = ['estimate', 'estimating', 'scheduling', 'changeorders'];
+                    const testFiles = ['estimate', 'schedule', 'changeorders'];
                     for (const testFile of testFiles) {
                         const testPath = `${this.config.jsonBasePath}${testFile}.json`;
                         const testResponse = await fetch(testPath);
@@ -253,10 +285,6 @@ class FeatureDetailPage {
                 });
                 return false;
             }
-            if (!section.image) {
-                console.error(`❌ Section ${i} missing image:`, section);
-                return false;
-            }
         }
         
         console.log(`✅ Data structure valid. Found ${data.sections.length} sections.`);
@@ -295,7 +323,7 @@ class FeatureDetailPage {
     }
 
     /**
-     * Render feature sections with alternating layout
+     * Render feature sections with blog-style vertical layout
      */
     renderSections(sections) {
         if (!this.elements.featureSections) {
@@ -303,7 +331,7 @@ class FeatureDetailPage {
             return;
         }
         
-        console.log(`🔧 Rendering ${sections.length} sections...`);
+        console.log(`🔧 Rendering ${sections.length} sections in blog-style layout...`);
         
         // Clear existing content
         this.elements.featureSections.innerHTML = '';
@@ -319,36 +347,42 @@ class FeatureDetailPage {
     }
 
     /**
-     * Create individual section element
+     * Create individual section element with blog-style layout
      */
     createSectionElement(section, index) {
         const sectionDiv = document.createElement('div');
         sectionDiv.className = 'feature-section';
         sectionDiv.setAttribute('data-section-index', index);
         
-        // Determine image position (alternating)
-        const imagePosition = index % 2 === 0 ? 'left' : 'right';
-        
-        // Get full image path
-        const imagePath = this.getImagePath(section.image);
-        console.log(`🖼️ Section ${index + 1} image path: ${imagePath}`);
-        
-        // Build section HTML
-        sectionDiv.innerHTML = `
+        // Build section HTML with blog-style vertical layout
+        let sectionHTML = `
             <header class="section-header">
                 <h2 class="section-title">${this.escapeHtml(section.header)}</h2>
             </header>
-            <div class="section-content image-${imagePosition}">
+            <div class="section-content">
+        `;
+        
+        // Add image if it exists
+        if (section.image) {
+            const imagePath = this.getImagePath(section.image);
+            console.log(`🖼️ Section ${index + 1} image path: ${imagePath}`);
+            
+            sectionHTML += `
                 <div class="section-image-container">
                     <img 
                         src="${imagePath}" 
                         alt="${this.escapeHtml(section.imageAlt || section.header + ' illustration')}"
                         class="section-image"
                         loading="lazy"
-                        onerror="this.src='${this.config.fallbackImage}'; console.log('❌ Image failed to load: ${imagePath}');"
+                        onerror="this.parentElement.style.display='none'; console.log('❌ Image failed to load: ${imagePath}');"
                         onload="console.log('✅ Image loaded: ${imagePath}');"
                     />
                 </div>
+            `;
+        }
+        
+        // Add text content
+        sectionHTML += `
                 <div class="section-text-container">
                     <div class="section-text">
                         ${this.formatText(section.text)}
@@ -357,11 +391,12 @@ class FeatureDetailPage {
             </div>
         `;
         
+        sectionDiv.innerHTML = sectionHTML;
         return sectionDiv;
     }
 
     /**
-     * Get full image path - ENHANCED VERSION
+     * Get full image path
      */
     getImagePath(imagePath) {
         // If already a full URL, return as-is
@@ -377,8 +412,8 @@ class FeatureDetailPage {
         }
         
         // Build path relative to feature folder
-        const fullPath = `${this.config.imageBasePath}${this.state.currentFeature}/${imagePath}`;
-        console.log(`📂 Building relative path: ${this.config.imageBasePath} + ${this.state.currentFeature} + ${imagePath} = ${fullPath}`);
+        const fullPath = `${this.config.imageBasePath}${this.state.actualFeatureName}/${imagePath}`;
+        console.log(`📂 Building relative path: ${this.config.imageBasePath} + ${this.state.actualFeatureName} + ${imagePath} = ${fullPath}`);
         return fullPath;
     }
 
@@ -516,7 +551,7 @@ class FeatureDetailPage {
         });
         
         // Navigate back to features section
-        const featuresURL = '../index.html#key-features-section';  // Relative path from feature-detail folder
+        const featuresURL = '../index.html#key-features-section';
         
         if (document.referrer && document.referrer.includes(window.location.hostname)) {
             // If came from same site, go back

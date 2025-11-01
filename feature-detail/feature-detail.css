@@ -1,4 +1,4 @@
-/* ===== BUILDERSOLVE FEATURE DETAIL PAGE ===== */
+/* ===== BUILDERSOLVE FEATURE DETAIL PAGE - BLOG STYLE ===== */
 
 /* ===== BASE STYLES ===== */
 .feature-detail-wrapper {
@@ -116,13 +116,16 @@
     font-size: var(--text-xl);
     line-height: var(--leading-relaxed);
     color: var(--gray-600);
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
-/* ===== FEATURE SECTIONS ===== */
+/* ===== BLOG-STYLE FEATURE SECTIONS ===== */
 .feature-sections {
-    margin-bottom: var(--space-16);
+    /* Center the entire sections container with large side margins */
+    max-width: 900px;
+    margin: 0 auto var(--space-16) auto;
+    padding: 0 var(--space-6);
 }
 
 .feature-section {
@@ -138,7 +141,7 @@
 }
 
 .section-header {
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-6);
     text-align: center;
 }
 
@@ -148,35 +151,25 @@
     font-weight: var(--font-bold);
     line-height: var(--leading-snug);
     color: var(--gray-900);
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-4);
 }
 
+/* ===== BLOG-STYLE VERTICAL LAYOUT ===== */
 .section-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-10);
-    align-items: center;
-    margin-bottom: var(--space-8);
-}
-
-/* ===== ALTERNATING LAYOUTS ===== */
-/* Default: Image Left, Text Right */
-.section-content.image-left {
-    grid-template-areas: "image text";
-}
-
-/* Alternate: Text Left, Image Right */
-.section-content.image-right {
-    grid-template-areas: "text image";
+    /* Simple vertical stacking - no grid needed */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
 }
 
 .section-image-container {
-    grid-area: image;
+    width: 100%;
     position: relative;
     border-radius: var(--radius-xl);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
     transition: all var(--transition-base);
+    margin: 0 auto;
 }
 
 .section-image-container:hover {
@@ -192,12 +185,11 @@
 }
 
 .section-image-container:hover .section-image {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .section-text-container {
-    grid-area: text;
-    padding: var(--space-4);
+    width: 100%;
 }
 
 .section-text {
@@ -207,8 +199,12 @@
     margin: 0;
 }
 
-.section-text p + p {
-    margin-top: var(--space-4);
+.section-text p {
+    margin-bottom: var(--space-4);
+}
+
+.section-text p:last-child {
+    margin-bottom: 0;
 }
 
 /* ===== CTA SECTION ===== */
@@ -217,7 +213,8 @@
     border-radius: var(--radius-2xl);
     padding: var(--space-12) var(--space-8);
     text-align: center;
-    margin: var(--space-16) 0;
+    margin: var(--space-16) auto;
+    max-width: 900px;
 }
 
 .cta-content {
@@ -343,10 +340,14 @@
 
 /* ===== RESPONSIVE DESIGN ===== */
 
-/* Large Desktop */
+/* Large Desktop - Even wider content for readability */
 @media (min-width: 1440px) {
     .container {
         max-width: 1400px;
+    }
+    
+    .feature-sections {
+        max-width: 1000px;
     }
     
     .feature-title {
@@ -354,14 +355,14 @@
     }
     
     .section-content {
-        gap: var(--space-12);
+        gap: var(--space-8);
     }
 }
 
 /* Desktop */
 @media (max-width: 1279px) {
-    .section-content {
-        gap: var(--space-8);
+    .feature-sections {
+        max-width: 850px;
     }
     
     .feature-title {
@@ -371,12 +372,21 @@
     .section-title {
         font-size: var(--text-2xl);
     }
+    
+    .section-content {
+        gap: var(--space-6);
+    }
 }
 
-/* Tablet */
+/* Tablet - Reduce side margins */
 @media (max-width: 1023px) {
     .container {
         padding: 0 var(--space-3);
+    }
+    
+    .feature-sections {
+        max-width: 750px;
+        padding: 0 var(--space-4);
     }
     
     .feature-header {
@@ -392,10 +402,6 @@
         font-size: var(--text-lg);
     }
     
-    .section-content {
-        gap: var(--space-6);
-    }
-    
     .section-title {
         font-size: var(--text-xl);
     }
@@ -406,7 +412,7 @@
     
     .feature-cta {
         padding: var(--space-10) var(--space-6);
-        margin: var(--space-12) 0;
+        margin: var(--space-12) auto;
     }
     
     .cta-title {
@@ -418,13 +424,18 @@
     }
 }
 
-/* Mobile - Stack Vertically */
+/* Mobile - Further reduce margins */
 @media (max-width: 767px) {
     .feature-detail-wrapper {
         padding-top: 60px; /* Smaller navbar on mobile */
     }
     
     .container {
+        padding: 0 var(--space-2);
+    }
+    
+    .feature-sections {
+        max-width: 100%;
         padding: 0 var(--space-2);
     }
     
@@ -451,16 +462,12 @@
         font-size: var(--text-base);
     }
     
-    .feature-sections {
-        margin-bottom: var(--space-12);
-    }
-    
     .feature-section {
         margin-bottom: var(--space-12);
     }
     
     .section-header {
-        margin-bottom: var(--space-6);
+        margin-bottom: var(--space-5);
     }
     
     .section-title {
@@ -468,33 +475,21 @@
         margin-bottom: var(--space-3);
     }
     
-    /* MOBILE STACKING: Image on top, text below */
     .section-content {
-        grid-template-columns: 1fr;
-        grid-template-areas: 
-            "image"
-            "text";
-        gap: var(--space-6);
-    }
-    
-    .section-content.image-left,
-    .section-content.image-right {
-        grid-template-areas: 
-            "image"
-            "text";
-    }
-    
-    .section-text-container {
-        padding: var(--space-2);
+        gap: var(--space-5);
     }
     
     .section-text {
         font-size: var(--text-sm);
     }
     
+    .section-text p {
+        margin-bottom: var(--space-3);
+    }
+    
     .feature-cta {
         padding: var(--space-8) var(--space-4);
-        margin: var(--space-10) 0;
+        margin: var(--space-10) auto;
         border-radius: var(--radius-lg);
     }
     
@@ -539,9 +534,13 @@
     }
 }
 
-/* Small Mobile */
+/* Small Mobile - Minimal margins */
 @media (max-width: 479px) {
     .container {
+        padding: 0 var(--space-1);
+    }
+    
+    .feature-sections {
         padding: 0 var(--space-1);
     }
     
@@ -629,6 +628,7 @@
     
     .feature-sections {
         margin-bottom: var(--space-8);
+        max-width: 100%;
     }
     
     .feature-section {

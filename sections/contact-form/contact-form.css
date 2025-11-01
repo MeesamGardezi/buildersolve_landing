@@ -1,0 +1,693 @@
+/**
+ * BuilderSolve Contact Form - Professional & Complete
+ * @version 3.0.0
+ */
+
+/* ===== VARIABLES ===== */
+:root {
+    /* Colors */
+    --primary-900: #0F172A;
+    --primary-800: #1E293B;
+    --primary-700: #334155;
+    --primary-600: #475569;
+    --primary-500: #64748B;
+    --primary-400: #94A3B8;
+    --primary-300: #CBD5E1;
+    --primary-200: #E2E8F0;
+    --primary-100: #F1F5F9;
+    --primary-50: #F8FAFC;
+    
+    --accent-blue: #2563EB;
+    --accent-blue-hover: #1D4ED8;
+    --accent-orange: #EA580C;
+    --accent-orange-hover: #DC2626;
+    
+    --success-green: #10B981;
+    --success-green-light: #D1FAE5;
+    --error-red: #EF4444;
+    --error-red-light: #FEE2E2;
+    
+    /* Spacing */
+    --contact-padding: 5rem;
+    --form-gap: 1.5rem;
+    
+    /* Transitions */
+    --transition-base: 0.25s ease;
+    --transition-fast: 0.15s ease;
+}
+
+/* ===== CONTACT SECTION ===== */
+.contact-section {
+    position: relative;
+    padding: var(--contact-padding) 0;
+    overflow: hidden;
+    background: white;
+}
+
+/* Background */
+.contact-background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.contact-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(37, 99, 235, 0.03) 0%,
+        rgba(255, 255, 255, 1) 50%,
+        rgba(234, 88, 12, 0.03) 100%
+    );
+}
+
+/* Container */
+.contact-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.contact-wrapper {
+    max-width: 100%;
+}
+
+/* ===== HEADER ===== */
+.contact-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.contact-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-900);
+    margin: 0 0 1rem 0;
+    line-height: 1.2;
+}
+
+.contact-subtitle {
+    font-size: 1.125rem;
+    color: var(--primary-600);
+    margin: 0 auto;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+/* ===== CONTENT GRID ===== */
+.contact-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 3rem;
+    align-items: start;
+}
+
+/* ===== FORM WRAPPER ===== */
+.contact-form-wrapper {
+    background: white;
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--primary-200);
+}
+
+/* ===== FORM ===== */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--form-gap);
+}
+
+/* Form Row */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Form Group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Labels */
+.form-label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--primary-900);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.required {
+    color: var(--error-red);
+    font-weight: 700;
+}
+
+/* Inputs & Selects */
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--primary-900);
+    background: white;
+    border: 2px solid var(--primary-300);
+    border-radius: 8px;
+    transition: all var(--transition-base);
+    outline: none;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-input:hover,
+.form-select:hover,
+.form-textarea:hover {
+    border-color: var(--primary-500);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--primary-400);
+}
+
+/* Select Styling */
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 3rem;
+    cursor: pointer;
+}
+
+.form-select option {
+    padding: 0.5rem;
+}
+
+/* Textarea */
+.form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+    margin-top: 0.5rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.form-checkbox {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 2px solid var(--primary-300);
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 2px;
+    transition: all var(--transition-fast);
+}
+
+.form-checkbox:checked {
+    accent-color: var(--accent-blue);
+}
+
+.form-checkbox:focus {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+.checkbox-text {
+    font-size: 0.9375rem;
+    color: var(--primary-700);
+    line-height: 1.5;
+}
+
+.checkbox-text a {
+    color: var(--accent-blue);
+    text-decoration: underline;
+    transition: color var(--transition-fast);
+}
+
+.checkbox-text a:hover {
+    color: var(--accent-blue-hover);
+}
+
+/* Error States */
+.form-input.error,
+.form-select.error,
+.form-textarea.error {
+    border-color: var(--error-red);
+}
+
+.form-input.error:focus,
+.form-select.error:focus,
+.form-textarea.error:focus {
+    box-shadow: 0 0 0 3px var(--error-red-light);
+}
+
+.form-error {
+    display: none;
+    font-size: 0.875rem;
+    color: var(--error-red);
+    margin-top: 0.25rem;
+}
+
+.form-error.show {
+    display: block;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.form-actions {
+    margin-top: 1rem;
+}
+
+.btn-submit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: white;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.btn-submit:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Button Loader */
+.btn-loader {
+    display: none;
+}
+
+.btn-submit.loading .btn-text,
+.btn-submit.loading .btn-icon {
+    display: none;
+}
+
+.btn-submit.loading .btn-loader {
+    display: block;
+}
+
+.loader-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.btn-icon {
+    transition: transform var(--transition-base);
+}
+
+.btn-submit:hover .btn-icon {
+    transform: translateX(4px);
+}
+
+/* ===== FORM MESSAGES ===== */
+.form-message {
+    display: none;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-message.show {
+    display: flex;
+}
+
+.form-success {
+    background: var(--success-green-light);
+    border: 1px solid var(--success-green);
+    color: #065F46;
+}
+
+.form-error-message {
+    background: var(--error-red-light);
+    border: 1px solid var(--error-red);
+    color: #991B1B;
+}
+
+.message-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.form-success .message-icon {
+    color: var(--success-green);
+}
+
+.form-error-message .message-icon {
+    color: var(--error-red);
+}
+
+.message-content {
+    flex: 1;
+}
+
+.message-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+}
+
+.message-text {
+    font-size: 0.9375rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ===== SIDEBAR ===== */
+.contact-info-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: sticky;
+    top: 2rem;
+}
+
+/* Info Card */
+.info-card {
+    background: var(--primary-50);
+    border: 1px solid var(--primary-200);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.info-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-900);
+    margin: 0 0 1.5rem 0;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--primary-200);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.info-item:first-child {
+    padding-top: 0;
+}
+
+.info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+    color: white;
+    border-radius: 8px;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary-600);
+    margin: 0 0 0.25rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--primary-900);
+    margin: 0;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a.info-value:hover {
+    color: var(--accent-blue);
+}
+
+/* Benefits Card */
+.benefits-card {
+    background: white;
+    border: 1px solid var(--primary-200);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.benefits-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--primary-900);
+    margin: 0 0 1.25rem 0;
+}
+
+.benefits-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    color: var(--primary-700);
+    line-height: 1.6;
+}
+
+.benefit-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--success-green);
+    margin-top: 2px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet */
+@media (max-width: 1023px) {
+    :root {
+        --contact-padding: 4rem;
+    }
+    
+    .contact-content-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .contact-info-sidebar {
+        position: static;
+        flex-direction: row;
+    }
+    
+    .info-card,
+    .benefits-card {
+        flex: 1;
+    }
+}
+
+/* Mobile Large */
+@media (max-width: 767px) {
+    :root {
+        --contact-padding: 3rem;
+        --form-gap: 1.25rem;
+    }
+    
+    .contact-section .container {
+        padding: 0 1rem;
+    }
+    
+    .contact-header {
+        margin-bottom: 2rem;
+    }
+    
+    .contact-title {
+        font-size: 2rem;
+    }
+    
+    .contact-subtitle {
+        font-size: 1rem;
+    }
+    
+    .contact-form-wrapper {
+        padding: 2rem 1.5rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: var(--form-gap);
+    }
+    
+    .contact-info-sidebar {
+        flex-direction: column;
+    }
+    
+    .info-card,
+    .benefits-card {
+        padding: 1.5rem;
+    }
+}
+
+/* Mobile Small */
+@media (max-width: 479px) {
+    :root {
+        --contact-padding: 2rem;
+    }
+    
+    .contact-title {
+        font-size: 1.75rem;
+    }
+    
+    .contact-subtitle {
+        font-size: 0.9375rem;
+    }
+    
+    .contact-form-wrapper {
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+        padding: 0.75rem;
+        font-size: 0.9375rem;
+    }
+    
+    .btn-submit {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .info-card,
+    .benefits-card {
+        padding: 1.25rem;
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+    .form-message,
+    .loader-spinner,
+    .btn-icon {
+        animation: none;
+        transition: none;
+    }
+    
+    .btn-submit:hover {
+        transform: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .form-input,
+    .form-select,
+    .form-textarea {
+        border-width: 3px;
+    }
+    
+    .btn-submit {
+        border: 2px solid var(--primary-900);
+    }
+}
+
+/* ===== PRINT ===== */
+@media print {
+    .contact-background,
+    .btn-submit,
+    .contact-info-sidebar {
+        display: none;
+    }
+    
+    .contact-form-wrapper {
+        box-shadow: none;
+        border: 2px solid var(--primary-900);
+    }
+}
