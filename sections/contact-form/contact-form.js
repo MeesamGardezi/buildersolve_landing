@@ -1,27 +1,20 @@
 /**
- * BuilderSolve Contact Form - Perfected Version
- * @version 4.0.0
- * Simplified, reliable, and fully functional
+ * BuilderSolve Contact Form - Dual Button (Email + WhatsApp)
+ * @version 7.0.0 - Two contact methods in one form
  */
 
 class ContactForm {
     constructor() {
         // ==========================================
-        // SETUP: Replace YOUR_FORM_ID with your actual Formspree form ID
-        // Get it from: https://formspree.io/forms
+        // CONFIGURATION - UPDATE THESE!
         // ==========================================
         this.config = {
-            formspreeId: 'YOUR_FORM_ID', // ← CHANGE THIS!
-            formspreeEndpoint: 'https://formspree.io/f/YOUR_FORM_ID', // ← CHANGE THIS!
-            
-            // Alternative: Use your own backend
-            // customEndpoint: '/api/contact',
-            // useCustomBackend: false,
+            whatsappNumber: '12345678900', // ← Country code + number (no + or spaces)
+            emailTo: 'info@buildersolve.com' // ← Your email address
         };
 
         this.state = {
-            isSubmitting: false,
-            formData: {}
+            isSubmitting: false
         };
 
         this.init();
@@ -31,13 +24,13 @@ class ContactForm {
      * Initialize form
      */
     init() {
-        console.log('🚀 Initializing contact form...');
+        console.log('🚀 Initializing dual-button contact form...');
         
         // Cache elements
         this.form = document.getElementById('contact-form');
-        this.submitBtn = document.getElementById('submit-btn');
-        this.successMsg = document.getElementById('success-message');
-        this.errorMsg = document.getElementById('error-message');
+        this.emailBtn = document.getElementById('emailBtn') || document.getElementById('email-btn');
+        this.whatsappBtn = document.getElementById('whatsappBtn') || document.getElementById('whatsapp-btn');
+        this.errorMsg = document.getElementById('errorMessage') || document.getElementById('error-message');
 
         if (!this.form) {
             console.error('❌ Contact form not found!');
@@ -45,19 +38,38 @@ class ContactForm {
         }
 
         // Bind events
-        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        this.bindEvents();
         
         // Real-time validation
         this.setupRealTimeValidation();
 
         console.log('✅ Contact form ready');
+        console.log(`📧 Email: ${this.config.emailTo}`);
+        console.log(`📱 WhatsApp: ${this.config.whatsappNumber}`);
+    }
+
+    /**
+     * Bind event listeners
+     */
+    bindEvents() {
+        // Email button
+        if (this.emailBtn) {
+            this.emailBtn.addEventListener('click', (e) => this.handleEmailClick(e));
+            console.log('✅ Email button bound');
+        }
+
+        // WhatsApp button
+        if (this.whatsappBtn) {
+            this.whatsappBtn.addEventListener('click', (e) => this.handleWhatsAppClick(e));
+            console.log('✅ WhatsApp button bound');
+        }
     }
 
     /**
      * Setup real-time validation
      */
     setupRealTimeValidation() {
-        const fields = ['first-name', 'last-name', 'email', 'phone', 'company', 'project-type', 'message'];
+        const fields = ['firstName', 'lastName', 'first-name', 'last-name', 'email', 'message'];
         
         fields.forEach(fieldId => {
             const field = document.getElementById(fieldId);
@@ -66,6 +78,9 @@ class ContactForm {
             // Clear error on input
             field.addEventListener('input', () => {
                 this.clearError(fieldId);
+                if (this.errorMsg) {
+                    this.errorMsg.classList.remove('show');
+                }
             });
 
             // Validate on blur
@@ -75,41 +90,80 @@ class ContactForm {
         });
 
         // Privacy checkbox
-        const privacyBox = document.getElementById('privacy-consent');
-        if (privacyBox) {
-            privacyBox.addEventListener('change', () => {
-                this.clearError('privacy-consent');
-            });
-        }
+        const privacyIds = ['privacy', 'privacy-consent'];
+        privacyIds.forEach(id => {
+            const privacyBox = document.getElementById(id);
+            if (privacyBox) {
+                privacyBox.addEventListener('change', () => {
+                    this.clearError(id);
+                    if (this.errorMsg) {
+                        this.errorMsg.classList.remove('show');
+                    }
+                });
+            }
+        });
     }
 
     /**
-     * Handle form submission
+     * Handle Email button click
      */
-    async handleSubmit(e) {
+    handleEmailClick(e) {
         e.preventDefault();
 
-        // Prevent double submission
-        if (this.state.isSubmitting) return;
+        console.log('📧 Email button clicked');
 
-        console.log('📤 Form submitted');
-
-        // Hide any previous messages
-        this.hideMessages();
+        // Hide error message
+        if (this.errorMsg) {
+            this.errorMsg.classList.remove('show');
+        }
 
         // Validate form
         if (!this.validateAll()) {
             console.log('❌ Validation failed');
+            if (this.errorMsg) {
+                this.errorMsg.classList.add('show');
+            }
             this.scrollToFirstError();
             return;
         }
 
         // Get form data
-        const formData = this.getFormData();
-        console.log('📋 Form data collected:', formData);
+        const data = this.getFormData();
+        console.log('📋 Form data collected:', data);
 
-        // Submit
-        await this.submit(formData);
+        // Send via email
+        this.sendViaEmail(data);
+    }
+
+    /**
+     * Handle WhatsApp button click
+     */
+    handleWhatsAppClick(e) {
+        e.preventDefault();
+
+        console.log('💬 WhatsApp button clicked');
+
+        // Hide error message
+        if (this.errorMsg) {
+            this.errorMsg.classList.remove('show');
+        }
+
+        // Validate form
+        if (!this.validateAll()) {
+            console.log('❌ Validation failed');
+            if (this.errorMsg) {
+                this.errorMsg.classList.add('show');
+            }
+            this.scrollToFirstError();
+            return;
+        }
+
+        // Get form data
+        const data = this.getFormData();
+        console.log('📋 Form data collected:', data);
+
+        // Send via WhatsApp
+        this.sendViaWhatsApp(data);
     }
 
     /**
@@ -118,27 +172,22 @@ class ContactForm {
     validateAll() {
         let isValid = true;
 
-        // Required fields
-        const requiredFields = [
-            { id: 'first-name', name: 'First name', minLength: 2 },
-            { id: 'last-name', name: 'Last name', minLength: 2 },
-            { id: 'email', name: 'Email', type: 'email' },
-            { id: 'phone', name: 'Phone', type: 'phone' },
-            { id: 'company', name: 'Company', minLength: 2 },
-            { id: 'project-type', name: 'Project type', type: 'select' },
-            { id: 'message', name: 'Message', minLength: 10 }
-        ];
+        // Get fields (support multiple ID formats)
+        const firstNameField = document.getElementById('firstName') || document.getElementById('first-name');
+        const lastNameField = document.getElementById('lastName') || document.getElementById('last-name');
+        const emailField = document.getElementById('email');
+        const messageField = document.getElementById('message');
 
-        requiredFields.forEach(field => {
-            if (!this.validateField(field.id)) {
-                isValid = false;
-            }
-        });
+        // Validate each field
+        if (firstNameField && !this.validateField(firstNameField.id)) isValid = false;
+        if (lastNameField && !this.validateField(lastNameField.id)) isValid = false;
+        if (emailField && !this.validateField('email')) isValid = false;
+        if (messageField && !this.validateField('message')) isValid = false;
 
         // Privacy consent
-        const privacyBox = document.getElementById('privacy-consent');
+        const privacyBox = document.getElementById('privacy') || document.getElementById('privacy-consent');
         if (privacyBox && !privacyBox.checked) {
-            this.showError('privacy-consent', 'You must agree to the privacy policy');
+            this.showError(privacyBox.id, 'You must agree to the privacy policy');
             isValid = false;
         }
 
@@ -166,17 +215,11 @@ class ContactForm {
                 error = 'Please enter a valid email address';
             }
         }
-        // Phone validation
-        else if (fieldId === 'phone' && value) {
-            const phoneDigits = value.replace(/\D/g, '');
-            if (phoneDigits.length < 10) {
-                error = 'Please enter a valid phone number';
-            }
-        }
-        // Minimum length
-        else if (value && value.length < 2 && fieldId !== 'message') {
+        // Minimum length for names
+        else if ((fieldId.includes('Name') || fieldId.includes('name')) && value && value.length < 2) {
             error = 'Must be at least 2 characters';
         }
+        // Message minimum
         else if (fieldId === 'message' && value && value.length < 10) {
             error = 'Please provide at least 10 characters';
         }
@@ -228,132 +271,88 @@ class ContactForm {
      * Get form data
      */
     getFormData() {
+        // Support multiple ID formats
+        const firstNameField = document.getElementById('firstName') || document.getElementById('first-name');
+        const lastNameField = document.getElementById('lastName') || document.getElementById('last-name');
+        const emailField = document.getElementById('email');
+        const messageField = document.getElementById('message');
+
         return {
-            firstName: document.getElementById('first-name')?.value.trim() || '',
-            lastName: document.getElementById('last-name')?.value.trim() || '',
-            email: document.getElementById('email')?.value.trim() || '',
-            phone: document.getElementById('phone')?.value.trim() || '',
-            company: document.getElementById('company')?.value.trim() || '',
-            projectType: document.getElementById('project-type')?.value || '',
-            budget: document.getElementById('budget')?.value || 'Not specified',
-            timeline: document.getElementById('timeline')?.value || 'Not specified',
-            message: document.getElementById('message')?.value.trim() || '',
-            timestamp: new Date().toISOString(),
-            source: 'BuilderSolve Landing Page'
+            firstName: firstNameField?.value.trim() || '',
+            lastName: lastNameField?.value.trim() || '',
+            email: emailField?.value.trim() || '',
+            message: messageField?.value.trim() || ''
         };
     }
 
     /**
-     * Submit form data
+     * Send via Email
      */
-    async submit(formData) {
-        this.setLoading(true);
+    sendViaEmail(data) {
+        console.log('📧 Preparing email...');
 
-        try {
-            console.log('📡 Sending to Formspree...');
+        const subject = `Contact from ${data.firstName} ${data.lastName}`;
+        
+        const body = `Name: ${data.firstName} ${data.lastName}
+Email: ${data.email}
 
-            const response = await fetch(this.config.formspreeEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+Message:
+${data.message}`;
 
-            const result = await response.json();
+        const mailtoLink = `mailto:${this.config.emailTo}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-            if (response.ok) {
-                console.log('✅ Form submitted successfully!');
-                this.handleSuccess(formData);
-            } else {
-                throw new Error(result.error || 'Submission failed');
-            }
-
-        } catch (error) {
-            console.error('❌ Submission error:', error);
-            this.handleError(error);
-        } finally {
-            this.setLoading(false);
-        }
-    }
-
-    /**
-     * Handle success
-     */
-    handleSuccess(formData) {
-        // Show success message
-        if (this.successMsg) {
-            this.successMsg.classList.add('show');
-            this.successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        // Reset form
-        this.form.reset();
+        console.log('📧 Opening email client...');
+        
+        // Open email client
+        window.location.href = mailtoLink;
 
         // Track conversion
-        this.trackConversion(formData);
+        this.trackConversion('email', data);
 
-        // Hide success message after 10 seconds
+        // Reset form after delay
         setTimeout(() => {
-            if (this.successMsg) {
-                this.successMsg.classList.remove('show');
-            }
-        }, 10000);
-
-        console.log('🎉 Success!');
+            this.form.reset();
+            console.log('✅ Form reset');
+        }, 1000);
     }
 
     /**
-     * Handle error
+     * Send via WhatsApp
      */
-    handleError(error) {
-        // Show error message
-        if (this.errorMsg) {
-            this.errorMsg.classList.add('show');
-            this.errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+    sendViaWhatsApp(data) {
+        console.log('💬 Preparing WhatsApp message...');
 
-        // Hide error message after 10 seconds
+        const whatsappMessage = `*New Contact from BuilderSolve Website*
+
+*Name:* ${data.firstName} ${data.lastName}
+*Email:* ${data.email}
+
+*Message:*
+${data.message}`;
+
+        const encodedMessage = encodeURIComponent(whatsappMessage);
+        const whatsappUrl = `https://wa.me/${this.config.whatsappNumber}?text=${encodedMessage}`;
+
+        console.log('💬 Opening WhatsApp...');
+
+        // Open WhatsApp in new tab
+        window.open(whatsappUrl, '_blank');
+
+        // Track conversion
+        this.trackConversion('whatsapp', data);
+
+        // Reset form after delay
         setTimeout(() => {
-            if (this.errorMsg) {
-                this.errorMsg.classList.remove('show');
-            }
-        }, 10000);
-
-        console.error('💥 Submission failed');
-    }
-
-    /**
-     * Set loading state
-     */
-    setLoading(isLoading) {
-        this.state.isSubmitting = isLoading;
-
-        if (this.submitBtn) {
-            if (isLoading) {
-                this.submitBtn.classList.add('loading');
-                this.submitBtn.disabled = true;
-            } else {
-                this.submitBtn.classList.remove('loading');
-                this.submitBtn.disabled = false;
-            }
-        }
-    }
-
-    /**
-     * Hide all messages
-     */
-    hideMessages() {
-        if (this.successMsg) this.successMsg.classList.remove('show');
-        if (this.errorMsg) this.errorMsg.classList.remove('show');
+            this.form.reset();
+            console.log('✅ Form reset');
+        }, 1000);
     }
 
     /**
      * Scroll to first error
      */
     scrollToFirstError() {
-        const firstError = this.form.querySelector('.form-error.show');
+        const firstError = this.form.querySelector('.error-message.show');
         if (firstError) {
             const field = firstError.previousElementSibling;
             if (field) {
@@ -366,38 +365,74 @@ class ContactForm {
     /**
      * Track conversion
      */
-    trackConversion(data) {
-        console.log('📊 Tracking conversion:', data);
+    trackConversion(method, data) {
+        console.log(`📊 Tracking ${method} conversion:`, data);
 
         // Google Analytics 4
         if (typeof gtag !== 'undefined') {
             gtag('event', 'form_submit', {
                 event_category: 'contact',
-                event_label: data.projectType,
+                event_label: method,
                 value: 1
             });
         }
 
         // Facebook Pixel
         if (typeof fbq !== 'undefined') {
-            fbq('track', 'Lead', {
-                content_name: 'Contact Form',
+            fbq('track', 'Contact', {
+                content_name: `Contact Form - ${method}`,
                 content_category: 'Lead'
             });
         }
 
         // Custom event
-        window.dispatchEvent(new CustomEvent('buildersolve:form:submitted', {
-            detail: data
+        window.dispatchEvent(new CustomEvent('buildersolve:contact:sent', {
+            detail: {
+                method: method,
+                ...data
+            }
         }));
+    }
+
+    /**
+     * Public API
+     */
+    getAPI() {
+        return {
+            validateAll: () => this.validateAll(),
+            getFormData: () => this.getFormData(),
+            sendViaEmail: (data) => this.sendViaEmail(data || this.getFormData()),
+            sendViaWhatsApp: (data) => this.sendViaWhatsApp(data || this.getFormData()),
+            reset: () => this.form.reset()
+        };
     }
 }
 
 // Initialize when DOM is ready
+let contactFormInstance;
+
+function initContactForm() {
+    try {
+        contactFormInstance = new ContactForm();
+        
+        // Export API to global scope
+        window.BuilderSolveContactForm = contactFormInstance.getAPI();
+        
+        console.log('✅ Contact form initialized successfully');
+        console.log('🔧 API exported to window.BuilderSolveContactForm');
+        
+    } catch (error) {
+        console.error('❌ Failed to initialize contact form:', error);
+    }
+}
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        new ContactForm();
-    });
+    document.addEventListener('DOMContentLoaded', initContactForm);
 } else {
-    new ContactForm();
+    initContactForm();
+}
+
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = ContactForm;
 }

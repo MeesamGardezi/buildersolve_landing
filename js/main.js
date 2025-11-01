@@ -8,7 +8,7 @@
 const BuilderSolve = {
     isLoading: true,
     sectionsLoaded: 0,
-    totalSections: 6,
+    totalSections: 7,
     currentSection: 'hero',
     scrollPosition: 0,
     isScrolling: false,
@@ -26,14 +26,15 @@ const BuilderSolve = {
     },
     
     // Section configurations - UPDATED
-    sections: [
-        { id: 'hero', file: 'hero', hasAnimation: true, hasJS: true },
-        { id: 'key-features', file: 'key-features', hasAnimation: true, hasJS: true },
-        { id: 'dashboard-showcase', file: 'dashboard-showcase', hasAnimation: true, hasJS: true },
-        { id: 'problem-solution', file: 'problem-solution', hasAnimation: true, hasJS: false },
-        { id: 'social-proof', file: 'social-proof', hasAnimation: true, hasJS: false },
-        { id: 'final-cta', file: 'final-cta', hasAnimation: true, hasJS: false }
-    ],
+sections: [
+    { id: 'hero', file: 'hero', hasAnimation: true, hasJS: true },
+    { id: 'key-features', file: 'key-features', hasAnimation: true, hasJS: true },
+    { id: 'dashboard-showcase', file: 'dashboard-showcase', hasAnimation: true, hasJS: true },
+    { id: 'problem-solution', file: 'problem-solution', hasAnimation: true, hasJS: false },
+    { id: 'social-proof', file: 'social-proof', hasAnimation: true, hasJS: false },
+    { id: 'final-cta', file: 'final-cta', hasAnimation: true, hasJS: false },
+    { id: 'contact-form', file: 'contact-form', hasAnimation: true, hasJS: true }  // ✅ ADDED
+],
     
     // Track loaded sections
     loadedSections: new Set(),
